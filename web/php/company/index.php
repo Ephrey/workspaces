@@ -14,4 +14,5 @@ $employees = $stm->fetchAll();
 echo '<pre>';
 $name = json_decode(json_encode($employees));
 var_dump($name[0]->last_name);
+var_dump($name[0]->first_name);
 echo '</pre>';
