@@ -23,7 +23,15 @@ class AppTest extends TestCase
     $app = new App();
     $request = new ServerRequest('GET', '/blog');
     $response = $app->run($request);
-    $this->assertContains('<h1>Welcome to the blog</h1>', $response->getBody());
+    $this->assertStringContainsString('<h1>Welcome to the blog</h1>', $response->getBody());
     $this->assertEquals(200, $response->getStatusCode());
+  }
+
+  public function testLogin()
+  {
+    $app = new App();
+    $request = new ServerRequest('GET', '/login');
+    $response = $app->run($request);
+    $this->assertStringContainsString('login', $response->getBody());
   }
 }
