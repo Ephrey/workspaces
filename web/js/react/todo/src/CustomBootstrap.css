@@ -1,0 +1,385 @@
+/*GLOBAL COLORS*
+#dd4b39 !important*/
+:root{
+    --main_bg_color: #E5E9F0;
+    --padding: 16px;
+    --secondary_color: #000000;
+    --primary_color: #FFBD2F;
+    --sub_color: #838389;
+    --white_color: #FFFFFF;
+    --fade_color: #505055;
+    --border: #E5E9F0;
+    --opacity: rgba(229, 233, 240, 0.80);
+    --bg_on_hover: rgba(229, 233, 240, 0.19);
+    --default_shodow: rgba(187, 187, 187, 0.5);
+
+    --all: #8BACFF;
+    --work: #FDC185;
+    --music: #F9A495;
+    --travel: #72D390;
+    --study: #AFAADE;
+    --home: #DF786A;
+    --hobbies: #B173C8;
+    --shopping: #61BEC8;
+    --sport: #FFB6B6;
+    --other: #FFBD2F;
+}
+
+/** HIDE ELEMENT **/
+.hide {
+    display:none !important;
+    z-index: -999 !important;
+    margin-top: 600px !important;
+}
+
+/*#### ACTION BUTTON */
+.action_button {
+    position: absolute;
+    bottom: 0;
+    left: 120px;
+    margin: 0 auto 15px auto;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 1px 12px #838389;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    z-index: 1;
+}
+
+div.hide_action_button {
+    margin-bottom: -150px !important;
+}
+
+.action_button:hover {
+    opacity: 0.7;
+}
+
+.action_button > img {
+    width: 23px;
+    height: 23px;
+}
+
+.primary_btn {
+    background-color: var(--primary_color);
+}
+
+.secondary_btn {
+    background-color: var(--secondary_color);
+}
+
+/* TASKS */
+
+.task {
+    background-color: var(--white_color);
+    padding: 10px;
+    border-radius: 0 5px 5px 0;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.task:hover {
+    box-shadow: 0 3px 6px var(--border);
+}
+
+div.default_border_left:hover {
+    box-shadow: 0 3px 6px var(--default_shodow);
+}
+
+.task 
+.task_content > h4 {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--sub_color);
+    margin-bottom: 5px;
+}
+
+.task 
+.task_content .task_start_time {
+    display: flex;
+    align-items: center;
+}
+
+.task
+.task_content .task_start_time > p {
+    font-size: 9px;
+    font-weight: 400;
+}
+
+.task .task_content
+.task_start_time > p.separator {
+    width: 2px;
+    height: 2px;
+    background-color: var(--main_bg_color);
+    margin: -2px 5px 0 5px;
+}
+.task .task_staus {
+    flex-grow: 1;
+}
+
+.task .task_staus 
+div.set_as_done_btn {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;;
+}
+
+.task .task_staus 
+div.set_as_done_btn:hover {
+    opacity: 1;
+}
+
+.task .task_staus 
+div.set_as_done_btn > img {
+    width: 15px;
+}
+
+
+/** MARGINGS **/
+.mb_30 {
+    margin-bottom: 60px !important;
+}
+
+.mt_30 {
+    margin-top: 80px !important;
+}
+
+/* RADIUS BORDER */
+.rouded_40 {
+    border-radius: 40px;
+}
+
+
+/** BACKGROUND COLORS **/
+
+.bg_white {
+    background-color: var(--white_color) !important;
+}
+
+.all_bg {
+    background-color: var(--all) !important;
+}
+
+.other_bg {
+    background-color: var(--primary_color) !important;
+}
+
+.travel_bg {
+    background-color: var(--travel) !important;
+}
+
+.study_bg {
+    background-color: var(--study) !important;
+}
+
+.work_bg {
+    background-color: var(--work) !important;
+}
+
+.sport_bg {
+    background-color: var(--sport) !important;
+}
+
+.hobbies_bg {
+    background-color: var(--hobbies) !important;
+}
+
+.music_bg {
+    background-color: var(--music) !important;
+}
+
+.shopping_bg {
+    background-color: var(--shopping) !important;
+}
+
+.home_bg {
+    background-color: var(--home) !important;
+}
+
+/** COLOR **/
+.white_color {
+    color: var(--white_color) !important;
+}
+
+.fade_color {
+    color: var(--main_bg_color);
+}
+
+.other_color {
+    color: var(--primary_color);
+}
+
+.default_color {
+    color: var(--primary_color);
+}
+
+.all_color {
+    color: var(--all);
+}
+
+.travel_color {
+    color: var(--travel);
+}
+
+.work_color {
+    color: var(--work);
+}
+
+.sport_color {
+    color: var(--sport);
+}
+
+.hobbies_color {
+    color: var(--hobbies);
+}
+
+.music_color {
+    color: var(--music);
+}
+
+.shopping_color {
+    color: var(--shopping);
+}
+
+.home_color {
+    color: var(--home);
+}
+
+.study_color {
+    color: var(--study);
+}
+
+/** BORDER LEFT **/
+.default_border_left {
+    border-left: 2px solid var(--primary_color);
+}
+
+.other_border_left {
+    border-left: 2px solid var(--primary_color);
+}
+
+.all_border_left {
+    border-left: 2px solid var(--all);
+}
+
+.travel_border_left {
+    border-left: 2px solid var(--travel);
+}
+
+.study_border_left {
+    border-left: 2px solid var(--study);
+}
+
+.hobbies_border_left {
+    border-left: 2px solid var(--hobbies);
+}
+
+.sport_border_left {
+    border-left: 2px solid var(--sport);
+}
+
+.work_border_left {
+    border-left: 2px solid var(--work);
+}
+
+.home_border_left {
+    border-left: 2px solid var(--home);
+}
+
+.shopping_border_left {
+    border-left: 2px solid var(--shopping);
+}
+
+.music_border_left {
+    border-left: 2px solid var(--music);
+}
+
+/** BORDER BOTTOM **/
+
+.all_border_bottom {
+    border-bottom: 1px solid var(--all) !important;
+}
+
+.other_border_bottom {
+    border-bottom: 1px solid var(--primary_color) !important;
+}
+
+.travel_border_bottom {
+    border-bottom: 1px solid var(--travel) !important;
+}
+
+.home_border_bottom {
+    border-bottom: 1px solid var(--home) !important;
+}
+
+.work_border_bottom {
+    border-bottom: 1px solid var(--work) !important;
+}
+
+.hobbies_border_bottom {
+    border-bottom: 1px solid var(--hobbies) !important;
+}
+
+.sport_border_bottom {
+    border-bottom: 1px solid var(--sport) !important;
+}
+
+.study_border_bottom {
+    border-bottom: 1px solid var(--study) !important;
+}
+
+.music_border_bottom {
+    border-bottom: 1px solid var(--music) !important;
+}
+
+.shopping_border_bottom {
+    border-bottom: 1px solid var(--shopping) !important;
+}
+
+
+/** SIZE **/
+.small_icon {
+    width: 20px !important;
+}
+
+.profile_image_size {
+    width: 35px;
+}
+
+
+/** ALERT MESSAGE TYPE **/
+
+.alert_success,
+.alert_error,
+.alert_warning {
+    color: var(--sub_color);
+}
+
+.alert_success {
+    border-bottom: 4px solid #72D390;
+}
+
+.alert_error {
+    border-bottom: 4px solid #DF786A;
+}
+
+.alert_warning {
+    border-bottom: 4px solid var(--primary_color);
+}
+
+
+div.remove {
+    margin-left: 300px !important;
+}

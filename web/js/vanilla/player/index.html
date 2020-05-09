@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="assets/css/main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="music_container">
+      <div
+        class="player_container"
+        style="background-image: url('assets/cover/default.jpg');"
+      >
+        <div class="error_container hide_error"><div>Welcome to Player Welcome to Player Welcome to Player Welcome to Player Welcome to Player </div></div>
+        <div class="volume_setting"><img data-role="mute"data-status="unmute" id="volume_icon" src="assets/icons/speaker.png" alt="">
+          <input data-role="volume" id="volume_setting" type="range" value="5" name="volume" min="0" max="10">
+        </div>
+        <div class="controller_container">
+          <div class="song_info">
+            <p class="song_title main_title">Welcome to Player</p>
+            <p class="timer"><span class="current_time">00:00</span> - <span class="total_time">00:00</span></p>
+          </div>
+          <div class="controller_content">
+            <div class="previous_button">
+              <img
+                data-role="previous"
+                src="assets/icons/previous.png"
+                alt=""
+              />
+            </div>
+            <div class="shuffle_button">
+              <img data-role="shuffle" src="assets/icons/shuffle.png" alt="" />
+            </div>
+            <div class="pause_play_button">
+              <img
+                class="main_play_pause_button"
+                id="1"
+                data-isplaying="false"
+                data-role="play"
+                src="assets/icons/play.png"
+                alt=""
+              />
+            </div>
+            <div class="repeat_button">
+              <img data-role="repeat" src="assets/icons/repeat.png" alt="" />
+            </div>
+            <div class="next_button">
+              <img data-role="next" src="assets/icons/skip.png" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="progress_bar_container">
+          <div class="progress_bar"></div>
+        </div>
+      </div>
+
+      <div class="play_list_container">
+        <div class="upload_container">
+          <label for="music_upload"><img src="assets/icons/download.png" alt="">
+          <br> <br> Click to load musics from your computer
+          </label>
+          <input id="music_upload" type="file" name="" multiple hidden />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <audio id="player" src="" type="audio/mpeg"></audio>
+    </div>
+  </body>
+  <script type="text/javascript" src="assets/js/main.js"></script>
+</html>
