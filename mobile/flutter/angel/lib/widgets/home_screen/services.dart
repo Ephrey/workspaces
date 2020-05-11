@@ -1,3 +1,4 @@
+import 'package:angel/widgets/service_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:angel/common/colors/custom_colors.dart';
 import 'package:angel/model/services_model.dart';
@@ -10,7 +11,7 @@ class Services extends StatelessWidget {
 
   Widget _buildServices(BuildContext context) {
     return Container(
-      height: 180,
+      height: 180.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         addAutomaticKeepAlives: false,
@@ -28,9 +29,9 @@ class Services extends StatelessWidget {
   Widget _buildService({BuildContext context, ServicesModel service}) {
     return GestureDetector(
       child: Container(
-        width: 135,
-        height: 170,
-        margin: EdgeInsets.only(top: 10, right: 20, bottom: 10),
+        width: 135.0,
+        height: 170.0,
+        margin: EdgeInsets.only(top: 10.0, right: 20.0, bottom: 10.0),
         decoration: BoxDecoration(
           color: service.color,
           borderRadius: BorderRadius.circular(10.0),
@@ -45,32 +46,15 @@ class Services extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            _buildServiceIcon(service),
+            ServiceIcon(icon: service.icon, color: service.color),
             _buildServiceName(service),
             Icon(Icons.trending_flat, color: Colors.white),
           ],
         ),
       ),
       onTap: () {
-        Navigator.pushNamed(context, '/');
+        Navigator.pushNamed(context, '/services');
       },
-    );
-  }
-
-  Widget _buildServiceIcon(ServicesModel service) {
-    return Container(
-      width: 50,
-      height: 50,
-      margin: EdgeInsets.only(top: 18, bottom: 15),
-      decoration: BoxDecoration(
-        color: BaseColors.welcomeBackground,
-        borderRadius: BorderRadius.circular(100.0),
-      ),
-      child: Icon(
-        service.icon,
-        size: 35,
-        color: service.color,
-      ),
     );
   }
 
@@ -78,7 +62,7 @@ class Services extends StatelessWidget {
     return Text(
       '${service.name}',
       style: TextStyle(
-        fontSize: 15,
+        fontSize: 15.0,
         fontWeight: FontWeight.bold,
         color: BaseColors.blackText,
       ),

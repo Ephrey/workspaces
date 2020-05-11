@@ -10,7 +10,7 @@ class BaseColors {
   static const Color continueButtonBackground = const Color(0xFFA9E5D9);
   static const Color link = const Color(0xFF39D5B5);
 
-  static const Color babySister = const Color(0xFF1BCEA9);
+  static const Color babySitter = const Color(0xFF1BCEA9);
   static const Color floorCleaning = const Color(0xFFFFB838);
   static const Color electrician = const Color(0xFFFF55EC);
 
@@ -19,6 +19,7 @@ class BaseColors {
 
   static const Color borderLight = const Color(0xFFDBDBDB);
   static const Color icons = const Color(0xFFA8A8A8);
+  static const Color favorite = const Color(0xFFC33336);
 
   static const Color shadow = const Color(0xFFD6D6D6);
 }

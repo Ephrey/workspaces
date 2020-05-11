@@ -50,6 +50,7 @@ class UsersCard extends StatelessWidget {
     }
 
     return Container(
+      padding: EdgeInsets.only(bottom: 20.0),
       child: Column(
         children: cards,
       ),
@@ -59,8 +60,9 @@ class UsersCard extends StatelessWidget {
   Widget _buildCardProfileImage({UsersModel user}) {
     return Container(
       width: 110.0,
+      height: 110.0,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.0),
         child: Image.asset(
           'assets/users/profile_pictures/${user.profilePicture}.jpg',
           fit: BoxFit.cover,

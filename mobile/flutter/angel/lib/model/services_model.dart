@@ -15,8 +15,8 @@ class ServicesModel {
 
 final List<ServicesModel> servicesModel = [
   ServicesModel(
-    name: 'Baby Sister',
-    color: BaseColors.babySister,
+    name: 'Baby Sitter',
+    color: BaseColors.babySitter,
     icon: Icons.child_friendly,
   ),
   ServicesModel(
