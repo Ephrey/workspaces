@@ -19,7 +19,7 @@ class Music {
   paused = "paused";
   haveBeenPlayed = [];
   currentVolumeLevel = "5";
-  validFormat = ['mp3'];
+  validFormat = ["mp3"];
 
   constructor() {
     this.timer_current_time = document.querySelector(".current_time");
@@ -28,8 +28,8 @@ class Music {
   }
 
   /**
-   * 
-   * @param {Array} track 
+   *
+   * @param {Array} track
    */
   triggerPlayer(track) {
     const selectedTrack = track;
@@ -54,7 +54,7 @@ class Music {
       this.selectedTrack.setAttribute("src", this.pauseButton);
       this.selectedTrack.dataset.isplaying = "true";
 
-      const track = this.playList.filter(track => {
+      const track = this.playList.filter((track) => {
         return track.id == trackId;
       });
 
@@ -67,7 +67,6 @@ class Music {
       return false;
     }
   }
-
 
   play() {
     this.setVolume(this.currentVolumeLevel);
@@ -91,11 +90,11 @@ class Music {
   }
 
   /**
-   * Swith Buttons play/paus
+   * Switch Buttons play/pause
    */
   switchActionButton() {
     const actionButtons = document.querySelectorAll("img[data-isplaying]");
-    actionButtons.forEach(button => {
+    actionButtons.forEach((button) => {
       if (
         button.id != this.currentPlaying.id &&
         button.dataset.isplaying == "true"
@@ -119,17 +118,17 @@ class Music {
   }
 
   getCurrentSongFullDetails() {
-    return this.playList.filter(track => {
+    return this.playList.filter((track) => {
       return track.id == this.currentPlaying.id;
     });
   }
 
   /**
-   * 
-   * @param {Number} id 
+   *
+   * @param {Number} id
    */
   getTrackById(id) {
-    return this.playList.filter(track => Number(track.id )=== Number(id));
+    return this.playList.filter((track) => Number(track.id) === Number(id));
   }
 
   updateProgressBarAndTimer() {
@@ -149,15 +148,51 @@ class Music {
   updateMainPlayPauseButtonId() {
     const button = document.querySelector(".main_play_pause_button");
     const currentPlaying = this.getCurrentSongFullDetails()[0];
-    button.setAttribute("id", currentPlaying.id);
-    button.dataset.isplaying = "true";
+    this.setAttribute(button, "id", currentPlaying.id);
+    button.dataset.isplaying = true;
   }
 
   updateMainPlayPauseButtonStatus(action) {
     const button = document.querySelector(".main_play_pause_button");
-    action === "paused"
-      ? button.setAttribute("src", this.playButton)
-      : button.setAttribute("src", this.pauseButton);
+    const trackId = button.getAttribute("id");
+
+    if (action === "paused") {
+      this.setAttribute(button, "src", this.playButton);
+      this.setTrackAsPaused(trackId);
+    } else {
+      this.setAttribute(button, "src", this.pauseButton);
+      this.setTrackAsPlaying(trackId);
+    }
+  }
+
+  /**
+   *
+   * @param int trackId
+   */
+  setTrackAsPaused(trackId) {
+    const track = document.querySelector("[data-id=song-" + trackId + "]");
+    this.setAttribute(track, "src", this.playButton);
+    track.dataset.isplaying = false;
+  }
+
+  /**
+   *
+   * @param int trackId
+   */
+  setTrackAsPlaying(trackId) {
+    const track = document.querySelector("[data-id=song-" + trackId + "]");
+    this.setAttribute(track, "src", this.pauseButton);
+    track.dataset.isplaying = true;
+  }
+
+  /**
+   *
+   * @param HTMLElement element
+   * @param HTMLElementAttributeName attribute
+   * @param mixed value
+   */
+  setAttribute(element, attribute, value) {
+    element.setAttribute(attribute, value);
   }
 
   playPrevious() {
@@ -166,14 +201,14 @@ class Music {
     if (this.currentPlaying.id) {
       const currentTrack = this.getTrackById(this.currentPlaying.id)[0];
       const currentTrackIndex = this.playList.indexOf(currentTrack);
-      
-      let previousTrackIndex = currentTrackIndex - 1; 
-      if(previousTrackIndex < 0) previousTrackIndex = 0; 
 
-      const previousTrack = this.playList[previousTrackIndex]; 
-      previousTrackId = previousTrack 
-          ? Number(previousTrack.id) 
-          : this.playList[this.playList.length - 1].id;
+      let previousTrackIndex = currentTrackIndex - 1;
+      if (previousTrackIndex < 0) previousTrackIndex = 0;
+
+      const previousTrack = this.playList[previousTrackIndex];
+      previousTrackId = previousTrack
+        ? Number(previousTrack.id)
+        : this.playList[this.playList.length - 1].id;
     }
 
     if (this.currentPlaying.id == 1) {
@@ -195,8 +230,8 @@ class Music {
     if (this.currentPlaying.id) {
       const currentTrack = this.getTrackById(this.currentPlaying.id)[0];
       const currentTrackIndex = this.playList.indexOf(currentTrack);
- 
-      const nextTrack = this.playList[currentTrackIndex + 1]; 
+
+      const nextTrack = this.playList[currentTrackIndex + 1];
 
       nextTrackId = nextTrack ? Number(nextTrack.id) : this.playList[0].id;
 
@@ -366,17 +401,17 @@ class Music {
   throwError(message) {
     const errorContainer = document.querySelector(".error_container");
     errorContainer.firstChild.innerHTML = message;
-    errorContainer.classList.remove('hide_error');
+    errorContainer.classList.remove("hide_error");
 
-    window.hideError = setTimeout(function() {
-      errorContainer.classList.add('hide_error');
+    window.hideError = setTimeout(function () {
+      errorContainer.classList.add("hide_error");
       clearTimeout(window.hideError);
     }, 3000);
   }
 
   playListRenderer() {
     let playList = "";
-    this.playList.map(track => {
+    this.playList.map((track) => {
       const { id, artist, title, cover, length } = track;
       playList += `
        <div class="single_song_container">
@@ -426,7 +461,7 @@ class Music {
   }
 
   resetAllActionButtons() {
-    document.querySelectorAll("img[data-isplaying]").forEach(button => {
+    document.querySelectorAll("img[data-isplaying]").forEach((button) => {
       button.setAttribute("src", this.playButton);
       button.dataset.isplaying = "false";
     });
@@ -437,57 +472,55 @@ class Music {
   }
 }
 
-
 /**
- * 
- * @param {ChangeEvent} e 
+ *
+ * @param {ChangeEvent} e
  */
 function getPlaylist(e) {
   const files = e.target.files;
-  const tracks = removeUnsupportedFiles(files); 
+  const tracks = removeUnsupportedFiles(files);
 
-  if(!tracks.length) {
+  if (!tracks.length) {
     musics.throwError("All provided files have bad format ! Good try :)");
     return false;
-  };
-
-  for(let e = 0; e < tracks.length; e++) {
-      const iteration = e + 1;
-      
-      const track = tracks[e];
-      const trackName = getTrackName(track.name);
-      const trackURL = URL.createObjectURL(track);
-
-      const audio = new Audio(trackURL);
-      audio.addEventListener('loadeddata', () => {
-
-        const audioDetails = {
-          id: iteration,
-          artist: trackName,
-          title: trackName,
-          song: trackURL,
-          cover: "default.jpg",
-          length: getTrackDuration(audio.duration)
-        }
-        
-        musics.playList.push(audioDetails); 
-
-        if(iteration === tracks.length) {
-          console.log(musics.playList);
-          startPlaying();
-        }
-      });
   }
-};
+
+  for (let e = 0; e < tracks.length; e++) {
+    const iteration = e + 1;
+
+    const track = tracks[e];
+    const trackName = getTrackName(track.name);
+    const trackURL = URL.createObjectURL(track);
+
+    const audio = new Audio(trackURL);
+    audio.addEventListener("loadeddata", () => {
+      const audioDetails = {
+        id: iteration,
+        artist: trackName,
+        title: trackName,
+        song: trackURL,
+        cover: "default.jpg",
+        length: getTrackDuration(audio.duration),
+      };
+
+      musics.playList.push(audioDetails);
+
+      if (iteration === tracks.length) {
+        console.log(musics.playList);
+        startPlaying();
+      }
+    });
+  }
+}
 
 function removeUnsupportedFiles(files) {
   const supportedFiles = [];
-  for(let e = 0; e < files.length; e++) {
+  for (let e = 0; e < files.length; e++) {
     const track = files[e];
     const format = extractTrackFormat(track.name);
-    if(isValidFormat(format)) {
-      tracksUrl =  supportedFiles.push(track);
-    } 
+    if (isValidFormat(format)) {
+      tracksUrl = supportedFiles.push(track);
+    }
   }
 
   return supportedFiles;
@@ -495,7 +528,7 @@ function removeUnsupportedFiles(files) {
 
 function startPlaying() {
   let playerInterface = document.querySelector("#music_container"),
-      playListContainer = document.querySelector(".play_list_container");
+    playListContainer = document.querySelector(".play_list_container");
 
   playListContainer.innerHTML = musics.playListRenderer();
   playerInterface.addEventListener("click", (e) => {
@@ -536,40 +569,39 @@ function triggerPlayer(e, musics) {
 }
 
 function getTrackName(name) {
-  const splitTrackName = name.split('.');
+  const splitTrackName = name.split(".");
   // remove track format from the name
   splitTrackName.pop();
   // join and return the track name without the format at the end
-  let newTrackName = splitTrackName.join(' ');
+  let newTrackName = splitTrackName.join(" ");
 
-  if(newTrackName.length > 20) {
-    return newTrackName.substring(0,17) + "...";
+  if (newTrackName.length > 20) {
+    return newTrackName.substring(0, 17) + "...";
   }
 
   return newTrackName;
 }
 
 function getTrackDuration(duration) {
-  if(!duration) return "00:00";
+  if (!duration) return "00:00";
 
   let minutes = Math.floor(duration / 60);
-  let seconds = Math.floor(duration - (minutes * 60));
+  let seconds = Math.floor(duration - minutes * 60);
 
-  if(minutes < 10) minutes = "0" + minutes;
-  if(seconds < 10) seconds = "0" + seconds;
+  if (minutes < 10) minutes = "0" + minutes;
+  if (seconds < 10) seconds = "0" + seconds;
 
   return minutes + ":" + seconds;
 }
 
 function isValidFormat(format) {
-   return musics.validFormat.indexOf(format) >= 0;
+  return musics.validFormat.indexOf(format) >= 0;
 }
 
 function extractTrackFormat(track) {
-  const peacesOfTrack = track.split('.');
+  const peacesOfTrack = track.split(".");
   return peacesOfTrack[peacesOfTrack.length - 1];
 }
-
 
 const uploadButton = document.querySelector("#music_upload");
 uploadButton.addEventListener("change", getPlaylist);
