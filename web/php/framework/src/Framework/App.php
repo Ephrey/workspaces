@@ -28,6 +28,7 @@ class App
 
     $response = new Response();
     $response->getBody()->write('Hello, world :)');
+
     return $response;
   }
 }
