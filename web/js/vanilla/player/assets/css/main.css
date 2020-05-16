@@ -71,7 +71,7 @@ p {
   min-height: 70px;
   margin: auto;
   text-align: center;
-  background-color: #FF0000;
+  background-color: #ff0000;
   color: #fff;
   border-radius: 10px;
   display: flex;
@@ -80,7 +80,6 @@ p {
   padding: 10px;
   line-height: 24px;
 }
-
 
 #music_container .player_container div.hide_error {
   margin-top: -150px;
@@ -284,4 +283,9 @@ p {
   width: 60px;
   margin-bottom: 6px;
   cursor: pointer;
+}
+
+[data-isplaying="true"] {
+  background-color: #ff00002a;
+  border-radius: 100%;
 }

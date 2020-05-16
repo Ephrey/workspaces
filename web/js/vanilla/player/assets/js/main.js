@@ -158,6 +158,7 @@ class Music {
 
     if (action === "paused") {
       this.setAttribute(button, "src", this.playButton);
+      this.setAttribute(button, "data-isplaying", false);
       this.setTrackAsPaused(trackId);
     } else {
       this.setAttribute(button, "src", this.pauseButton);
