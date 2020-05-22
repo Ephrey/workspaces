@@ -244,7 +244,7 @@ class _BuildNavigationItems extends StatelessWidget {
             );
           },
         ),
-        _buildGradientOverlay(_deviceScreenSize),
+        _BuildGradientOverlay(_deviceScreenSize),
       ],
     );
 
@@ -321,24 +321,33 @@ class _BuildLink extends StatelessWidget {
   }
 }
 
-Widget _buildGradientOverlay(_deviceScreenSize) {
-  return Container(
-    margin: EdgeInsets.only(
-      left: _deviceScreenSize.width * 0.60,
-    ),
-    width: _deviceScreenSize.width * 0.15,
-    decoration: BoxDecoration(
+class _BuildGradientOverlay extends StatelessWidget {
+  final Size _deviceScreenSize;
+
+  _BuildGradientOverlay(this._deviceScreenSize);
+
+  @override
+  Widget build(_) {
+    final _gradient = LinearGradient(
+      begin: Alignment.centerRight,
+      end: Alignment.centerLeft,
+      colors: [
+        BaseColors.background.withOpacity(0.9),
+        BaseColors.background.withOpacity(0.3),
+      ],
+    );
+
+    final _decoration = BoxDecoration(
       color: BaseColors.favorite,
-      gradient: LinearGradient(
-        begin: Alignment.centerRight,
-        end: Alignment.centerLeft,
-        colors: [
-          BaseColors.background.withOpacity(0.9),
-          BaseColors.background.withOpacity(0.3),
-        ],
-      ),
-    ),
-  );
+      gradient: _gradient,
+    );
+
+    return Container(
+      margin: EdgeInsets.only(left: _deviceScreenSize.width * 0.60),
+      width: _deviceScreenSize.width * 0.15,
+      decoration: _decoration,
+    );
+  }
 }
 
 class _BuildUserGreeting extends StatelessWidget {
