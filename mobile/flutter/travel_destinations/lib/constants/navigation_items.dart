@@ -6,9 +6,9 @@ class Navigations {
   Navigations({@required this.name});
 }
 
-List<Navigations> navigations = [
+final List<Navigations> navigations = List<Navigations>.unmodifiable([
   Navigations(name: 'For you'),
   Navigations(name: 'Upcoming trips'),
   Navigations(name: 'Popular'),
   Navigations(name: 'Recommended'),
-];
+]);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_destinations/routes.dart';
+import 'package:travel_destinations/screens/welcome.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,8 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: Routes.welcome,
-      routes: Routes.routes,
+      home: Welcome(),
     );
   }
 }

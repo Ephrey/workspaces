@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_destinations/constants/custom_colors.dart';
-import 'package:travel_destinations/routes.dart';
+import 'package:travel_destinations/screens/home.dart';
+import 'package:travel_destinations/utils/custom_route_builder.dart';
 
 class Welcome extends StatefulWidget {
   @override
@@ -47,6 +48,8 @@ class _WelcomeState extends State<Welcome> {
           end: Alignment.center,
           colors: [
             BaseColors.darkBlack.withOpacity(0.9),
+            // BaseColors.darkBlack.withOpacity(0.7),
+            // BaseColors.darkBlack.withOpacity(0.6),
             BaseColors.darkBlack.withOpacity(0.0),
           ],
         ),
@@ -66,10 +69,7 @@ class _WelcomeState extends State<Welcome> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: Image.asset(
-        'assets/images/home/cover.jpg',
-        fit: BoxFit.cover,
-      ),
+      child: Image.asset('assets/images/home/cover.jpg', fit: BoxFit.cover),
     );
   }
 
@@ -142,7 +142,7 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Widget _buildButton(
-    BuildContext _context,
+    BuildContext _,
     _deviceScreenSize,
     _deviceOrientation,
   ) {
@@ -166,7 +166,7 @@ class _WelcomeState extends State<Welcome> {
             fontWeight: FontWeight.w800,
           ),
         ),
-        onPressed: () => Navigator.pushNamed(_context, Routes.home),
+        onPressed: () => Navigator.push(_, buildCustomRoute(Home())),
       ),
     );
   }
