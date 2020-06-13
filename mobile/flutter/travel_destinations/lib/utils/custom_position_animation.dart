@@ -69,8 +69,8 @@ class CustomPositionAnimationState extends State<CustomPositionAnimation>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
