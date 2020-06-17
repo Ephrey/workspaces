@@ -626,9 +626,12 @@ class _BuildCardImage extends StatelessWidget {
         topLeft: Radius.circular(15.0),
         topRight: Radius.circular(15.0),
       ),
-      child: Image.asset(
-        'assets/images/destinations/${_destination.image}',
-        fit: BoxFit.cover,
+      child: Hero(
+        tag: '${_destination.id}',
+        child: Image.asset(
+          'assets/images/destinations/${_destination.image}',
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

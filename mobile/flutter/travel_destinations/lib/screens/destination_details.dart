@@ -263,11 +263,14 @@ class _BuildHeroSection extends StatelessWidget {
       ),
     );
 
-    return Container(
-      decoration: _decoration,
-      width: double.infinity,
-      height: _heroHeight,
-      child: _heroInfo,
+    return Hero(
+      tag: '${_destination.id}',
+      child: Container(
+        decoration: _decoration,
+        width: double.infinity,
+        height: _heroHeight,
+        child: _heroInfo,
+      ),
     );
   }
 }
