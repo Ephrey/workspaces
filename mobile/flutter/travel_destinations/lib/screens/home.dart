@@ -99,7 +99,6 @@ class _BuildUserGreeting extends StatelessWidget {
 
   @override
   Widget build(_) {
-    print('Hello, from user info :)');
     final _greeting = <Widget>[
       _BuildGreeting(_deviceScreenSize, _user),
       _BuildUserImage(_deviceScreenSize, _user),
