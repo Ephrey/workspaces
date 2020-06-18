@@ -231,6 +231,13 @@ class _BuildHeroSection extends StatelessWidget {
   Widget build(_) {
     final _heroInfo = Stack(
       children: <Widget>[
+        Hero(
+          tag: '${_destination.id}',
+          child: Image.asset(
+            'assets/images/destinations/${_destination.image}',
+            fit: BoxFit.cover,
+          ),
+        ),
         _BuildBackIcon(_deviceScreenSize),
         _BuildGradientBackground(_deviceScreenSize),
         CustomPositionAnimation(
@@ -256,21 +263,18 @@ class _BuildHeroSection extends StatelessWidget {
       ],
     );
 
-    final _decoration = BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage('assets/images/destinations/${_destination.image}'),
-        fit: BoxFit.cover,
-      ),
-    );
+    // final _decoration = BoxDecoration(
+    //   image: DecorationImage(
+    //     image: AssetImage('assets/images/destinations/${_destination.image}'),
+    //     fit: BoxFit.cover,
+    //   ),
+    // );
 
-    return Hero(
-      tag: '${_destination.id}',
-      child: Container(
-        decoration: _decoration,
-        width: double.infinity,
-        height: _heroHeight,
-        child: _heroInfo,
-      ),
+    return Container(
+      color: BaseColors.favorite,
+      width: double.infinity,
+      height: _heroHeight,
+      child: _heroInfo,
     );
   }
 }
