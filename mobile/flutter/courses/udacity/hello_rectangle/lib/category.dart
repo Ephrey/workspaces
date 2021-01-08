@@ -29,7 +29,15 @@ class Category extends StatelessWidget {
   /// A [Category] saves the name of the Category (e.g. 'Length'), its color for
   /// the UI, and the icon that represents it (e.g. a ruler).
   // TODO: You'll need the name, color, and iconLocation from main.dart
-  const Category({Key key, this.name, this.color, this.icon}) : super(key: key);
+  const Category({
+    Key key,
+    this.name,
+    this.color,
+    this.icon,
+  })  : assert(name != null),
+        assert(color != null),
+        assert(icon != null),
+        super(key: key);
 
   /// Builds a custom widget that shows [Category] information.
   ///
@@ -45,26 +53,29 @@ class Category extends StatelessWidget {
       color: Colors.transparent,
       child: Container(
         height: _containerHeigh,
-        padding: const EdgeInsets.all(_containerPadding),
         child: InkWell(
           borderRadius: BorderRadius.circular(_borderRadius),
           splashColor: color,
           highlightColor: color,
           onTap: () => print('I was tapped !'),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(_iconPadding),
-                child: Icon(icon, size: _iconSize),
-              ),
-              Center(
-                child: Text(
-                  name,
-                  style: TextStyle(fontSize: _textSize),
+          child: Padding(
+            padding: const EdgeInsets.all(_containerPadding),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(_iconPadding),
+                  child: Icon(icon, size: _iconSize),
                 ),
-              ),
-            ],
+                Center(
+                  child: Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
