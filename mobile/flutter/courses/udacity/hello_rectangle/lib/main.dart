@@ -10,11 +10,6 @@ import 'package:flutter/material.dart';
 // More details at http://dart-lang.github.io/linter/lints/avoid_relative_lib_imports.html
 import 'package:hello_rectangle/category_route.dart';
 
-// TODO: Pass this information into your custom [Category] widget
-const _categoryName = 'Cake';
-const _categoryIcon = Icons.cake;
-const _categoryColor = Colors.green;
-
 /// The function that is called when main.dart is run.
 void main() => runApp(UnitConverterApp());
 

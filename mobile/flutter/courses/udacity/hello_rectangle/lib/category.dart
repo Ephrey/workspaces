@@ -6,14 +6,14 @@
 // https://www.dartlang.org/guides/language/effective-dart/style#ordering
 
 import 'package:flutter/material.dart';
+import 'package:hello_rectangle/unit.dart';
+import 'package:hello_rectangle/converter_route.dart';
 
 const double _containerHeigh = 100.0;
 const double _containerPadding = 8.0;
 const double _borderRadius = _containerHeigh / 2.0;
 const double _iconSize = 60.0;
 const double _iconPadding = 16.0;
-const double _textSize = 24.0;
-const double _iconWithColoredBgWidth = 70.0;
 
 /// A custom [Category] widget.
 ///
@@ -23,6 +23,7 @@ class Category extends StatelessWidget {
   final String name;
   final Color color;
   final IconData icon;
+  final List<Unit> units;
 
   /// Creates a [Category].
   ///
@@ -34,10 +35,26 @@ class Category extends StatelessWidget {
     this.name,
     this.color,
     this.icon,
+    this.units,
   })  : assert(name != null),
         assert(color != null),
         assert(icon != null),
         super(key: key);
+
+  void _navigateToConverter(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return ConverterRoute(
+            name: this.name,
+            color: this.color,
+            units: this.units,
+          );
+        },
+      ),
+    );
+  }
 
   /// Builds a custom widget that shows [Category] information.
   ///
@@ -57,7 +74,7 @@ class Category extends StatelessWidget {
           borderRadius: BorderRadius.circular(_borderRadius),
           splashColor: color,
           highlightColor: color,
-          onTap: () => print('I was tapped !'),
+          onTap: () => _navigateToConverter(context),
           child: Padding(
             padding: const EdgeInsets.all(_containerPadding),
             child: Row(
