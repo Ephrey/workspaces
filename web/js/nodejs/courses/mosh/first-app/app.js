@@ -1,3 +1,9 @@
-const log = require('./logger');
+const Logger = require('./logger');
+const myLogger = new Logger();
 
-log('Hello, world !');
+// Register a listener
+myLogger.on('msgLog', (arg) => {
+    console.log('Listener called', arg);
+})
+
+myLogger.log('Message');
