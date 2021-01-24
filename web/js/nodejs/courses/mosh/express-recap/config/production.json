@@ -1,0 +1,6 @@
+{
+    "name": "Express Demo - Production",
+    "email": {
+        "host": "http://prod_host"
+    }
+}
