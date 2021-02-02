@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-module.exports = mongoose.model('Customer', new mongoose.Schema({
+const customerSchema = new mongoose.Schema({
     name: {
         type: String,
         minlength: 3,
@@ -19,4 +19,9 @@ module.exports = mongoose.model('Customer', new mongoose.Schema({
         trim: true,
         required: true,
     }
-}));
+});
+
+const CustomerModel = mongoose.model('Customer', customerSchema);
+
+module.exports.CustomerModel = CustomerModel;
+module.exports.customerSchema = customerSchema;
