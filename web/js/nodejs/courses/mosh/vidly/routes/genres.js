@@ -1,3 +1,4 @@
+const validateObjectId = require("../middlewares/validateObjectId");
 const auth = require("../middlewares/auth");
 const admin = require("../middlewares/admin");
 const validateGenre = require("../validators/genres");
@@ -17,12 +18,8 @@ router.get("/", async (req, res) => {
 /**
  * Get a genre by its ID
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const genreId = req.params.id;
-
-  if (genreId.length !== 24) {
-    return res.status(400).send("The ID is required and must be of length 24");
-  }
 
   try {
     const genre = await GenreModel.findById(genreId);

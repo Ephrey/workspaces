@@ -1,60 +1,74 @@
-const mongoose = require('mongoose');
-
+const moment = require("moment");
+const mongoose = require("mongoose");
 
 const rentalSchema = new mongoose.Schema({
-    customer: {
-        type: new mongoose.Schema({
-            name: {
-                type: String,
-                required: true,
-                minlength: 5,
-                maxlength: 50
-            },
-            isGold: {
-                type: Boolean,
-                default: false
-            },
-            phone: {
-                type: String,
-                required: true,
-                minlength: 5,
-                maxlength: 50
-            }
-        }),
-        required: true
-    }, 
-    movie: {
-        type: new mongoose.Schema({
-            title: { 
-                type: String,
-                required: true,
-                trim: true,
-                minlength: 5,
-                maxlength: 255
-            }, 
-            dailyRentalRate: {
-                type: Number,
-                required: true,
-                min: 0,
-                max: 255
-            }
-        }),
-        required: true
-    },
-    dateOut: {
-        type: Date,
+  customer: {
+    type: new mongoose.Schema({
+      name: {
+        type: String,
         required: true,
-        default: Date.now
-    },
-    dateReturn: {
-        type: Date,
-    },
-    rentalFee: {
+        minlength: 5,
+        maxlength: 50,
+      },
+      isGold: {
+        type: Boolean,
+        default: false,
+      },
+      phone: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 50,
+      },
+    }),
+    required: true,
+  },
+  movie: {
+    type: new mongoose.Schema({
+      title: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 5,
+        maxlength: 255,
+      },
+      dailyRentalRate: {
         type: Number,
-        min: 0
-    }
+        required: true,
+        min: 0,
+        max: 255,
+      },
+    }),
+    required: true,
+  },
+  dateOut: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+  dateReturn: {
+    type: Date,
+  },
+  rentalFee: {
+    type: Number,
+    min: 0,
+  },
 });
 
-const rentalModel = mongoose.model('Rentals', rentalSchema);
+rentalSchema.statics.lookup = function (customerId, movieId) {
+  return this.findOne({
+    "customer._id": customerId,
+    "movie._id": movieId,
+  });
+};
 
-module.exports = rentalModel;
+rentalSchema.methods.return = function () {
+  this.dateReturn = new Date();
+
+  const rentalDays = moment().diff(this.dateOut, "days");
+  this.rentalFee = rentalDays * this.movie.dailyRentalRate;
+};
+
+const RentalModel = mongoose.model("Rentals", rentalSchema);
+
+module.exports = RentalModel;
