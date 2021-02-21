@@ -3,9 +3,23 @@
   "version": "1.0.0",
   "description": "A simple app for managing grocery list",
   "main": "index.js",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "scripts": {
-    "test": "test"
+    "test": "jest --watchAll --detectOpenHandles"
   },
   "author": "ephraimilunga",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.3.3",
+    "debug": "^2.6.9",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "mongoose": "^5.11.13"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "supertest": "^6.1.3"
+  }
 }
