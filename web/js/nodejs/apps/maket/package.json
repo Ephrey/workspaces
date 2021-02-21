@@ -1,0 +1,11 @@
+{
+  "name": "maket",
+  "version": "1.0.0",
+  "description": "A simple app for managing grocery list",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "ephraimilunga",
+  "license": "ISC"
+}
