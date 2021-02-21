@@ -11,7 +11,7 @@ class TopBar extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Text(
-            'Find angels',
+            'Big Nelly :)',
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w900,
