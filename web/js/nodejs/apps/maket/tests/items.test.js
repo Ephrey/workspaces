@@ -83,8 +83,20 @@ describe(itemConst.ENDPOINT, () => {
       expect(res.status).toBe(400);
     });
 
+    it("should return 400 if item's name is more than 50 characters", async () => {
+      item.name = new Array(52).join("x");
+      const res = await exec();
+      expect(res.status).toBe(400);
+    });
+
     it("should return 400 if item's category is less than 2 characters", async () => {
       item.category = "1";
+      const res = await exec();
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if item's category is more than 50 characters", async () => {
+      item.category = new Array(52).join("x");
       const res = await exec();
       expect(res.status).toBe(400);
     });
@@ -98,6 +110,50 @@ describe(itemConst.ENDPOINT, () => {
     it("should return the item", async () => {
       const res = await exec();
       expect(res.body).toHaveProperty("name", item.name);
+    });
+  });
+
+  describe("PUT /", () => {
+    let itemId;
+    let newItemValues;
+
+    beforeEach(() => {
+      itemId = mongoose.Types.ObjectId();
+      newItemValues = { name: "Orange", category: "Fruits" };
+    });
+
+    const exec = () => {
+      return request(server)
+        .put(itemConst.ENDPOINT + itemId)
+        .send(newItemValues);
+    };
+
+    it("should return 400 if invalid item's ID provided", async () => {
+      itemId = "1";
+      const res = await exec();
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if new item's values not provided", async () => {
+      newItemValues = {};
+      const res = await exec();
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 404 if item not found", async () => {
+      const res = await exec();
+      expect(res.status).toBe(404);
+    });
+
+    it("should update item if valid item's ID and new values passed", async () => {
+      const item = new ItemModel({ name: "Oranges", category: "Fruits" });
+      await item.save();
+
+      itemId = item._id;
+      const res = await exec();
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("name", "Orange");
     });
   });
 });
