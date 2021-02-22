@@ -1,0 +1,9 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "html.format.enable": false,
+    "json.format.enable": false,
+    "typescript.format.enable": false,
+    "javascript.format.enable": false,
+    "java.format.enabled": false,
+    "php.validate.enable": false
+}

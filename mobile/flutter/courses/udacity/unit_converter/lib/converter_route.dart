@@ -191,7 +191,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
             decoration: InputDecoration(
               labelText: 'Input',
               labelStyle: Theme.of(context).textTheme.headline4,
-              errorText: _showValidateError ? 'Invalid number entered' ,
+              errorText: _showValidateError ? 'Invalid number entered' : null,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(0.0),
               ),
@@ -204,10 +204,11 @@ class _ConverterRouteState extends State<ConverterRoute> {
     );
 
     // TODO: Create a compare arrows icon.
-    final _compareIcon = Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [Icon(Icons.compare_arrows, size: 40.0)],
+    final arrows = RotatedBox(
+      quarterTurns: 1,
+      child: Icon(
+        Icons.compare_arrows,
+        size: 40.0,
       ),
     );
 
@@ -260,7 +261,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
       home: Scaffold(
           appBar: _appBar,
           body: Column(
-            children: [_inputGroup, _compareIcon, _outputGroup],
+            children: [_inputGroup, arrows, _outputGroup],
           )),
     );
   }
