@@ -46,7 +46,7 @@ describe("/api/genres", () => {
       expect(res.body).toHaveProperty("name", genre.name);
     });
 
-    it("should return a 400 if invalid ID is passed", async () => {
+    it("should return 400 if invalid ID is passed", async () => {
       const res = await request(server).get("/api/genres/1");
 
       expect(res.status).toBe(400);
@@ -79,7 +79,7 @@ describe("/api/genres", () => {
       expect(res.status).toBe(400);
     });
 
-    it("should return 400 if genre is less than 50 characters", async () => {
+    it("should return 400 if genre is more than 50 characters", async () => {
       genreName = new Array(52).join("a");
       const res = await exec();
       expect(res.status).toBe(400);
