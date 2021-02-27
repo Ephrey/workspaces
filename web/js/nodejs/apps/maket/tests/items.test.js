@@ -5,15 +5,15 @@ const {
   SUCCESS,
   BAD_REQUEST,
   NOT_FOUND,
-} = require("../utils/constants/response_codes");
+} = require("../utils/constants/httpResponseCodes");
 const mongoose = require("mongoose");
 const request = require("supertest");
 
-let server;
-let itemId;
-let itemValues;
-
 describe(ITEM_ENDPOINT, () => {
+  let server;
+  let itemId;
+  let itemValues;
+
   beforeEach(() => {
     server = require("../index");
     itemValues = { name: "Oranges", category: "Fruits" };
@@ -159,7 +159,6 @@ describe(ITEM_ENDPOINT, () => {
 
     it("should return 400 if item's name more 50 characters", async () => {
       newItemValues.name = generateString();
-      debug(newItemValues);
       const rest = await exec();
       expect(rest.status).toBe(BAD_REQUEST);
     });

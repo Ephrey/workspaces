@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 
 require("./startup/db")();
+require("./startup/joiObjectIdValidator")();
 require("./startup/router")(app);
 
 const PORT = process.env.PORT || 3000;

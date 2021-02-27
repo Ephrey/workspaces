@@ -8,12 +8,14 @@ const ItemModel = mongoose.model(
       minlength: 2,
       maxlength: 50,
       required: true,
+      trim: true,
     },
     category: {
       type: String,
       minlength: 2,
       maxlength: 50,
       default: "other",
+      trim: true,
     },
     createDate: {
       type: Date,
