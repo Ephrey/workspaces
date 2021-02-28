@@ -1,3 +1,9 @@
+const {
+  ITEM_MIN_LENGTH,
+  ITEM_MAX_LENGTH,
+  ITEM_CATEGORY_MIN_LENGTH,
+  ITEM_CATEGORY_MAX_LENGTH,
+} = require("../utils/constants/items");
 const mongoose = require("mongoose");
 
 const ItemModel = mongoose.model(
@@ -5,15 +11,15 @@ const ItemModel = mongoose.model(
   new mongoose.Schema({
     name: {
       type: String,
-      minlength: 2,
-      maxlength: 50,
+      minlength: ITEM_MIN_LENGTH,
+      maxlength: ITEM_MAX_LENGTH,
       required: true,
       trim: true,
     },
     category: {
       type: String,
-      minlength: 2,
-      maxlength: 50,
+      minlength: ITEM_CATEGORY_MIN_LENGTH,
+      maxlength: ITEM_CATEGORY_MAX_LENGTH,
       default: "other",
       trim: true,
     },

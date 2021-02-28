@@ -1,4 +1,4 @@
-const debug = require("debug")("maket");
+const debug = require("debug")("maket:db");
 const config = require("config");
 const mongoose = require("mongoose");
 

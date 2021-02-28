@@ -1,4 +1,4 @@
-const debug = require("debug")("maket");
+const debug = require("debug")("maket:index");
 const express = require("express");
 const app = express();
 

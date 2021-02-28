@@ -117,7 +117,7 @@ describe(ITEM_ENDPOINT, () => {
     it("should save item if valid values provided", async () => {
       await exec();
       const itemInDb = await ItemModel.findOne({ name: itemValues.name });
-      expect(itemInDb).toHaveProperty("name", itemValues.name);
+      expect(itemInDb).not.toBeNull();
     });
 
     it("should return the created item", async () => {
