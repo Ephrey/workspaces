@@ -101,7 +101,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(SUCCESS);
     });
 
-    it("should return the Shopping List if valid ID", async () => {
+    it("should return the Shopping List for the given ID", async () => {
       shoppingList.save();
 
       shoppingListId = shoppingList._id;
@@ -133,28 +133,28 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     });
 
     it("should return 400 if Shopping List name is empty", async () => {
-      shoppingListValues.name = "";
+      _.set(shoppingListValues, "name", "");
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List name is less than 2 characters", async () => {
-      shoppingListValues.name = generateString(1);
+      _.set(shoppingListValues, "name", generateString(1));
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List name is greater than 50 characters", async () => {
-      shoppingListValues.name = generateString();
+      _.set(shoppingListValues, "name", generateString());
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List items is empty", async () => {
-      shoppingListValues.items = [];
+      _.set(shoppingListValues, "items", []);
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -227,22 +227,21 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     });
 
     it("should return 400 if Shopping List Description is not set", async () => {
-      const { name, items } = shoppingListValues;
-      shoppingListValues = { name, items };
+      _.unset(shoppingListValues, "description");
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List Description is not a string", async () => {
-      shoppingListValues.description = 0;
+      _.set(shoppingListValues, "description", 0);
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List Description is greater than 50 characters", async () => {
-      shoppingListValues.description = generateString();
+      _.set(shoppingListValues, "description", generateString());
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -288,28 +287,28 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     });
 
     it("should return 400 if Shopping List name is empty", async () => {
-      newShoppingListValues.name = "";
+      _.set(newShoppingListValues, "name", "");
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List name is less than 2 characters", async () => {
-      newShoppingListValues.name = generateString(1);
+      _.set(newShoppingListValues, "name", generateString(1));
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List name is greater than 50 characters", async () => {
-      newShoppingListValues.name = generateString();
+      _.set(newShoppingListValues, "name", generateString());
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 400 if Shopping List items is empty", async () => {
-      newShoppingListValues.items = [];
+      _.set(newShoppingListValues, "items", []);
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -377,15 +376,46 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     });
 
     it("should save the new Shopping List if valid values provided", async () => {
-      const oldShoppingList = createShoppingList();
-      await oldShoppingList.save();
+      await shoppingList.save();
 
-      shoppingListId = oldShoppingList._id;
+      shoppingListId = shoppingList._id;
 
       const res = await exec();
 
       expect(res.status).toBe(SUCCESS);
       expect(res.body).toHaveProperty("name", newShoppingListValues.name);
+    });
+  });
+
+  describe("DELETE /id", () => {
+    const exec = () => {
+      return request(server).delete(SHOPPING_LIST_ENDPOINT + shoppingListId);
+    };
+
+    it("should return 400 if Shopping List ID is not valid", async () => {
+      shoppingListId = generateString(1);
+
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 404 if Shopping List not found for the given ID", async () => {
+      const res = await exec();
+      expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should delete the Shopping List for the given ID", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+
+      const res = await exec();
+
+      const result = await ShoppingListModel.findById(shoppingListId);
+
+      expect(res.status).toBe(SUCCESS);
+      expect(res.body).toHaveProperty("_id", shoppingListId.toString());
+      expect(result).toBeNull();
     });
   });
 });

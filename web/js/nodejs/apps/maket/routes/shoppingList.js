@@ -33,20 +33,30 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", validateId, async (req, res) => {
-  const newValues = req.body;
+  const newShoppingListValues = req.body;
 
-  const { error } = validateShoppingList(newValues);
+  const { error } = validateShoppingList(newShoppingListValues);
   if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
   const newShoppingList = await ShoppingListModel.findByIdAndUpdate(
     req.params.id,
-    newValues,
+    newShoppingListValues,
     { new: true, useFindAndModify: false }
   );
 
   !newShoppingList
     ? res.status(NOT_FOUND).send("Can't update. Shopping List not found")
     : res.send(newShoppingList);
+});
+
+router.delete("/:id", validateId, async (req, res) => {
+  const deletedShoppingList = await ShoppingListModel.findByIdAndDelete(
+    req.params.id
+  );
+
+  !deletedShoppingList
+    ? res.status(NOT_FOUND).send("Shopping List not found")
+    : res.send(deletedShoppingList);
 });
 
 module.exports = router;
