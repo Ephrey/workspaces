@@ -49,6 +49,10 @@ router.put("/:id", validateId, async (req, res) => {
     : res.send(newShoppingList);
 });
 
+router.put("/:id/item/:id", validateId, async (req, res) => {
+  debug(req.query);
+});
+
 router.delete("/:id", validateId, async (req, res) => {
   const deletedShoppingList = await ShoppingListModel.findByIdAndDelete(
     req.params.id

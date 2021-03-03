@@ -17,6 +17,8 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     shoppingList = createShoppingList();
     shoppingListValues = getShoppingListValues();
     newShoppingListValues = getNewShoppingListValues();
+    shoppingListItemId = mongoose.Types.ObjectId();
+    queryString = getQueryStringItemValues();
   });
 
   afterEach(async () => {
@@ -50,6 +52,10 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       ],
       description: "New description",
     };
+  };
+
+  const getQueryStringItemValues = () => {
+    return [{ price: 20.99 }, { bought: true }];
   };
 
   const generateString = (length = 51) => {
@@ -384,6 +390,25 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
 
       expect(res.status).toBe(SUCCESS);
       expect(res.body).toHaveProperty("name", newShoppingListValues.name);
+    });
+  });
+
+  describe("PUT /id/item/itemId?price=10.90&bought=true", () => {
+    const exec = () => {
+      return request(server)
+        .put(
+          SHOPPING_LIST_ENDPOINT +
+            shoppingListId +
+            "/item/" +
+            shoppingListItemId
+        )
+        .query(queryString[0])
+        .query(queryString[1]);
+    };
+
+    it("should return 400 if Shopping List ID is invalid", async () => {
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
     });
   });
 
