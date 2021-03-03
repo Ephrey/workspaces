@@ -214,32 +214,25 @@ class _ConverterRouteState extends State<ConverterRoute> {
 
     // TODO: Create the 'output' group of widgets. This is a Column that
     // includes the output value, and 'to' unit [Dropdown].
-    final _outputGroup = Container(
+    final _outputGroup = Padding(
       padding: _padding,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Ouput',
-                floatingLabelBehavior: FloatingLabelBehavior.auto,
-                border: OutlineInputBorder(),
+          InputDecorator(
+            child: Text(
+              _convertedValue,
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            decoration: InputDecoration(
+              labelText: 'Ouput',
+              labelStyle: Theme.of(context).textTheme.headline4,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(0.0),
               ),
             ),
           ),
-          DropdownButton(
-            isExpanded: true,
-            hint: Text('To'),
-            items: widget.units.map<DropdownMenuItem<String>>((Unit unit) {
-              return DropdownMenuItem(
-                child: Text(unit.name),
-                value: unit.conversion.toString(),
-              );
-            }).toList(),
-            onChanged: (v) => print(v),
-          ),
+          _createDropdown(_toValue.name, _updateToConversion)
         ],
       ),
     );
@@ -255,14 +248,25 @@ class _ConverterRouteState extends State<ConverterRoute> {
       ),
     );
 
+    final _converter = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _inputGroup,
+        arrows,
+        _outputGroup,
+      ],
+    );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Converter Route',
       home: Scaffold(
-          appBar: _appBar,
-          body: Column(
-            children: [_inputGroup, arrows, _outputGroup],
-          )),
+        appBar: _appBar,
+        body: Padding(
+          padding: _padding,
+          child: _converter,
+        ),
+      ),
     );
   }
 }
