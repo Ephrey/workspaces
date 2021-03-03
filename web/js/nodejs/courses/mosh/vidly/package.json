@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose --maxWorkers=1"
   },
   "engines": {
     "node": "14.15.3"

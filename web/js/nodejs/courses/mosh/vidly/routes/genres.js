@@ -39,7 +39,7 @@ router.get("/:id", validateObjectId, async (req, res) => {
 // POST
 router.post("/", auth, async (req, res) => {
   let genre = req.body;
-
+  console.log(req.body);
   const { error } = validateGenre(genre);
 
   if (error) {
