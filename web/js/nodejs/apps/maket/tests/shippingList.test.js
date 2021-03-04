@@ -4,6 +4,7 @@ const {
   NOT_FOUND,
 } = require("../utils/constants/httpResponseCodes");
 const { SHOPPING_LIST_ENDPOINT } = require("../utils/constants/shoppingList");
+const buildEndpoint = require("../utils/endpoint/buildEndpoint");
 const ShoppingListModel = require("../models/shoppingList");
 const debug = require("debug")("maket:shop_list_test");
 const _ = require("lodash");
@@ -55,7 +56,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
   };
 
   const getQueryStringItemValues = () => {
-    return [{ price: 20.99 }, { bought: true }];
+    return { price: 20.99, bought: true };
   };
 
   const generateString = (length = 51) => {
@@ -63,7 +64,9 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
   };
 
   const exec = () => {
-    return request(server).get(SHOPPING_LIST_ENDPOINT + shoppingListId);
+    return request(server).get(
+      buildEndpoint(SHOPPING_LIST_ENDPOINT, [shoppingListId])
+    );
   };
 
   describe("GET /", () => {
@@ -128,7 +131,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
   describe("POST /", () => {
     const exec = function () {
       return request(server)
-        .post(SHOPPING_LIST_ENDPOINT)
+        .post(buildEndpoint(SHOPPING_LIST_ENDPOINT))
         .send(shoppingListValues);
     };
 
@@ -268,7 +271,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
   describe("PUT /id", () => {
     const exec = () => {
       return request(server)
-        .put(SHOPPING_LIST_ENDPOINT + shoppingListId)
+        .put(buildEndpoint(SHOPPING_LIST_ENDPOINT, [shoppingListId]))
         .send(newShoppingListValues);
     };
 
@@ -395,19 +398,39 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
 
   describe("PUT /id/item/itemId?price=10.90&bought=true", () => {
     const exec = () => {
-      return request(server)
-        .put(
-          SHOPPING_LIST_ENDPOINT +
-            shoppingListId +
-            "/item/" +
-            shoppingListItemId
+      return request(server).put(
+        buildEndpoint(
+          SHOPPING_LIST_ENDPOINT,
+          [shoppingListId, "item", shoppingListItemId],
+          queryString
         )
-        .query(queryString[0])
-        .query(queryString[1]);
+      );
     };
 
     it("should return 400 if Shopping List ID is invalid", async () => {
+      shoppingListId = generateString(1);
       const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if Item ID is invalid", async () => {
+      shoppingListItemId = generateString(1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 404 if Shopping List not found for the given Id", async () => {
+      const res = await exec();
+      expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should update the 400 if item is not found in Shopping List Items", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+
+      const res = await exec();
+
       expect(res.status).toBe(BAD_REQUEST);
     });
   });

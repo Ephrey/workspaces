@@ -49,8 +49,18 @@ router.put("/:id", validateId, async (req, res) => {
     : res.send(newShoppingList);
 });
 
-router.put("/:id/item/:id", validateId, async (req, res) => {
-  debug(req.query);
+router.put("/:id/item/:itemId", validateId, async (req, res) => {
+  const shoppingList = await ShoppingListModel.exists({ _id: req.params.id });
+
+  if (!shoppingList)
+    return res.status(NOT_FOUND).send("Shopping List not found");
+
+  shoppingListItem = await ShoppingListModel.findOne({
+    "items._id": req.params.itemId,
+  });
+
+  debug(shoppingListItem);
+  res.send(req.query);
 });
 
 router.delete("/:id", validateId, async (req, res) => {

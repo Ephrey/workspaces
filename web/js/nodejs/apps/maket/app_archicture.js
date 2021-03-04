@@ -31,3 +31,7 @@
 
 // SHOPPING SUMMARY
 // to be added
+
+// MSVCR120.dll
+// MSVCP120.dll
+// MSVCP120.dll

@@ -1,8 +1,18 @@
 const mongoose = require("mongoose");
 
 module.exports = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+  if (!isValidObjectId(req.params.id)) {
     return res.status(400).send("Invalid ID");
   }
+
+  if (req.params.itemId) {
+    if (!isValidObjectId(req.params.itemId))
+      return res.status(400).send("Invalid Item ID");
+  }
+
   next();
+};
+
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
 };
