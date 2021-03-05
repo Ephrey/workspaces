@@ -50,17 +50,35 @@ router.put("/:id", validateId, async (req, res) => {
 });
 
 router.put("/:id/item/:itemId", validateId, async (req, res) => {
-  const shoppingList = await ShoppingListModel.exists({ _id: req.params.id });
+  const shoppingListId = req.params.id;
+  const shoppingListItemId = req.params.itemId;
 
-  if (!shoppingList)
+  if (!(await ShoppingListModel.exists({ _id: shoppingListId })))
     return res.status(NOT_FOUND).send("Shopping List not found");
 
-  shoppingListItem = await ShoppingListModel.findOne({
-    "items._id": req.params.itemId,
+  const isShoppingListItemExist = await ShoppingListModel.exists({
+    "items._id": { $eq: shoppingListItemId },
   });
 
-  debug(shoppingListItem);
-  res.send(req.query);
+  if (!isShoppingListItemExist)
+    return res.status(NOT_FOUND).send("Item not found");
+
+  const updatedShoppingList = await ShoppingListModel.findOneAndUpdate(
+    { _id: shoppingListId },
+    {
+      $set: {
+        "items.$[item].price": req.query.price,
+        "items.$[item].bought": req.query.bought,
+      },
+    },
+    {
+      arrayFilters: [{ "item._id": { $eq: shoppingListItemId } }],
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.send(updatedShoppingList);
 });
 
 router.delete("/:id", validateId, async (req, res) => {

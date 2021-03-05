@@ -31,8 +31,8 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     return new ShoppingListModel({
       name: "January Grocery",
       items: [
-        { _id: mongoose.Types.ObjectId(), price: 93.39, bought: true },
-        { _id: mongoose.Types.ObjectId(), price: 23.99, bought: true },
+        { _id: mongoose.Types.ObjectId(), price: 93.39, bought: false },
+        { _id: mongoose.Types.ObjectId(), price: 23.99, bought: false },
         { _id: mongoose.Types.ObjectId(), price: 49.99, bought: false },
       ],
       description: "For my birthday party :)",
@@ -424,14 +424,40 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(NOT_FOUND);
     });
 
-    it("should update the 400 if item is not found in Shopping List Items", async () => {
+    it("should return 404 if Item is not found in Shopping List Items", async () => {
       await shoppingList.save();
 
       shoppingListId = shoppingList._id;
 
       const res = await exec();
 
-      expect(res.status).toBe(BAD_REQUEST);
+      expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should return 200 if Shopping List and Item exist", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      const res = await exec();
+
+      expect(res.status).toBe(SUCCESS);
+    });
+
+    it("should return the Shopping List with the updated Item", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      const res = await exec();
+
+      expect(res.status).toBe(SUCCESS);
+      debug(typeof res.body.items[0]._id);
+      expect(res.body.items[0]._id).toBe(shoppingListItemId.toString());
+      expect(res.body.items[0].price).toBe(queryString.price);
+      expect(res.body.items[0].bought).toBe(queryString.bought);
     });
   });
 
