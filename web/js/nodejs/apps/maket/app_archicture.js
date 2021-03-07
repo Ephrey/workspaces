@@ -23,15 +23,23 @@
 // change description
 // remove/delete one or more items
 
-// *** NEXT :
+// ** DONE :
 // SET ITEM AS BOUGHT
 // shopping_list_id
 // item_id
 // item_price
 
+// ** DONE
+// DELETE ITEMS
+
+// ** NEXT :
+// INSERT A SINGLE ITEM IN THE SHOPPING LIST
+
+// ** NEXT
+// Delete Item from ITEM COLLECTION
+// Delete the corresponding ITEM from all Shopping List.
+//
+// Will learn : Transaction.
+
 // SHOPPING SUMMARY
 // to be added
-
-// MSVCR120.dll
-// MSVCP120.dll
-// MSVCP120.dll

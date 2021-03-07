@@ -28,6 +28,7 @@ const shoppingListSchema = new mongoose.Schema({
   name: {
     type: String,
     default: "Shopping List",
+    required: true,
     minlength: SHOPPING_LIST_NAME_MIN_LENGTH,
     maxlength: SHOPPING_LIST_NAME_MAX_LENGTH,
     trim: true,

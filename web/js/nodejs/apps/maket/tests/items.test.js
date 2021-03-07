@@ -1,6 +1,12 @@
-const debug = require("debug")("maket");
+const debug = require("debug")("maket:item_test");
 const ItemModel = require("../models/items");
-const { ITEM_ENDPOINT } = require("../utils/constants/items");
+const {
+  ITEM_ENDPOINT,
+  ITEM_MIN_LENGTH,
+  ITEM_MAX_LENGTH,
+  ITEM_CATEGORY_MIN_LENGTH,
+  ITEM_CATEGORY_MAX_LENGTH,
+} = require("../utils/constants/items");
 const {
   SUCCESS,
   BAD_REQUEST,
@@ -90,26 +96,26 @@ describe(ITEM_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's name is less than 2 characters", async () => {
-      itemValues.name = generateString(1);
+    it("should return 400 if item's name is less than ITEM_MIN_LENGTH characters", async () => {
+      itemValues.name = generateString(ITEM_MIN_LENGTH - 1);
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's name is more than 50 characters", async () => {
-      itemValues.name = generateString();
+    it("should return 400 if item's name is more than ITEM_MAX_LENGTH characters", async () => {
+      itemValues.name = generateString(ITEM_MAX_LENGTH + 1);
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's category is less than 2 characters", async () => {
-      itemValues.category = generateString(1);
+    it("should return 400 if item's category is less than ITEM_CATEGORY_MIN_LENGTH characters", async () => {
+      itemValues.category = generateString(ITEM_CATEGORY_MIN_LENGTH - 1);
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's category is more than 50 characters", async () => {
-      itemValues.category = generateString();
+    it("should return 400 if item's category is more than ITEM_CATEGORY_MAX_LENGTH characters", async () => {
+      itemValues.category = generateString(ITEM_CATEGORY_MAX_LENGTH + 1);
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
@@ -151,28 +157,28 @@ describe(ITEM_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's name less than 2 characters", async () => {
-      newItemValues.name = generateString(1);
-      const rest = await exec();
-      expect(rest.status).toBe(BAD_REQUEST);
+    it("should return 400 if item's name less than ITEM_MIN_LENGTH characters", async () => {
+      newItemValues.name = generateString(ITEM_MIN_LENGTH - 1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's name more 50 characters", async () => {
-      newItemValues.name = generateString();
-      const rest = await exec();
-      expect(rest.status).toBe(BAD_REQUEST);
+    it("should return 400 if item's name more than ITEM_MAX_LENGTH characters", async () => {
+      newItemValues.name = generateString(ITEM_MAX_LENGTH + 1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's description less than 2 characters", async () => {
-      newItemValues.description = generateString(1);
-      const rest = await exec();
-      expect(rest.status).toBe(BAD_REQUEST);
+    it("should return 400 if item's category less than ITEM_CATEGORY_MIN_LENGTH characters", async () => {
+      newItemValues.category = generateString(ITEM_CATEGORY_MIN_LENGTH - 1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if item's description more 50 characters", async () => {
-      newItemValues.description = generateString();
-      const rest = await exec();
-      expect(rest.status).toBe(BAD_REQUEST);
+    it("should return 400 if item's category more than ITEM_CATEGORY_MAX_LENGTH characters", async () => {
+      newItemValues.category = generateString(ITEM_CATEGORY_MAX_LENGTH + 1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 404 if item not found", async () => {

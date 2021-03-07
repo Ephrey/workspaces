@@ -4,7 +4,7 @@
  * @param {Array} params require params in the endpoint eg: /:id/key/:id
  * @param {Object} queries an object representing the query string. eg: {key: value, key: value}
  */
-module.exports = (endpoint, params = [], queries = {}) => {
+module.exports = (endpoint, params = [], queries = null) => {
   let queryString = "";
 
   let paramsString = params ? params.join("/") + (queries ? "?" : "") : "";

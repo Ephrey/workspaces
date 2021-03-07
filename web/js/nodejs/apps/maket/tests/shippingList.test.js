@@ -3,7 +3,13 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
 } = require("../utils/constants/httpResponseCodes");
-const { SHOPPING_LIST_ENDPOINT } = require("../utils/constants/shoppingList");
+const {
+  SHOPPING_LIST_ENDPOINT,
+  SHOPPING_LIST_NAME_MIN_LENGTH,
+  SHOPPING_LIST_NAME_MAX_LENGTH,
+  SHOPPING_LIST_DESCRIPTION_MAX_LENGTH,
+} = require("../utils/constants/shoppingList");
+const { ITEM_PRICE_MIN, ITEM_PRICE_MAX } = require("../utils/constants/items");
 const buildEndpoint = require("../utils/endpoint/buildEndpoint");
 const ShoppingListModel = require("../models/shoppingList");
 const debug = require("debug")("maket:shop_list_test");
@@ -14,11 +20,11 @@ const request = require("supertest");
 describe(SHOPPING_LIST_ENDPOINT, () => {
   beforeEach(() => {
     server = require("../index");
-    shoppingListId = mongoose.Types.ObjectId();
+    shoppingListId = generateObjectId();
     shoppingList = createShoppingList();
     shoppingListValues = getShoppingListValues();
     newShoppingListValues = getNewShoppingListValues();
-    shoppingListItemId = mongoose.Types.ObjectId();
+    shoppingListItemId = generateObjectId();
     queryString = getQueryStringItemValues();
   });
 
@@ -31,9 +37,9 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     return new ShoppingListModel({
       name: "January Grocery",
       items: [
-        { _id: mongoose.Types.ObjectId(), price: 93.39, bought: false },
-        { _id: mongoose.Types.ObjectId(), price: 23.99, bought: false },
-        { _id: mongoose.Types.ObjectId(), price: 49.99, bought: false },
+        { _id: generateObjectId(), price: 93.39, bought: false },
+        { _id: generateObjectId(), price: 23.99, bought: false },
+        { _id: generateObjectId(), price: 49.99, bought: false },
       ],
       description: "For my birthday party :)",
     });
@@ -48,8 +54,8 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
     return {
       name: "New Shopping List Name",
       items: [
-        { _id: mongoose.Types.ObjectId(), price: 0.0, bought: false },
-        { _id: mongoose.Types.ObjectId(), price: 2.99, bought: true },
+        { _id: generateObjectId(), price: 0.0, bought: false },
+        { _id: generateObjectId(), price: 2.99, bought: true },
       ],
       description: "New description",
     };
@@ -61,6 +67,10 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
 
   const generateString = (length = 51) => {
     return new Array(length + 1).join("x");
+  };
+
+  const generateObjectId = () => {
+    return mongoose.Types.ObjectId().toHexString();
   };
 
   const exec = () => {
@@ -148,15 +158,23 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List name is less than 2 characters", async () => {
-      _.set(shoppingListValues, "name", generateString(1));
+    it("should return 400 if Shopping List name is less than SHOPPING_LIST_NAME_MIN_LENGTH characters", async () => {
+      _.set(
+        shoppingListValues,
+        "name",
+        generateString(SHOPPING_LIST_NAME_MIN_LENGTH - 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List name is greater than 50 characters", async () => {
-      _.set(shoppingListValues, "name", generateString());
+    it("should return 400 if Shopping List name is greater than SHOPPING_LIST_NAME_MAX_LENGTH characters", async () => {
+      _.set(
+        shoppingListValues,
+        "name",
+        generateString(SHOPPING_LIST_NAME_MAX_LENGTH + 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -204,15 +222,15 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List items[0].price is less than 0", async () => {
-      shoppingListValues.items[0].price = -1.0;
+    it("should return 400 if Shopping List items[0].price is less than ITEM_PRICE_MIN", async () => {
+      shoppingListValues.items[0].price = ITEM_PRICE_MIN - 1;
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List items[0].price is greater than 50000", async () => {
-      shoppingListValues.items[0].price = 50100.0;
+    it("should return 400 if Shopping List items[0].price is greater than ITEM_PRICE_MAX", async () => {
+      shoppingListValues.items[0].price = ITEM_PRICE_MAX + 1;
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -249,8 +267,12 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List Description is greater than 50 characters", async () => {
-      _.set(shoppingListValues, "description", generateString());
+    it("should return 400 if Shopping List Description is greater than SHOPPING_LIST_DESCRIPTION_MAX_LENGTH characters", async () => {
+      _.set(
+        shoppingListValues,
+        "description",
+        generateString(SHOPPING_LIST_DESCRIPTION_MAX_LENGTH + 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -302,15 +324,23 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List name is less than 2 characters", async () => {
-      _.set(newShoppingListValues, "name", generateString(1));
+    it("should return 400 if Shopping List name is less than SHOPPING_LIST_NAME_MIN_LENGTH characters", async () => {
+      _.set(
+        newShoppingListValues,
+        "name",
+        generateString(SHOPPING_LIST_NAME_MIN_LENGTH - 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List name is greater than 50 characters", async () => {
-      _.set(newShoppingListValues, "name", generateString());
+    it("should return 400 if Shopping List name is greater than SHOPPING_LIST_NAME_MAX_LENGTH characters", async () => {
+      _.set(
+        newShoppingListValues,
+        "name",
+        generateString(SHOPPING_LIST_NAME_MAX_LENGTH + 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -351,15 +381,15 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List items[0].price is less than 0", async () => {
-      _.set(newShoppingListValues, "items[0].price", -1);
+    it("should return 400 if Shopping List items[0].price is less than ITEM_PRICE_MIN", async () => {
+      _.set(newShoppingListValues, "items[0].price", ITEM_PRICE_MIN - 1);
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List items[0].price is greater than 50000", async () => {
-      _.set(newShoppingListValues, "items[0].price", 50001);
+    it("should return 400 if Shopping List items[0].price is greater than ITEM_PRICE_MAX", async () => {
+      _.set(newShoppingListValues, "items[0].price", ITEM_PRICE_MAX + 1);
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -372,8 +402,12 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Shopping List description is greater than 50 characters", async () => {
-      _.set(newShoppingListValues, "description", generateString());
+    it("should return 400 if Shopping List description is greater than SHOPPING_LIST_DESCRIPTION_MAX_LENGTH characters", async () => {
+      _.set(
+        newShoppingListValues,
+        "description",
+        generateString(SHOPPING_LIST_DESCRIPTION_MAX_LENGTH + 1)
+      );
 
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -413,7 +447,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it("should return 400 if Item ID is invalid", async () => {
+    it("should return 400 if Shopping List's Item ID is invalid", async () => {
       shoppingListItemId = generateString(1);
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
@@ -432,6 +466,97 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       const res = await exec();
 
       expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should return 400 if the Item new values is not provided", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      queryString = {};
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if price is not set", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      _.unset(queryString, "price");
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if price is not a valid number", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      queryString.price = generateString(1);
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if price is less than ITEM_PRICE_MIN", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      queryString.price = ITEM_PRICE_MIN - 1;
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if price is greater than ITEM_PRICE_MAX", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      queryString.price = ITEM_PRICE_MAX + 1;
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if bought is not set", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      _.unset(queryString, "bought");
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if bought is not a valid boolean", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      queryString.bought = generateString(1);
+
+      const res = await exec();
+
+      expect(res.status).toBe(BAD_REQUEST);
     });
 
     it("should return 200 if Shopping List and Item exist", async () => {
@@ -454,7 +579,7 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       const res = await exec();
 
       expect(res.status).toBe(SUCCESS);
-      debug(typeof res.body.items[0]._id);
+
       expect(res.body.items[0]._id).toBe(shoppingListItemId.toString());
       expect(res.body.items[0].price).toBe(queryString.price);
       expect(res.body.items[0].bought).toBe(queryString.bought);
@@ -468,7 +593,6 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
 
     it("should return 400 if Shopping List ID is not valid", async () => {
       shoppingListId = generateString(1);
-
       const res = await exec();
       expect(res.status).toBe(BAD_REQUEST);
     });
@@ -490,6 +614,68 @@ describe(SHOPPING_LIST_ENDPOINT, () => {
       expect(res.status).toBe(SUCCESS);
       expect(res.body).toHaveProperty("_id", shoppingListId.toString());
       expect(result).toBeNull();
+    });
+  });
+
+  describe("DELETE /id/item/itemId", () => {
+    const exec = () => {
+      return request(server).delete(
+        buildEndpoint(SHOPPING_LIST_ENDPOINT, [
+          shoppingListId,
+          "item",
+          shoppingListItemId,
+        ])
+      );
+    };
+
+    it("should return 400 if the Shopping List ID is not valid", async () => {
+      shoppingListId = generateString(1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 400 if the Shopping List's Item ID is invalid", async () => {
+      shoppingListItemId = generateString(1);
+      const res = await exec();
+      expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it("should return 404 if Shopping List is not found for the given ID", async () => {
+      const res = await exec();
+      expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should return 404 if Item for the given ID is not found in Shopping List Items", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+
+      const res = await exec();
+
+      expect(res.status).toBe(NOT_FOUND);
+    });
+
+    it("should return 200 if Shopping List for the given ID exist and contains the Item for the given Item ID", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      const res = await exec();
+
+      expect(res.status).toBe(SUCCESS);
+    });
+
+    it("should delete the Item for the given Item ID from the Shopping List", async () => {
+      await shoppingList.save();
+
+      shoppingListId = shoppingList._id;
+      shoppingListItemId = shoppingList.items[0]._id;
+
+      const res = await exec();
+
+      expect(res.body.items.length).toBe(shoppingList.items.length - 1);
+      expect(res.body.items[0]._id).not.toEqual(shoppingListItemId.toString());
     });
   });
 });
