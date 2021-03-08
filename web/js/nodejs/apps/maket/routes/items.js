@@ -1,4 +1,4 @@
-const debug = require("debug")("maket");
+const debug = require("debug")("maket:item_route");
 const validateId = require("../middlewares/validateId");
 const {
   BAD_REQUEST,
@@ -6,6 +6,7 @@ const {
 } = require("../utils/constants/httpResponseCodes");
 const ItemModel = require("../models/items");
 const validateItem = require("../validators/items");
+const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 
@@ -42,11 +43,23 @@ router.put("/:id", validateId, async (req, res) => {
 });
 
 router.delete("/:id", validateId, async (req, res) => {
-  const deletedItem = await ItemModel.findByIdAndDelete(req.params.id);
+  const itemExist = await ItemModel.exists({ _id: req.params.id });
 
-  !deletedItem
-    ? res.status(NOT_FOUND).send("Item not found")
-    : res.send(deletedItem);
+  if (!itemExist) {
+    return res.status(NOT_FOUND).send("Item not found");
+  }
+
+  const session = await mongoose.connection.startSession();
+  session.startTransaction();
+
+  const deletedItem = await ItemModel.findByIdAndDelete(req.params.id, {
+    session: session,
+  });
+
+  session.commitTransaction();
+
+  debug(deletedItem);
+  res.send(deletedItem);
 });
 
 module.exports = router;
