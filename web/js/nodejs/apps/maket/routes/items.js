@@ -3,8 +3,10 @@ const validateId = require("../middlewares/validateId");
 const {
   BAD_REQUEST,
   NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
 } = require("../utils/constants/httpResponseCodes");
 const ItemModel = require("../models/items");
+const ShoppingListModel = require("../models/shoppingList");
 const validateItem = require("../validators/items");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -43,7 +45,9 @@ router.put("/:id", validateId, async (req, res) => {
 });
 
 router.delete("/:id", validateId, async (req, res) => {
-  const itemExist = await ItemModel.exists({ _id: req.params.id });
+  const itemId = req.params.id;
+
+  const itemExist = await ItemModel.exists({ _id: itemId });
 
   if (!itemExist) {
     return res.status(NOT_FOUND).send("Item not found");
@@ -52,14 +56,31 @@ router.delete("/:id", validateId, async (req, res) => {
   const session = await mongoose.connection.startSession();
   session.startTransaction();
 
-  const deletedItem = await ItemModel.findByIdAndDelete(req.params.id, {
-    session: session,
-  });
+  try {
+    deletedItem = await ItemModel.findByIdAndDelete(itemId, {
+      session: session,
+    });
 
-  session.commitTransaction();
+    await ShoppingListModel.updateMany(
+      { "items._id": itemId },
+      { $pull: { items: { _id: { $eq: itemId } } } },
+      { session: session }
+    );
 
-  debug(deletedItem);
-  res.send(deletedItem);
+    if (req.query.throw) {
+      throw new Error("Transaction failed for testing purpose ... :(");
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.send(deletedItem);
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+
+    return res.status(INTERNAL_SERVER_ERROR).send(err.message);
+  }
 });
 
 module.exports = router;

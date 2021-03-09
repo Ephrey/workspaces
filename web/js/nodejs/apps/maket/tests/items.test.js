@@ -1,5 +1,3 @@
-const debug = require("debug")("maket:item_test");
-const ItemModel = require("../models/items");
 const {
   ITEM_ENDPOINT,
   ITEM_MIN_LENGTH,
@@ -11,7 +9,12 @@ const {
   SUCCESS,
   BAD_REQUEST,
   NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
 } = require("../utils/constants/httpResponseCodes");
+const debug = require("debug")("maket:item_test");
+const ItemModel = require("../models/items");
+const ShoppingListModel = require("../models/shoppingList");
+const buildEndpoint = require("../utils/endpoint/buildEndpoint");
 const mongoose = require("mongoose");
 const request = require("supertest");
 
@@ -24,6 +27,7 @@ describe(ITEM_ENDPOINT, () => {
     server = require("../index");
     itemValues = { name: "Oranges", category: "Fruits" };
     itemId = mongoose.Types.ObjectId();
+    queryString = {};
   });
 
   afterEach(async () => {
@@ -38,6 +42,24 @@ describe(ITEM_ENDPOINT, () => {
   const createItem = () => {
     const item = new ItemModel(itemValues);
     return item.save();
+  };
+
+  const getItemById = (id) => {
+    return ItemModel.findOne({ _id: id });
+  };
+
+  const createShoppingList = (itemId) => {
+    const shoppingList = new ShoppingListModel({
+      name: "Test",
+      items: [{ _id: itemId, price: 12.99, bought: true }],
+      description: "Test transaction on delete Item",
+    });
+
+    return shoppingList.save();
+  };
+
+  const clearShoppingListsDB = () => {
+    return ShoppingListModel.deleteMany({});
   };
 
   const generateString = (length = 51) => {
@@ -199,7 +221,9 @@ describe(ITEM_ENDPOINT, () => {
 
   describe("DELETE /", () => {
     const exec = () => {
-      return request(server).delete(ITEM_ENDPOINT + itemId);
+      return request(server).delete(
+        buildEndpoint(ITEM_ENDPOINT, [itemId], queryString)
+      );
     };
 
     it("should return 400 if invalid item ID passed", async () => {
@@ -213,13 +237,37 @@ describe(ITEM_ENDPOINT, () => {
       expect(res.status).toBe(NOT_FOUND);
     });
 
+    it("should return 500 if the delete transaction failed", async () => {
+      const item = await createItem();
+
+      itemId = item._id;
+
+      await createShoppingList(itemId);
+
+      queryString.throw = true;
+
+      const res = await exec();
+
+      const itemInDb = await getItemById(itemId);
+
+      await clearShoppingListsDB();
+
+      expect(res.status).toBe(INTERNAL_SERVER_ERROR);
+      expect(itemInDb).toBeTruthy();
+    });
+
     it("should return 200 if item was deleted", async () => {
       const item = await createItem();
 
       itemId = item._id;
+
+      await createShoppingList(itemId);
+
       const res = await exec();
 
-      const itemInDb = await ItemModel.findOne({ _id: itemId });
+      const itemInDb = await getItemById(itemId);
+
+      await clearShoppingListsDB();
 
       expect(res.status).toBe(SUCCESS);
       expect(res.body).toHaveProperty("name", item.name);
