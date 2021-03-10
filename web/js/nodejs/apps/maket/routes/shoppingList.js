@@ -112,6 +112,7 @@ router.delete("/:id/item/:itemId", validateId, async (req, res) => {
 
   const isShoppingListItemExist = await ShoppingListModel.findOne({
     "items._id": { $eq: shoppingListItemId },
+    _id: { $eq: shoppingListId },
   });
 
   if (!isShoppingListItemExist)

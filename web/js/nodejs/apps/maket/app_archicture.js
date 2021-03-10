@@ -35,7 +35,7 @@
 // ** NEXT :
 // INSERT A SINGLE ITEM IN THE SHOPPING LIST
 
-// ** NEXT
+// ** DONE
 // Delete Item from ITEM COLLECTION
 // Delete the corresponding ITEM from all Shopping List.
 //
