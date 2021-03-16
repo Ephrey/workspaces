@@ -29,6 +29,6 @@ let author = {
 let course = {
     author: {
         id: "ref",
-        "name": "Mosh"
+        "name": "Ephraim"
     }
 }

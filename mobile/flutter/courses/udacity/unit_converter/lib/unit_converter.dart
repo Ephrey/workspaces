@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import 'category.dart';
 import 'unit.dart';
 
 const _padding = EdgeInsets.all(16.0);
@@ -14,29 +15,20 @@ const _padding = EdgeInsets.all(16.0);
 ///
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
-class ConverterRoute extends StatefulWidget {
+class UnitConverter extends StatefulWidget {
   /// Color for this [Category].
-  final Color color;
-
-  /// Name for this [Category]
-  final String name;
-
-  /// Units for this [Category].
-  final List<Unit> units;
+  final Category category;
 
   /// This [ConverterRoute] requires the color and units to not be null.
-  const ConverterRoute({
-    @required this.name,
-    @required this.color,
-    @required this.units,
-  })  : assert(color != null),
-        assert(units != null);
+  const UnitConverter({
+    @required this.category,
+  }) : assert(category != null);
 
   @override
-  _ConverterRouteState createState() => _ConverterRouteState();
+  _UnitConverterState createState() => _UnitConverterState();
 }
 
-class _ConverterRouteState extends State<ConverterRoute> {
+class _UnitConverterState extends State<UnitConverter> {
   // TODO: Set some variables, such as for keeping track of the user's input value and units
   Unit _fromValue;
   Unit _toValue;
@@ -44,6 +36,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
   String _convertedValue = '';
   List<DropdownMenuItem> _unitMenuItems;
   bool _showValidateError = false;
+  final _inputKey = GlobalKey(debugLabel: 'inputText');
 
   // TODO: Determine whether you need to override anything, such as initState()
   @override
@@ -53,11 +46,21 @@ class _ConverterRouteState extends State<ConverterRoute> {
     _setDefaults();
   }
 
+  @override
+  void didUpdateWidget(UnitConverter old) {
+    super.didUpdateWidget(old);
+
+    if (old.category != widget.category) {
+      _createDropdownMenuItems();
+      _setDefaults();
+    }
+  }
+
   // TODO: Add other helper functions. We've given you one, _format()
   void _createDropdownMenuItems() {
     var newItems = <DropdownMenuItem>[];
 
-    for (var unit in widget.units) {
+    for (var unit in widget.category.units) {
       newItems.add(DropdownMenuItem(
         value: unit.name,
         child: Container(
@@ -76,8 +79,8 @@ class _ConverterRouteState extends State<ConverterRoute> {
   void _setDefaults() {
     setState(() {
       setState(() {
-        _fromValue = widget.units[0];
-        _toValue = widget.units[1];
+        _fromValue = widget.category.units[0];
+        _toValue = widget.category.units[1];
       });
     });
   }
@@ -124,7 +127,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
   }
 
   Unit _getUnit(String unitName) {
-    return widget.units.firstWhere((Unit unit) {
+    return widget.category.units.firstWhere((Unit unit) {
       return unit.name == unitName;
     }, orElse: null);
   }
@@ -186,6 +189,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(
+            key: _inputKey,
             style: Theme.of(context).textTheme.headline4,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
@@ -204,7 +208,7 @@ class _ConverterRouteState extends State<ConverterRoute> {
     );
 
     // TODO: Create a compare arrows icon.
-    final arrows = RotatedBox(
+    final _arrows = RotatedBox(
       quarterTurns: 1,
       child: Icon(
         Icons.compare_arrows,
@@ -237,36 +241,29 @@ class _ConverterRouteState extends State<ConverterRoute> {
       ),
     );
 
-    // TODO: Return the input, arrows, and output widgets, wrapped in a Column.
-    final AppBar _appBar = AppBar(
-      elevation: 1.0,
-      title: Text(widget.name, style: Theme.of(context).textTheme.headline4),
-      backgroundColor: widget.color,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    );
-
-    final _converter = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    final _converter = ListView(
       children: [
         _inputGroup,
-        arrows,
+        _arrows,
         _outputGroup,
       ],
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Converter Route',
-      home: Scaffold(
-        appBar: _appBar,
-        body: Padding(
-          padding: _padding,
-          child: _converter,
-        ),
-      ),
+    return Padding(
+      padding: _padding,
+      child: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+        if (orientation == Orientation.portrait) {
+          return _converter;
+        } else {
+          return Center(
+            child: Container(
+              width: 450.0,
+              child: _converter,
+            ),
+          );
+        }
+      }),
     );
   }
 }

@@ -4,20 +4,11 @@
 
 import 'package:flutter/material.dart';
 
-// TODO: Check if we need to import anything
-import 'package:unit_converter/category.dart';
-import 'package:unit_converter/unit.dart';
-
-// TODO: Define any constants
-final _bgColor = Colors.green[100];
-
-/// Category Route (screen).
-///
-/// This is the 'home' screen of the Unit Converter. It shows a header and
-/// a list of [Categories].
-///
-/// While it is named CategoryRoute, a more apt name would be CategoryScreen,
-/// because it is responsible for the UI at the route's destination.
+import 'backdrop.dart';
+import 'category.dart';
+import 'category_tile.dart';
+import 'unit.dart';
+import 'unit_converter.dart';
 
 class CategoryRoute extends StatefulWidget {
   const CategoryRoute();
@@ -27,7 +18,10 @@ class CategoryRoute extends StatefulWidget {
 }
 
 class _CategoryRouteState extends State<CategoryRoute> {
-  final List<Category> categories = [];
+  Category _defaultCategory;
+  Category _currentCategory;
+
+  final _categories = <Category>[];
 
   static const _categoryNames = <String>[
     'Length',
@@ -81,12 +75,17 @@ class _CategoryRouteState extends State<CategoryRoute> {
     super.initState();
 
     for (var i = 0; i < _categoryNames.length; i++) {
-      categories.add(Category(
+      var category = Category(
         name: _categoryNames[i],
         color: _baseColors[i],
-        icon: Icons.cake,
+        iconLocation: Icons.cake,
         units: _retrieveUnitList(_categoryNames[i]),
-      ));
+      );
+      if (i == 0) {
+        _defaultCategory = category;
+      }
+
+      _categories.add(category);
     }
   }
 
@@ -100,38 +99,56 @@ class _CategoryRouteState extends State<CategoryRoute> {
     });
   }
 
-  Widget _buildCategoryWidgets() {
-    return ListView.builder(
-      itemBuilder: (_, int i) => categories[i],
-      itemCount: categories.length,
-    );
+  void _onCategoryTap(Category category) {
+    setState(() {
+      _currentCategory = category;
+    });
+  }
+
+  Widget _buildCategoryWidgets(Orientation deviceOrientation) {
+    if (deviceOrientation == Orientation.portrait) {
+      return ListView.builder(
+        itemBuilder: (_, int i) => CategoryTile(
+          category: _categories[i],
+          onTap: _onCategoryTap,
+        ),
+        itemCount: _categories.length,
+      );
+    } else {
+      return GridView.count(
+        crossAxisCount: 2,
+        childAspectRatio: 3.0,
+        children: _categories.map(
+          (Category c) {
+            return CategoryTile(
+              category: c,
+              onTap: _onCategoryTap,
+            );
+          },
+        ).toList(),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Create a list view of the Categories
-    final listView = Container(
-      color: _bgColor,
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
-      child: _buildCategoryWidgets(),
-    );
-
-    // TODO: Create an App Bar
-    final appBar = AppBar(
-      title: Text(
-        'Unit Converter',
-        style: TextStyle(
-          fontSize: 30.0,
-          color: Colors.black,
-        ),
+    final listView = Padding(
+      padding: EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+        bottom: 48.8,
       ),
-      backgroundColor: _bgColor,
-      elevation: 0.0,
+      child: _buildCategoryWidgets(MediaQuery.of(context).orientation),
     );
 
-    return Scaffold(
-      appBar: appBar,
-      body: listView,
-    );
+    return Backdrop(
+        currentCategory:
+            _currentCategory == null ? _defaultCategory : _currentCategory,
+        frontPanel: _currentCategory == null
+            ? UnitConverter(category: _defaultCategory)
+            : UnitConverter(category: _currentCategory),
+        backPanel: listView,
+        frontTitle: Text('Unit Converter'),
+        backTitle: Text('Select a Category'));
   }
 }
