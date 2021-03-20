@@ -15,21 +15,21 @@ class CategoryTile extends StatelessWidget {
   /// conversions
   ///
   /// Tapping on i tbrings you to the unit converter.
-  const CategoryTile({Key key, @required this.category, @required this.onTap})
+  const CategoryTile({Key key, @required this.category, this.onTap})
       : assert(category != null),
-        assert(onTap != null),
         super(key: key);
 
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color:
+          onTap == null ? Color.fromRGBO(50, 50, 50, 0.2) : Colors.transparent,
       child: Container(
         height: _rowHeight,
         child: InkWell(
           borderRadius: _borderRadius,
           highlightColor: category.color['highlight'],
           splashColor: category.color['splash'],
-          onTap: () => onTap(category),
+          onTap: onTap == null ? null : () => onTap(category),
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
@@ -37,7 +37,7 @@ class CategoryTile extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Icon(category.iconLocation, size: 60.0),
+                    child: Image.asset(category.iconLocation),
                   ),
                   Center(
                     child: Text(

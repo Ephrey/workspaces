@@ -1,9 +1,12 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import 'api.dart';
 import 'backdrop.dart';
 import 'category.dart';
 import 'category_tile.dart';
@@ -22,17 +25,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Category _currentCategory;
 
   final _categories = <Category>[];
-
-  static const _categoryNames = <String>[
-    'Length',
-    'Area',
-    'Volume',
-    'Mass',
-    'Time',
-    'Digital Storage',
-    'Energy',
-    'Currency',
-  ];
 
   static const _baseColors = <ColorSwatch>[
     ColorSwatch(0xFF6AB7A8, {
@@ -70,33 +62,90 @@ class _CategoryRouteState extends State<CategoryRoute> {
     }),
   ];
 
+  static const _icons = <String>[
+    "assets/icons/length.png",
+    "assets/icons/area.png",
+    "assets/icons/volume.png",
+    "assets/icons/mass.png",
+    "assets/icons/time.png",
+    "assets/icons/digital_storage.png",
+    "assets/icons/power.png",
+    "assets/icons/currency.png",
+  ];
+
   @override
-  void initState() {
-    super.initState();
-
-    for (var i = 0; i < _categoryNames.length; i++) {
-      var category = Category(
-        name: _categoryNames[i],
-        color: _baseColors[i],
-        iconLocation: Icons.cake,
-        units: _retrieveUnitList(_categoryNames[i]),
-      );
-      if (i == 0) {
-        _defaultCategory = category;
-      }
-
-      _categories.add(category);
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    if (_categories.isEmpty) {
+      await _retrieveLocalCategories();
+      await _retrieveApiCategory();
     }
   }
 
-  List<Unit> _retrieveUnitList(String categoryName) {
-    return List.generate(10, (int i) {
-      i += 1;
-      return Unit(
-        name: "$categoryName Unit $i",
-        conversion: i.toDouble(),
+  Future<void> _retrieveLocalCategories() async {
+    final json = DefaultAssetBundle.of(context)
+        .loadString("assets/data/regular_units.json");
+
+    final data = JsonDecoder().convert(await json);
+
+    if (data is! Map) {
+      throw ("Data retrieve from API is not a Map");
+    }
+
+    var categoryIndex = 0;
+    data.keys.forEach((key) {
+      final List<Unit> units =
+          data[key].map<Unit>((dynamic data) => Unit.fromJson(data)).toList();
+
+      var category = Category(
+        name: key,
+        units: units,
+        color: _baseColors[categoryIndex],
+        iconLocation: _icons[categoryIndex],
+      );
+
+      setState(() {
+        if (categoryIndex == 0) {
+          _defaultCategory = category;
+        }
+        _categories.add(category);
+      });
+
+      categoryIndex += 1;
+    });
+  }
+
+  Future<void> _retrieveApiCategory() async {
+    setState(() {
+      _categories.add(
+        Category(
+          name: apiCategory['name'],
+          units: [],
+          color: _baseColors.last,
+          iconLocation: _icons.last,
+        ),
       );
     });
+    final api = Api();
+    final jsonUnits = await api.getUnits(apiCategory['route']);
+    if (jsonUnits != null) {
+      final units = <Unit>[];
+      for (var unit in jsonUnits) {
+        units.add(Unit.fromJson(unit));
+      }
+
+      setState(() {
+        _categories.removeLast();
+        _categories.add(
+          Category(
+            name: apiCategory['name'],
+            units: units,
+            color: _baseColors.last,
+            iconLocation: _icons.last,
+          ),
+        );
+      });
+    }
   }
 
   void _onCategoryTap(Category category) {
@@ -108,10 +157,17 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Widget _buildCategoryWidgets(Orientation deviceOrientation) {
     if (deviceOrientation == Orientation.portrait) {
       return ListView.builder(
-        itemBuilder: (_, int i) => CategoryTile(
-          category: _categories[i],
-          onTap: _onCategoryTap,
-        ),
+        itemBuilder: (_, int i) {
+          var _category = _categories[i];
+
+          return CategoryTile(
+            category: _category,
+            onTap: (_category.name == apiCategory['name'] &&
+                    _category.units.isEmpty)
+                ? null
+                : _onCategoryTap,
+          );
+        },
         itemCount: _categories.length,
       );
     } else {
@@ -141,7 +197,12 @@ class _CategoryRouteState extends State<CategoryRoute> {
       child: _buildCategoryWidgets(MediaQuery.of(context).orientation),
     );
 
-    return Backdrop(
+    if (_currentCategory == null && _defaultCategory == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return Backdrop(
         currentCategory:
             _currentCategory == null ? _defaultCategory : _currentCategory,
         frontPanel: _currentCategory == null
@@ -149,6 +210,8 @@ class _CategoryRouteState extends State<CategoryRoute> {
             : UnitConverter(category: _currentCategory),
         backPanel: listView,
         frontTitle: Text('Unit Converter'),
-        backTitle: Text('Select a Category'));
+        backTitle: Text('Select a Category'),
+      );
+    }
   }
 }
