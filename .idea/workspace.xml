@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8eaff86d-349d-43f6-ab75-df187bb44bc7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/logfile.log" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/logfile.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/routes/genres.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly/routes/genres.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1qaPVW5Ds9FjUCXKie6u7XXCGH4" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8eaff86d-349d-43f6-ab75-df187bb44bc7" name="Default Changelist" comment="" />
+      <created>1617314751548</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1617314751548</updated>
+    </task>
+    <servers />
+  </component>
+</project>

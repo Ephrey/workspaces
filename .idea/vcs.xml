@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/dicee" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/magic-8-ball" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mobile/flutter/courses/appbrewery/mi_card" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/web/js/nodejs/courses/mosh/vidly" vcs="Git" />
+  </component>
+</project>
