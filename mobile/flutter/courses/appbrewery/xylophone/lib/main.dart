@@ -26,7 +26,7 @@ class XylophoneApp extends StatelessWidget {
         _buildNoteButton(4, Colors.blue),
         _buildNoteButton(5, Colors.amber),
         _buildNoteButton(6, Colors.pink),
-        _buildNoteButton(7, Colors.tealAccent),
+        _buildNoteButton(7, Colors.yellow),
       ],
     );
   }
