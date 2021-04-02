@@ -6,7 +6,7 @@ void main() => runApp(XylophoneApp());
 class XylophoneApp extends StatelessWidget {
   static AudioCache player = AudioCache();
 
-  Widget _buildNoteButton(int noteNumber, Color color) {
+  Expanded _buildNoteButton({int noteNumber, Color color}) {
     return Expanded(
       child: TextButton(
         style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
@@ -16,17 +16,17 @@ class XylophoneApp extends StatelessWidget {
     );
   }
 
-  Widget _noteButtons() {
+  Column _noteButtons() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildNoteButton(1, Colors.red),
-        _buildNoteButton(2, Colors.orange),
-        _buildNoteButton(3, Colors.teal),
-        _buildNoteButton(4, Colors.blue),
-        _buildNoteButton(5, Colors.amber),
-        _buildNoteButton(6, Colors.pink),
-        _buildNoteButton(7, Colors.tealAccent),
+        _buildNoteButton(noteNumber: 1, color: Colors.red),
+        _buildNoteButton(noteNumber: 2, color: Colors.orange),
+        _buildNoteButton(noteNumber: 3, color: Colors.teal),
+        _buildNoteButton(noteNumber: 4, color: Colors.blue),
+        _buildNoteButton(noteNumber: 5, color: Colors.amber),
+        _buildNoteButton(noteNumber: 6, color: Colors.pink),
+        _buildNoteButton(noteNumber: 7, color: Colors.tealAccent),
       ],
     );
   }
