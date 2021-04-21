@@ -4,8 +4,6 @@ import 'package:flash_chat/widget/rounded_button.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static const String route = 'welcome';
-
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }

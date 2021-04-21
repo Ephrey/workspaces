@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "820599574627",
+    "project_id": "flash-chat-dd700",
+    "storage_bucket": "flash-chat-dd700.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820599574627:android:2e126165f8229c3b66e856",
+        "android_client_info": {
+          "package_name": "com.tshilolo.flash_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "820599574627-1qprqe6jn00rij92g9ts7a9vsjfu6ukd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAahSG1g-JM-Pgi93swSFa5dsoWwpRzRuU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820599574627-1qprqe6jn00rij92g9ts7a9vsjfu6ukd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
