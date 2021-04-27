@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.maket">
    <application
-        android:label="maket"
+        android:label="Maket"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
