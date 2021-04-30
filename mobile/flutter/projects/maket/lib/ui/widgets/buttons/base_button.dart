@@ -28,6 +28,8 @@ class BaseActionButton extends StatelessWidget {
     Color _buttonBgColor;
     Color _textColor;
     Color _buttonBorderColor;
+    FontWeight _fontWeight = FontWeight.w600;
+
     Function _onPressed = onPressed;
 
     double _sixPercentOfScreenHeight = Math.percentage(
@@ -65,8 +67,9 @@ class BaseActionButton extends StatelessWidget {
     }
 
     if (buttonType == ButtonType.disable) {
-      _buttonBgColor = (icon != null) ? kSecondaryColor : kBgPrimaryColor;
+      _buttonBgColor = (icon != null) ? kSecondaryColor : kSecondaryColor;
       _textColor = kTextSecondaryColor;
+      _fontWeight = FontWeight.w400;
       _buttonBorderColor = (icon == null) ? kSecondaryColor : null;
       _onPressed = null;
     }
@@ -77,12 +80,12 @@ class BaseActionButton extends StatelessWidget {
         percent: Numbers.thirtyTwo,
         total: _buttonHeight,
       ),
-      fontWeight: FontWeight.w600,
+      fontWeight: _fontWeight,
     );
 
     ButtonStyle _buttonStyle = ButtonStyle(
       minimumSize: MaterialStateProperty.all<Size>(
-        Size.fromHeight(_buttonHeight),
+        Size.fromHeight(_buttonHeight + Numbers.ten),
       ),
       backgroundColor: MaterialStateProperty.all<Color>(_buttonBgColor),
       padding: MaterialStateProperty.all<EdgeInsets>(
@@ -113,8 +116,10 @@ class BaseActionButton extends StatelessWidget {
             child: Icon(
               icon,
               color: _textColor,
-              size:
-                  Math.percentage(percent: Numbers.sixty, total: _buttonHeight),
+              size: Math.percentage(
+                percent: Numbers.sixty,
+                total: _buttonHeight,
+              ),
             ),
           )
         : null;

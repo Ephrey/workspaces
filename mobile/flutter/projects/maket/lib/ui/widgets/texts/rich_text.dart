@@ -12,8 +12,8 @@ class TextRich extends StatelessWidget {
   final Function onTap;
 
   TextRich({
-    this.mainText,
-    this.richText,
+    @required this.mainText,
+    @required this.richText,
     this.mainTextColor: kPrimaryColor,
     this.onTap,
   });

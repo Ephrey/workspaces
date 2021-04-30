@@ -15,13 +15,18 @@ class Separator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double percentage = Math.percentage(
+    ScreenSize _screenSize = ScreenSize(context: context);
+
+    double _size =
+        dimension == Dimension.height ? _screenSize.height : _screenSize.width;
+
+    final double _percentage = Math.percentage(
       percent: distanceAsPercent,
-      total: ScreenSize(context: context).height,
+      total: _size,
     );
 
     return (dimension == Dimension.height)
-        ? SizedBox(height: percentage)
-        : SizedBox(width: percentage);
+        ? SizedBox(height: _percentage)
+        : SizedBox(width: _percentage);
   }
 }
