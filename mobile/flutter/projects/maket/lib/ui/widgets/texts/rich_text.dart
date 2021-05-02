@@ -26,7 +26,7 @@ class TextRich extends StatelessWidget {
         style: TextStyle(
           color: mainTextColor,
           fontSize: (Math.percentage(
-                percent: Numbers.fore,
+                percent: Numbers.four,
                 total: ScreenSize(context: context).width,
               ) -
               Numbers.two),

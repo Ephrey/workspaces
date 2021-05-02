@@ -6,8 +6,10 @@ class BaseView extends StatelessWidget {
   final Widget child;
   final bool centered;
 
-  BaseView({@required this.child, this.centered: false})
-      : assert(child != null);
+  BaseView({
+    @required this.child,
+    this.centered: false,
+  }) : assert(child != null);
 
   @override
   Widget build(BuildContext context) {

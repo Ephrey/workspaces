@@ -5,12 +5,12 @@ import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
 
-class FormInput extends StatelessWidget {
+class FormSelect extends StatelessWidget {
   final String label;
   final bool password;
   final TextInputType keyBorderType;
 
-  FormInput({
+  FormSelect({
     this.label,
     this.password: false,
     this.keyBorderType: TextInputType.text,
@@ -36,7 +36,9 @@ class FormInput extends StatelessWidget {
 
     OutlineInputBorder _borderStyle = OutlineInputBorder(
       borderRadius: BorderRadius.zero,
-      borderSide: BorderSide(color: kTextSecondaryColor),
+      borderSide: BorderSide(
+        color: kTextSecondaryColor,
+      ),
     );
 
     return Column(
@@ -44,31 +46,33 @@ class FormInput extends StatelessWidget {
       children: [
         Text(label, style: _textStyle),
         Separator(distanceAsPercent: Numbers.one),
-        TextFormField(
-          keyboardType: keyBorderType,
-          obscureText: password,
+        DropdownButtonFormField(
+          value: null,
+          icon: Icon(Icons.keyboard_arrow_down),
+          iconSize: 25,
+          isExpanded: true,
+          dropdownColor: kPrimaryColor,
           style: TextStyle(
             color: kPrimaryColor,
             fontSize: _textSize,
           ),
-          cursorColor: kPrimaryColor,
-          textCapitalization: TextCapitalization.words,
+          items: <String>['One', 'Two', 'Free', 'Four']
+              .map<DropdownMenuItem>((String value) {
+            return DropdownMenuItem<String>(
+              child: Text(value),
+              value: value,
+            );
+          }).toList(),
+          onChanged: (newValue) => print(newValue),
           decoration: InputDecoration(
-            hintText: 'Type in your $label',
+            hintText: 'Select a category',
             hintStyle: TextStyle(
               fontSize: _textSize,
               color: kTextSecondaryColor,
             ),
-            contentPadding: EdgeInsets.symmetric(
-              vertical: _textFieldPadding,
-              horizontal: _textFieldPadding,
-            ),
             border: _borderStyle,
-            disabledBorder: _borderStyle,
+            focusedBorder: _borderStyle,
             enabledBorder: _borderStyle,
-            focusedBorder: _borderStyle.copyWith(
-              borderSide: const BorderSide(color: kPrimaryColor, width: 0.7),
-            ),
           ),
         ),
       ],

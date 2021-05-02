@@ -9,7 +9,7 @@ class Separator extends StatelessWidget {
   final Dimension dimension;
 
   Separator({
-    this.distanceAsPercent: Numbers.fore,
+    this.distanceAsPercent: Numbers.four,
     this.dimension: Dimension.height,
   });
 
@@ -17,8 +17,9 @@ class Separator extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenSize _screenSize = ScreenSize(context: context);
 
-    double _size =
-        dimension == Dimension.height ? _screenSize.height : _screenSize.width;
+    double _size = (dimension == Dimension.height)
+        ? _screenSize.height
+        : _screenSize.width;
 
     final double _percentage = Math.percentage(
       percent: distanceAsPercent,

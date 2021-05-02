@@ -11,3 +11,5 @@ const Color kErrorColor = Color(0xFFFB3640);
 
 const Color kBgPrimaryColor = Color(0xFFFFFFFF);
 const Color kBgSecondaryColor = Color(0xFFF7F7F7);
+
+const Color kElevationColor = Color(0xFFEAEAEA);

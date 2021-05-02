@@ -57,19 +57,19 @@ class _CarouselContent extends StatelessWidget {
     TextStyle _titleStyle = TextStyle(
       color: kPrimaryColor,
       fontSize: Math.percentage(
-        percent: Numbers.fore,
+        percent: Numbers.four,
         total: ScreenSize(context: context).height,
       ),
-      fontWeight: FontWeight.w900,
+      fontWeight: FontWeight.w800,
     );
 
     TextStyle _subtitleStyle = TextStyle(
       color: kPrimaryColor,
       fontSize: Math.percentage(
-        percent: Numbers.fore,
+        percent: Numbers.four,
         total: ScreenSize(context: context).width,
       ),
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w600,
       height: 1.7,
     );
 

@@ -16,27 +16,27 @@ class WelcomeView extends StatelessWidget {
     return BaseView(
       child: PaddingView(
         child: CenteredView(
-          child: ScrollableView(child: WelcomeViewBody()),
+          child: ScrollableView(child: _WelcomeViewBody()),
         ),
       ),
     );
   }
 }
 
-class WelcomeViewBody extends StatelessWidget {
+class _WelcomeViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         WelcomeCarousel(),
         Separator(distanceAsPercent: Numbers.seven),
-        WelcomeViewActionButtons(),
+        _WelcomeViewActionButtons(),
       ],
     );
   }
 }
 
-class WelcomeViewActionButtons extends StatelessWidget {
+class _WelcomeViewActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(

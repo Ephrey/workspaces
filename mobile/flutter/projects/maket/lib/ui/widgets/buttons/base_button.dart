@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/constants.dart';
 import 'package:maket/constants/enums.dart';
+import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
@@ -44,13 +45,13 @@ class BaseActionButton extends StatelessWidget {
 
     double _iconMarginRight = (iconPosition == Position.right)
         ? Math.percentage(
-            percent: Numbers.sixty,
+            percent: Numbers.ten,
             total: _buttonHeight,
           )
         : 0.0;
     double _iconMarginLeft = (iconPosition == Position.left)
         ? Math.percentage(
-            percent: Numbers.sixty,
+            percent: Numbers.ten,
             total: _buttonHeight,
           )
         : 0.0;
@@ -108,7 +109,7 @@ class BaseActionButton extends StatelessWidget {
     );
 
     dynamic _icon = (icon != null)
-        ? Padding(
+        ? PaddingView(
             padding: EdgeInsets.only(
               right: _iconMarginLeft,
               left: _iconMarginRight,
@@ -117,7 +118,7 @@ class BaseActionButton extends StatelessWidget {
               icon,
               color: _textColor,
               size: Math.percentage(
-                percent: Numbers.sixty,
+                percent: Numbers.eighty,
                 total: _buttonHeight,
               ),
             ),
