@@ -1,1 +1,7 @@
-const List<String> itemCategories = ['Fruits', 'Dairy', 'Utensil', 'Toiletry'];
+const List<String> itemCategories = [
+  'Fruits',
+  'Dairy',
+  'Utensil',
+  'Toiletry',
+  'Others',
+];

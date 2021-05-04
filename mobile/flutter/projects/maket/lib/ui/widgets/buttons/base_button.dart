@@ -14,6 +14,7 @@ class BaseActionButton extends StatelessWidget {
   final Position contentPosition;
   final ButtonType buttonType;
   final Function onPressed;
+  final bool disabled;
 
   const BaseActionButton({
     this.icon,
@@ -22,6 +23,7 @@ class BaseActionButton extends StatelessWidget {
     this.contentPosition: Position.start,
     this.buttonType: ButtonType.primary,
     this.onPressed,
+    this.disabled: false,
   });
 
   @override
@@ -73,6 +75,13 @@ class BaseActionButton extends StatelessWidget {
       _fontWeight = FontWeight.w400;
       _buttonBorderColor = (icon == null) ? kSecondaryColor : null;
       _onPressed = null;
+    }
+
+    if (disabled) {
+      _onPressed = null;
+      _buttonBorderColor = kSecondaryColor;
+      _textColor = kTextSecondaryColor;
+      _buttonBgColor = kBgPrimaryColor;
     }
 
     TextStyle _textStyle = TextStyle(

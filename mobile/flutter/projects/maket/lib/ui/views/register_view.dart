@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
+import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
@@ -30,7 +31,7 @@ class _RegisterViewBody extends StatelessWidget {
     return Column(
       children: [
         NavBar(),
-        Expanded(
+        ExpandedView(
           flex: 2,
           child: CenteredView(
             child: ScrollableView(child: _RegisterForm()),
@@ -47,12 +48,12 @@ class _RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<_RegisterForm> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: _registerFormKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
