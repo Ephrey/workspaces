@@ -9,7 +9,7 @@ const Color kTextSecondaryColor = Color(0xFFA0A2A4);
 const Color kSuccessColor = Color(0xFF16C79A);
 const Color kErrorColor = Color(0xFFFB3640);
 
-const Color kBgPrimaryColor = Color(0xFFFFFFFF);
+const Color kBgPrimaryColor = Color(0xFFFAFAFA);
 const Color kBgSecondaryColor = Color(0xFFF7F7F7);
 
 const Color kElevationColor = Color(0xFFEAEAEA);

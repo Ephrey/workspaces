@@ -14,6 +14,9 @@ class FormInput extends StatelessWidget {
   final String hintText;
   final List items;
   final TextInputType keyBorderType;
+  final int minLines;
+  final int maxLines;
+  final IconData prefixIcon;
 
   FormInput({
     this.inputType: InputType.field,
@@ -22,6 +25,9 @@ class FormInput extends StatelessWidget {
     this.hintText,
     this.items,
     this.keyBorderType: TextInputType.text,
+    this.minLines: Numbers.one,
+    this.maxLines: Numbers.six,
+    this.prefixIcon,
   });
 
   @override
@@ -48,6 +54,12 @@ class FormInput extends StatelessWidget {
     );
 
     InputDecoration _inputDecoration = InputDecoration(
+      prefixIcon: (prefixIcon != null)
+          ? Icon(prefixIcon,
+              size:
+                  Math.percentage(percent: Numbers.eight, total: _screenWidth),
+              color: kTextSecondaryColor)
+          : null,
       hintText: (hintText != null) ? hintText : 'Type in your $label',
       hintStyle: TextStyle(
         fontSize: _textSize,
@@ -70,23 +82,41 @@ class FormInput extends StatelessWidget {
       fontSize: _textSize,
     );
 
+    Widget _getInput(InputType type) {
+      switch (type) {
+        case InputType.field:
+          return _TextFormField(
+            keyBorderType: keyBorderType,
+            password: password,
+            inputTextStyle: _inputTexStyle,
+            inputDecoration: _inputDecoration,
+          );
+        case InputType.dropdown:
+          return _DropdownFormField(
+            items: items,
+            inputTextStyle: _inputTexStyle,
+            inputDecoration: _inputDecoration,
+          );
+        case InputType.textArea:
+          return _TextFormField(
+            keyBorderType: keyBorderType,
+            inputTextStyle: _inputTexStyle,
+            inputDecoration: _inputDecoration,
+            minLines: minLines,
+            maxLines: maxLines,
+            password: password,
+          );
+        default:
+          return _TextFormField();
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: _labelTextStyle),
+        if (label != null) Text(label, style: _labelTextStyle),
         Separator(distanceAsPercent: Numbers.one),
-        (inputType == InputType.field)
-            ? _TextFormField(
-                keyBorderType: keyBorderType,
-                password: password,
-                inputTextStyle: _inputTexStyle,
-                inputDecoration: _inputDecoration,
-              )
-            : _DropdownFormField(
-                items: items,
-                inputTextStyle: _inputTexStyle,
-                inputDecoration: _inputDecoration,
-              ),
+        _getInput(inputType)
       ],
     );
   }
@@ -130,12 +160,16 @@ class _TextFormField extends StatelessWidget {
   final bool password;
   final TextStyle inputTextStyle;
   final InputDecoration inputDecoration;
+  final int minLines;
+  final int maxLines;
 
   const _TextFormField({
     this.keyBorderType,
     this.password,
     this.inputTextStyle,
     this.inputDecoration,
+    this.minLines,
+    this.maxLines,
   });
 
   @override
@@ -147,6 +181,9 @@ class _TextFormField extends StatelessWidget {
       cursorColor: kPrimaryColor,
       textCapitalization: TextCapitalization.words,
       decoration: inputDecoration,
+      minLines: minLines,
+      maxLines:
+          (keyBorderType == TextInputType.multiline) ? maxLines : Numbers.one,
     );
   }
 }

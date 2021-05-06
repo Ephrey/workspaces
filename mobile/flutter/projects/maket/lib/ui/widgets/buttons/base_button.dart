@@ -72,7 +72,6 @@ class BaseActionButton extends StatelessWidget {
     if (buttonType == ButtonType.disable) {
       _buttonBgColor = (icon != null) ? kSecondaryColor : kSecondaryColor;
       _textColor = kTextSecondaryColor;
-      _fontWeight = FontWeight.w400;
       _buttonBorderColor = (icon == null) ? kSecondaryColor : null;
       _onPressed = null;
     }
