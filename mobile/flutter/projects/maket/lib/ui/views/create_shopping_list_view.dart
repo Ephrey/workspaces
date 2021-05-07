@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/constants/items.dart';
 import 'package:maket/ui/views/base/base_view.dart';
@@ -9,6 +8,7 @@ import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
+import 'package:maket/ui/widgets/item_tile.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
@@ -20,10 +20,10 @@ class CreateShoppingListView extends StatelessWidget {
       child: PageView(
         children: [
           PaddingView(
-            child: _CreateShoppingListViewBody(),
+            child: _SetShoppingListNameAndDescriptionViewBody(),
           ),
           PaddingView(
-            child: _AddItemToShoppingListView(),
+            child: _AddItemsToShoppingListView(),
           )
         ],
       ),
@@ -31,61 +31,16 @@ class CreateShoppingListView extends StatelessWidget {
   }
 }
 
-class _AddItemToShoppingListView extends StatelessWidget {
+class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FormInput(hintText: 'Search for an Item', prefixIcon: Icons.search),
-        Separator(distanceAsPercent: Numbers.two),
-        ExpandedView(
-          child: ListView.separated(
-            addAutomaticKeepAlives: false,
-            itemCount: Item.groupByCategory().length,
-            itemBuilder: (BuildContext context, int i) {
-              final item = Item.groupByCategory()[i];
-              return ListTile(
-                tileColor: (item['type'] == null) ? kSecondaryColor : null,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: (item['type'] == null) ? 25.0 : 15.0,
-                ),
-                title: Text(
-                  '${item['name']}',
-                  style: TextStyle(
-                    color: (item['type'] == null)
-                        ? kPrimaryColor
-                        : kTextSecondaryColor,
-                    fontSize: 17.0,
-                    fontWeight: (item['type'] == null)
-                        ? FontWeight.w400
-                        : FontWeight.w900,
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (_, __) =>
-                Separator(distanceAsPercent: Numbers.one),
-          ),
-        ),
-        Separator(distanceAsPercent: Numbers.three),
-        _AddItemsToListActionButton(),
-        Separator(distanceAsPercent: Numbers.two),
-      ],
+      children: [NavBar(), _SetShoppingListNameAndDescriptionForm()],
     );
   }
 }
 
-class _CreateShoppingListViewBody extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [NavBar(), _CreateShoppingListForm()],
-    );
-  }
-}
-
-class _CreateShoppingListForm extends StatelessWidget {
+class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget _form = Column(
@@ -100,7 +55,7 @@ class _CreateShoppingListForm extends StatelessWidget {
           minLines: Numbers.four,
         ),
         Separator(),
-        _ActionButton(),
+        _SetListNameAndDescriptionActionButton(),
       ],
     );
 
@@ -110,7 +65,7 @@ class _CreateShoppingListForm extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+class _SetListNameAndDescriptionActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -135,6 +90,40 @@ class _ActionButton extends StatelessWidget {
             onPressed: () => print('Done creating list ...'),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _AddItemsToShoppingListView extends StatelessWidget {
+  void onItemTap(String itemId) {
+    print('item $itemId click');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FormInput(hintText: 'Search for an Item', prefixIcon: Icons.search),
+        Separator(distanceAsPercent: Numbers.two),
+        ExpandedView(
+          child: ListView.separated(
+            addAutomaticKeepAlives: false,
+            itemCount: Item.groupByCategory().length,
+            itemBuilder: (BuildContext context, int itemIndex) {
+              return ItemTitle(
+                item: Item.groupByCategory()[itemIndex],
+                onItemTap: onItemTap,
+              );
+            },
+            separatorBuilder: (_, __) =>
+                Separator(distanceAsPercent: Numbers.one),
+          ),
+        ),
+        Separator(distanceAsPercent: Numbers.three),
+        _AddItemsToListActionButton(),
+        Separator(distanceAsPercent: Numbers.two),
       ],
     );
   }
