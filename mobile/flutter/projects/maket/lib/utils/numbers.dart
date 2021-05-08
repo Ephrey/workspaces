@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:maket/constants/enums.dart';
+import 'package:maket/utils/math.dart';
+import 'package:maket/utils/screen_size.dart';
+
 class Numbers {
   static const zero = 0;
   static const one = 1;
@@ -32,4 +37,27 @@ class Numbers {
   static const seventy = 70;
   static const eighty = 80;
   static const ninety = 90;
+
+  /// Get Sizes to use for Elements such as Text font size, height, width, ...
+  ///
+  /// [BuildContext] the context from build function you called this method from.
+  ///
+  /// [percent] the screen percentage you to use as size on elements.
+  ///
+  /// [Dimension] the [width] or [height] the screen to use as total value.
+
+  static double size({
+    @required BuildContext context,
+    @required int percent,
+    Dimension dimension: Dimension.height,
+  }) {
+    ScreenSize _screenSize = ScreenSize(context: context);
+
+    return Math.percentage(
+      percent: percent,
+      total: (dimension == Dimension.height)
+          ? _screenSize.height
+          : _screenSize.width,
+    );
+  }
 }

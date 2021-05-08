@@ -6,5 +6,4 @@ final ThemeData theme = ThemeData.light().copyWith(
   errorColor: kErrorColor,
   textTheme: GoogleFonts.openSansTextTheme(),
   scaffoldBackgroundColor: kBgPrimaryColor,
-  shadowColor: kElevationColor,
 );
