@@ -17,6 +17,8 @@ class FormInput extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final IconData prefixIcon;
+  final TextAlign textAlign;
+  final bool withBorder;
 
   FormInput({
     this.inputType: InputType.field,
@@ -28,6 +30,8 @@ class FormInput extends StatelessWidget {
     this.minLines: Numbers.one,
     this.maxLines: Numbers.six,
     this.prefixIcon,
+    this.textAlign: TextAlign.start,
+    this.withBorder: true,
   });
 
   @override
@@ -50,7 +54,9 @@ class FormInput extends StatelessWidget {
 
     OutlineInputBorder _borderStyle = OutlineInputBorder(
       borderRadius: BorderRadius.zero,
-      borderSide: BorderSide(color: kTextSecondaryColor),
+      borderSide: BorderSide(
+        color: (withBorder) ? kTextSecondaryColor : kTransparentColor,
+      ),
     );
 
     InputDecoration _inputDecoration = InputDecoration(
@@ -90,6 +96,7 @@ class FormInput extends StatelessWidget {
             password: password,
             inputTextStyle: _inputTexStyle,
             inputDecoration: _inputDecoration,
+            textAlign: textAlign,
           );
         case InputType.dropdown:
           return _DropdownFormField(
@@ -105,6 +112,7 @@ class FormInput extends StatelessWidget {
             minLines: minLines,
             maxLines: maxLines,
             password: password,
+            textAlign: textAlign,
           );
         default:
           return _TextFormField();
@@ -115,7 +123,7 @@ class FormInput extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) Text(label, style: _labelTextStyle),
-        Separator(distanceAsPercent: Numbers.one),
+        if (label != null) Separator(distanceAsPercent: Numbers.one),
         _getInput(inputType)
       ],
     );
@@ -162,6 +170,7 @@ class _TextFormField extends StatelessWidget {
   final InputDecoration inputDecoration;
   final int minLines;
   final int maxLines;
+  final TextAlign textAlign;
 
   const _TextFormField({
     this.keyBorderType,
@@ -170,6 +179,7 @@ class _TextFormField extends StatelessWidget {
     this.inputDecoration,
     this.minLines,
     this.maxLines,
+    this.textAlign,
   });
 
   @override
@@ -184,6 +194,7 @@ class _TextFormField extends StatelessWidget {
       minLines: minLines,
       maxLines:
           (keyBorderType == TextInputType.multiline) ? maxLines : Numbers.one,
+      textAlign: textAlign,
     );
   }
 }

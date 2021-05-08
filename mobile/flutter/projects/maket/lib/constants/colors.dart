@@ -14,4 +14,6 @@ const Color kBgSecondaryColor = Color(0xFFF7F7F7);
 
 const Color kElevationColor = Color(0xFFEAEAEA);
 
+const Color kWhite = Color(0xFFFFFFFF);
+
 const Color kTransparentColor = Colors.transparent;
