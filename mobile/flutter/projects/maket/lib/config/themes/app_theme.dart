@@ -6,4 +6,8 @@ final ThemeData theme = ThemeData.light().copyWith(
   errorColor: kErrorColor,
   textTheme: GoogleFonts.openSansTextTheme(),
   scaffoldBackgroundColor: kBgPrimaryColor,
+  snackBarTheme: SnackBarThemeData(
+    backgroundColor: kPrimaryColor,
+    contentTextStyle: TextStyle(color: kTextPrimaryColor),
+  ),
 );

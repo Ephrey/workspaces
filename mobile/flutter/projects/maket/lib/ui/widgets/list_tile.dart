@@ -4,28 +4,39 @@ import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/dot_separator.dart';
+import 'package:maket/ui/widgets/on_select_lists_action.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:maket/utils/show_snackbar.dart';
 
 class ShoppingListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: kSecondaryColor,
-      child: PaddingView(
-        vertical:
-            Numbers.size(context: context, percent: Numbers.two) + Numbers.one,
-        child: Row(
-          children: [
-            _CheckBoxIcon(icon: Icons.check_box),
-            Separator(
-              dimension: Dimension.width,
-              distanceAsPercent: Numbers.seven,
-            ),
-            _ListInfo(),
-            _ArrowIcon(),
-          ],
+    return GestureHandler(
+      child: Container(
+        // color: kSecondaryColor,
+        child: PaddingView(
+          vertical: Numbers.size(context: context, percent: Numbers.two) +
+              Numbers.one,
+          child: Row(
+            children: [
+              _CheckBoxIcon(icon: Icons.check_box),
+              Separator(
+                dimension: Dimension.width,
+                distanceAsPercent: Numbers.seven,
+              ),
+              _ListInfo(),
+              // _ArrowIcon(),
+            ],
+          ),
         ),
+      ),
+      onTap: () => print('List typed ...'),
+      onLongPress: () => showSnackBar(
+        context: context,
+        content: OnSelectListsAction(),
+        duration: Duration(days: 365),
       ),
     );
   }
@@ -133,6 +144,9 @@ class _CheckBoxIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Icon(icon, color: kPrimaryColor);
+    return GestureHandler(
+      child: Icon(icon, color: kPrimaryColor),
+      onTap: () => print('Icon tapped ...'),
+    );
   }
 }

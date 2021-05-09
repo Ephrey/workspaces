@@ -18,12 +18,13 @@ class _ShoppingListsViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool _hasList = true;
+    bool _isSelecting = true;
     return Stack(
       children: [
         if (!_hasList) EmptyShopListsView(),
         if (_hasList) _ShoppingListTiles(),
         if (_hasList) SearchView(),
-        PlusButton(),
+        if (!_isSelecting) PlusButton(),
       ],
     );
   }
