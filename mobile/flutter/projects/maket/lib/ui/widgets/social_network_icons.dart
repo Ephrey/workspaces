@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:maket/constants/enums.dart';
-import 'package:maket/ui/widgets/buttons/circle_button.dart';
+import 'package:maket/ui/widgets/buttons/base/circle_button.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 

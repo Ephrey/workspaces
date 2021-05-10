@@ -7,6 +7,14 @@ import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
 
 class EmptyShopListsView extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  EmptyShopListsView({
+    this.title: 'Your Shopping Lists will \n appear here.',
+    this.subtitle: 'To create Lists and Items, click on the + button.',
+  });
+
   @override
   Widget build(BuildContext context) {
     double _screenWidth = ScreenSize(context: context).width;
@@ -21,18 +29,12 @@ class EmptyShopListsView extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _Text(
-          text: 'Your Shopping Lists will \n appear here.',
-          fontSize: _titleSize,
-        ),
+        _Text(text: title, fontSize: _titleSize),
         Separator(
           dimension: Dimension.height,
           distanceAsPercent: Numbers.three,
         ),
-        _Text(
-          text: 'To create Lists and Items, click on the + button.',
-          fontSize: _subTitleSize,
-        ),
+        _Text(text: subtitle, fontSize: _subTitleSize),
       ],
     );
   }

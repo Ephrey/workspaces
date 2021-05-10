@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:maket/config/themes/app_theme.dart';
-import 'package:maket/ui/views/base/shopping_list_view.dart';
+import 'package:maket/ui/views/shopping_list_view.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {

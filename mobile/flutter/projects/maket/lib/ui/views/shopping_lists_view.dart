@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/ui/views/base/base_view.dart';
-import 'package:maket/ui/views/plus_button_view.dart';
+import 'package:maket/ui/widgets/buttons/plus_button_view.dart';
 import 'package:maket/ui/widgets/empty_shopping_list_view.dart';
 import 'package:maket/ui/widgets/list_tile.dart';
 import 'package:maket/ui/widgets/search_view.dart';

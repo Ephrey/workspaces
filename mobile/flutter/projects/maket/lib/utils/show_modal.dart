@@ -5,6 +5,7 @@ void showModel({
   @required Widget child,
   bool isScrollControlled: false,
 }) {
+  print('in show_model.dart');
   showModalBottomSheet(
     backgroundColor: Colors.transparent,
     context: context,
