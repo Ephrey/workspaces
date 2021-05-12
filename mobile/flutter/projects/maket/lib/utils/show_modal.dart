@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void showModel({
   @required BuildContext context,
   @required Widget child,
-  bool isScrollControlled: false,
+  bool isScrollControlled: true,
 }) {
   print('in show_model.dart');
   showModalBottomSheet(

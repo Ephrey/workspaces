@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
+import 'package:maket/constants/constants.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
 import 'package:maket/ui/widgets/list/list_name.dart';
-import 'package:maket/ui/widgets/on_select_lists_action.dart';
+import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/show_snackbar.dart';
 
-import 'list/list_subtitle.dart';
+import 'list_subtitle.dart';
 
 class ShoppingListTile extends StatelessWidget {
   @override
@@ -38,8 +39,8 @@ class ShoppingListTile extends StatelessWidget {
       onTap: () => print('List typed ...'),
       onLongPress: () => showSnackBar(
         context: context,
-        content: OnSelectListsAction(),
-        duration: Duration(days: 365),
+        content: OnLongPressActions(),
+        duration: kOneYearDuration,
       ),
     );
   }
@@ -56,7 +57,7 @@ class _ListInfo extends StatelessWidget {
           Separator(distanceAsPercent: Numbers.one),
           ListSubTitle(text: 'Lorem ipsum dolor sit amet. Lorem ipsum dolor.'),
           Separator(distanceAsPercent: Numbers.two),
-          ListMoreInfo(),
+          ListItemCountAndCreateDate(),
         ],
       ),
     );

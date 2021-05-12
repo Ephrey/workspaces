@@ -5,7 +5,11 @@ import 'package:maket/ui/widgets/list/list_subtitle.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 
-class ListMoreInfo extends StatelessWidget {
+class ListItemCountAndCreateDate extends StatelessWidget {
+  final double fontSize;
+
+  ListItemCountAndCreateDate({this.fontSize});
+
   @override
   Widget build(BuildContext context) {
     dynamic _separator = Separator(
@@ -16,11 +20,19 @@ class ListMoreInfo extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ListSubTitle(text: '0 item', fontWeight: FontWeight.w700),
+        ListSubTitle(
+          text: '0 item',
+          fontWeight: FontWeight.w700,
+          fontSize: fontSize,
+        ),
         _separator,
         DotSeparator(),
         _separator,
-        ListSubTitle(text: '10 Feb. 2021', fontWeight: FontWeight.w700),
+        ListSubTitle(
+          text: '10 Feb. 2021',
+          fontWeight: FontWeight.w700,
+          fontSize: fontSize,
+        ),
       ],
     );
   }

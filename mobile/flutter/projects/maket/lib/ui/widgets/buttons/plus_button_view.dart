@@ -10,12 +10,16 @@ import 'package:maket/utils/screen_size.dart';
 import 'package:maket/utils/show_modal.dart';
 
 class PlusButton extends StatelessWidget {
+  final Alignment position;
+
+  PlusButton({this.position: Alignment.bottomCenter});
+
   @override
   Widget build(BuildContext context) {
     double _screenWidth = ScreenSize(context: context).width;
 
     return AlignedView(
-      position: Alignment.bottomCenter,
+      position: position,
       child: PaddingView(
         vertical: Math.percentage(percent: Numbers.six, total: _screenWidth),
         child: CircleButton(

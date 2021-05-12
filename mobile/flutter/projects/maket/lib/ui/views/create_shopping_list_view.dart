@@ -8,7 +8,7 @@ import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
-import 'package:maket/ui/widgets/item_tile.dart';
+import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
@@ -114,23 +114,16 @@ class _AddItemsToShoppingListView extends StatelessWidget {
 }
 
 class _ItemsList extends StatelessWidget {
-  void onItemTap(String itemId) {
-    print('item $itemId click');
+  void onItemTap(itemIndex) {
+    print('item click #$itemIndex from Create Shopping List');
   }
 
   @override
   Widget build(BuildContext context) {
     return ExpandedView(
-      child: ListView.separated(
-        addAutomaticKeepAlives: false,
-        itemCount: Item.groupByCategory().length,
-        itemBuilder: (BuildContext context, int itemIndex) {
-          return ItemTitle(
-            item: Item.groupByCategory()[itemIndex],
-            onItemTap: onItemTap,
-          );
-        },
-        separatorBuilder: (_, __) => Separator(distanceAsPercent: Numbers.one),
+      child: ListItems(
+        items: Item.groupByCategory(),
+        onItemTaped: onItemTap,
       ),
     );
   }

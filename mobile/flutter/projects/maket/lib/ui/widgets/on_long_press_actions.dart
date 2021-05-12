@@ -6,7 +6,11 @@ import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/numbers.dart';
 
-class OnSelectListsAction extends StatelessWidget {
+class OnLongPressActions extends StatelessWidget {
+  final Function onCancel;
+
+  OnLongPressActions({this.onCancel});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,7 +19,7 @@ class OnSelectListsAction extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _Text(text: 'Cancel'),
+            GestureHandler(child: _Text(text: 'Cancel'), onTap: onCancel),
             _Text(text: '2'),
             _ActionButtons(),
           ],
