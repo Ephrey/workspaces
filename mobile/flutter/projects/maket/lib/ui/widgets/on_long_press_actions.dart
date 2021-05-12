@@ -37,8 +37,7 @@ class _Text extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double _fontSize =
-        (Numbers.size(context: context, percent: Numbers.two) - Numbers.three);
+    double _fontSize = (Numbers.size(context: context, percent: Numbers.two));
 
     TextStyle _style = TextStyle(
       fontSize: _fontSize,
@@ -73,8 +72,7 @@ class _Icon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double _iconSize =
-        (Numbers.size(context: context, percent: Numbers.three) -
-            Numbers.three);
+        (Numbers.size(context: context, percent: Numbers.four) - Numbers.three);
 
     return Icon(icon, color: kTextPrimaryColor, size: _iconSize);
   }

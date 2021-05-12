@@ -29,7 +29,7 @@ class ShoppingListView extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _ShoppingListInfoBlock(),
+              // _ShoppingListInfoBlock(),
               _ShoppingListItems(),
               Separator(),
             ],

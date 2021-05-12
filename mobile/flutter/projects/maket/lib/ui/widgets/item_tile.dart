@@ -30,16 +30,19 @@ class ItemTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(Numbers.size(context: context, percent: Numbers.two) - Numbers.four);
+    bool _isSelected = (item['id'] == "6") ? false : true;
+
     double _screenTwoPercent =
         Numbers.size(context: context, percent: Numbers.two);
 
     bool _isItemsTitle = item['type'] != null;
 
-    double _horizontalPadding = (!_isItemsTitle)
-        ? (Numbers.size(context: context, percent: Numbers.three) -
-            Numbers.three)
-        : (_screenTwoPercent - Numbers.four);
+    double _horizontalPadding = (_isSelected)
+        ? 0.0
+        : (!_isItemsTitle)
+            ? (Numbers.size(context: context, percent: Numbers.three) -
+                Numbers.three)
+            : (_screenTwoPercent - Numbers.four);
 
     TextStyle _itemNameStyle = TextStyle(
       color: (!_isItemsTitle) ? kPrimaryColor : kTextSecondaryColor,
@@ -47,42 +50,46 @@ class ItemTitle extends StatelessWidget {
       fontWeight: (!_isItemsTitle) ? FontWeight.w400 : FontWeight.w700,
     );
 
-    bool _isSelected = (item['id'] == "6") ? false : true;
+    Color _tileColor = (!_isItemsTitle)
+        ? (_isSelected)
+            ? kBgPrimaryColor
+            : kSecondaryColor
+        : null;
+
+    Function _onTap = (_isItemsTitle)
+        ? null
+        : (_isSelected)
+            ? null
+            : () => onItemTap(item);
+
+    Text _price = Text(
+      'R1.003,99',
+      style: TextStyle(
+        color: kPrimaryColor,
+        fontSize: (_screenTwoPercent - Numbers.two),
+        letterSpacing: 0.5,
+      ),
+    );
+
+    Row _priceAndCheck = (!_isItemsTitle && _isSelected)
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _price,
+              Separator(dimension: Dimension.width),
+              Icon(Icons.check, color: kPrimaryColor),
+            ],
+          )
+        : null;
 
     return ListTile(
       leading: _getLeadingIcon(_isSelected, _isItemsTitle),
-      tileColor: (!_isItemsTitle)
-          ? (_isSelected)
-              ? kBgPrimaryColor
-              : kSecondaryColor
-          : null,
+      tileColor: _tileColor,
       contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
       title: Text('${item['name']}', style: _itemNameStyle),
-      onTap: _isItemsTitle
-          ? null
-          : (_isSelected)
-              ? null
-              : () => onItemTap(item),
+      onTap: _onTap,
       onLongPress: _isItemsTitle ? null : () => onItemLongPress(item),
-      trailing: (!_isItemsTitle && _isSelected)
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'R1.003,99',
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize:
-                        (Numbers.size(context: context, percent: Numbers.two) -
-                            Numbers.four),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                Separator(dimension: Dimension.width),
-                Icon(Icons.check, color: kPrimaryColor),
-              ],
-            )
-          : null,
+      trailing: _priceAndCheck,
     );
   }
 }
