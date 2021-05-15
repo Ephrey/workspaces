@@ -2,7 +2,9 @@ const {
   USER_NAME_MIN_LENGTH,
   USER_NAME_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-} = required("../utils/constants/user");
+} = require("../utils/constants/user");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -28,6 +30,10 @@ const userSchema = new mongoose.Schema({
     default: new Date(),
   },
 });
+
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id }, config.get("jsonwebtoken"));
+};
 
 const UserModel = mongoose.model("Users", userSchema);
 

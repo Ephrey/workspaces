@@ -1,5 +1,7 @@
+const { BASE_ENDPOINT } = require("../../utils/constants/common");
+
 module.exports = Object.freeze({
-  ITEM_ENDPOINT: "/api/items/",
+  ITEM_ENDPOINT: BASE_ENDPOINT + "items/",
   ITEM_MIN_LENGTH: 2,
   ITEM_MAX_LENGTH: 50,
   ITEM_CATEGORY_MIN_LENGTH: 2,

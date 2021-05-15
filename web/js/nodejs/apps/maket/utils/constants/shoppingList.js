@@ -1,5 +1,7 @@
+const { BASE_ENDPOINT } = require("../../utils/constants/common");
+
 module.exports = Object.freeze({
-  SHOPPING_LIST_ENDPOINT: "/api/shopping_list/",
+  SHOPPING_LIST_ENDPOINT: BASE_ENDPOINT + "shopping_list/",
   SHOPPING_LIST_NAME_MIN_LENGTH: 2,
   SHOPPING_LIST_NAME_MAX_LENGTH: 50,
   SHOPPING_LIST_DESCRIPTION_MIN_LENGTH: 0,
