@@ -9,6 +9,10 @@ const mongoose = require("mongoose");
 const ItemModel = mongoose.model(
   "Items",
   new mongoose.Schema({
+    owner: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
     name: {
       type: String,
       minlength: ITEM_MIN_LENGTH,

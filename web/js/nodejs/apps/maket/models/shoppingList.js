@@ -25,6 +25,10 @@ const shoppingListItemSchema = new mongoose.Schema({
 });
 
 const shoppingListSchema = new mongoose.Schema({
+  owner: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
   name: {
     type: String,
     default: "Shopping List",
