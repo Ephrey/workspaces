@@ -12,6 +12,7 @@
   "author": "ephraimilunga",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "config": "^3.3.3",
     "debug": "^2.6.9",
     "express": "^4.17.1",

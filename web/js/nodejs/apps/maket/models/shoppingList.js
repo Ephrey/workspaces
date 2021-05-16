@@ -4,13 +4,17 @@ const {
   SHOPPING_LIST_DESCRIPTION_MIN_LENGTH,
   SHOPPING_LIST_DESCRIPTION_MAX_LENGTH,
 } = require("../utils/constants/shoppingList");
-const { ITEM_PRICE_MIN, ITEM_PRICE_MAX } = require("../utils/constants/items");
+const {
+  ITEM_PRICE_MIN,
+  ITEM_PRICE_MAX,
+  ITEM_DEFAULT_QUANTITY,
+} = require("../utils/constants/items");
 const mongoose = require("mongoose");
 
 const shoppingListItemSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Types.ObjectId,
-    required: true,
+    required: false,
   },
   price: {
     type: Number,
@@ -21,6 +25,11 @@ const shoppingListItemSchema = new mongoose.Schema({
   bought: {
     type: Boolean,
     default: false,
+  },
+  quantity: {
+    type: Number,
+    min: ITEM_DEFAULT_QUANTITY,
+    required: true,
   },
 });
 

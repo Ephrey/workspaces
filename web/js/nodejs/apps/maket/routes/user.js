@@ -1,41 +1,58 @@
+const { BAD_REQUEST } = require("../utils/constants/httpResponseCodes");
 const {
-  SUCCESS,
-  BAD_REQUEST,
-} = require("../utils/constants/httpResponseCodes");
+  userRegisterValidate,
+  userLoginValidate,
+} = require("../validators/user");
+const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
+const {
+  USER_REGISTER_ENDPOINT,
+  USER_LOGIN_ENDPOINT,
+} = require("../utils/constants/user");
+const _ = require("lodash");
+const bcrypt = require("bcrypt");
 const debug = require("debug")("maket:userRoute");
 const UserModel = require("../models/user");
-const validateUser = require("../validators/user");
 const express = require("express");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post(USER_REGISTER_ENDPOINT, async (req, res) => {
   const userDetails = req.body;
 
-  // validate the value sent from client `
-  const { error } = validateUser(userDetails);
+  const { error } = userRegisterValidate(userDetails);
   if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
-  // check if the user is already subscribed `
   const exist = await UserModel.exists({ email: userDetails.email });
-  debug(exist);
   if (exist) return res.status(BAD_REQUEST).send("User already registered.");
 
-  // hash password
+  const hashedPassword = await bcrypt.hash(
+    userDetails.password,
+    PASSWORD_HASH_SALT_ROUNDS
+  );
 
-  // build a new user
-  const user = new UserModel(userDetails);
+  const user = new UserModel(_.pick(userDetails, ["name", "email"]));
+  user.password = hashedPassword;
+  await user.save();
 
-  // save the user
-  // await user.save();
+  res.set({ "x-token": user.generateToken() }).send();
+});
 
-  // generate a token
-  const token = user.generateToken();
+router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
+  const userDetails = req.body;
 
-  // set the token in response header
-  const header = { "x-token": token };
+  const { error } = userLoginValidate(userDetails);
+  if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
-  // send the response
-  res.set(header).send();
+  const user = await UserModel.findOne({ email: userDetails.email });
+  if (!user) return res.status(BAD_REQUEST).send("Invalid Email or Password");
+
+  const isValidPassword = await bcrypt.compare(
+    userDetails.password,
+    user.password
+  );
+  if (!isValidPassword)
+    return res.status(BAD_REQUEST).send("Invalid Email or Password");
+
+  res.set({ "x-token": user.generateToken() }).send();
 });
 
 module.exports = router;

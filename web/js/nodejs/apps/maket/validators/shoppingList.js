@@ -11,7 +11,6 @@ const Joi = require("joi");
 
 const validateShoppingList = (shoppingList) => {
   const schema = Joi.object({
-    owner: Joi.objectId().required(),
     name: Joi.string()
       .min(SHOPPING_LIST_NAME_MIN_LENGTH)
       .max(SHOPPING_LIST_NAME_MAX_LENGTH)
@@ -26,6 +25,7 @@ const validateShoppingList = (shoppingList) => {
             .max(ITEM_PRICE_MAX)
             .required(),
           bought: Joi.boolean().required(),
+          quantity: Joi.number().required().default(),
         })
       )
       .min(SHOPPING_LIST_MIN_ITEMS)

@@ -11,7 +11,7 @@ const ItemModel = mongoose.model(
   new mongoose.Schema({
     owner: {
       type: mongoose.Types.ObjectId,
-      required: true,
+      required: false,
     },
     name: {
       type: String,

@@ -8,4 +8,5 @@ module.exports = Object.freeze({
   ITEM_CATEGORY_MAX_LENGTH: 50,
   ITEM_PRICE_MIN: 0.0,
   ITEM_PRICE_MAX: 50000.0,
+  ITEM_DEFAULT_QUANTITY: 1,
 });

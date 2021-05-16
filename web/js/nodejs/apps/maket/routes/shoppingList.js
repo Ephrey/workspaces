@@ -9,8 +9,11 @@ const {
   validateShoppingListItemNewValues,
 } = require("../validators/shoppingList");
 const ShoppingListModel = require("../models/shoppingList");
+const authorization = require("../middlewares/authorization");
 const express = require("express");
 const router = express.Router();
+
+router.use(authorization);
 
 router.get("/", async (req, res) => {
   res.send(await ShoppingListModel.find({}));
@@ -77,6 +80,7 @@ router.put("/:id/item/:itemId", validateId, async (req, res) => {
       $set: {
         "items.$[item].price": itemNewValues.price,
         "items.$[item].bought": itemNewValues.bought,
+        "items.$[item].quantity": itemNewValues.quantity,
       },
     },
     {

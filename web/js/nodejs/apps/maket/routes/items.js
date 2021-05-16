@@ -8,9 +8,12 @@ const {
 const ItemModel = require("../models/items");
 const ShoppingListModel = require("../models/shoppingList");
 const validateItem = require("../validators/items");
+const authorization = require("../middlewares/authorization");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+
+router.use(authorization);
 
 router.get("/", async (req, res) => {
   res.send(await ItemModel.find({}));
