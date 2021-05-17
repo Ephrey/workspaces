@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
@@ -11,6 +12,7 @@ import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/social_network_icons.dart';
 import 'package:maket/ui/widgets/texts/rich_text.dart';
+import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 
 class SignInView extends StatelessWidget {
@@ -61,6 +63,7 @@ class _SignInFormState extends State<_SignInForm> {
           FormInput(
             label: 'Email',
             keyBorderType: TextInputType.emailAddress,
+            autoFocus: true,
           ),
           Separator(distanceAsPercent: Numbers.three),
           FormInput(label: 'Password', password: true),
@@ -88,7 +91,10 @@ class _SignInFormState extends State<_SignInForm> {
             child: TextRich(
               mainText: 'Don\'t have an account',
               richText: 'Create',
-              onTap: () => print('Navigate to Register ...'),
+              onTap: () => pushRoute(
+                context: context,
+                name: AppRoute.registerView,
+              ),
             ),
           ),
         ],

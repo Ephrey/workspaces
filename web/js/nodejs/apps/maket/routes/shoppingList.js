@@ -16,7 +16,7 @@ const router = express.Router();
 router.use(authorization);
 
 router.get("/", async (req, res) => {
-  res.send(await ShoppingListModel.find({}));
+  res.send(await ShoppingListModel.find({ owner: req.body.owner }));
 });
 
 router.get("/:id", validateId, async (req, res) => {

@@ -8,6 +8,7 @@ import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
 
 class FormInput extends StatelessWidget {
+  final TextEditingController controller;
   final InputType inputType;
   final String label;
   final bool password;
@@ -19,8 +20,10 @@ class FormInput extends StatelessWidget {
   final IconData prefixIcon;
   final TextAlign textAlign;
   final bool withBorder;
+  final bool autoFocus;
 
   FormInput({
+    @required this.controller,
     this.inputType: InputType.field,
     this.label,
     this.password: false,
@@ -32,6 +35,7 @@ class FormInput extends StatelessWidget {
     this.prefixIcon,
     this.textAlign: TextAlign.start,
     this.withBorder: true,
+    this.autoFocus: false,
   });
 
   @override
@@ -92,11 +96,13 @@ class FormInput extends StatelessWidget {
       switch (type) {
         case InputType.field:
           return _TextFormField(
+            controller: controller,
             keyBorderType: keyBorderType,
             password: password,
             inputTextStyle: _inputTexStyle,
             inputDecoration: _inputDecoration,
             textAlign: textAlign,
+            autoFocus: autoFocus,
           );
         case InputType.dropdown:
           return _DropdownFormField(
@@ -106,6 +112,7 @@ class FormInput extends StatelessWidget {
           );
         case InputType.textArea:
           return _TextFormField(
+            controller: controller,
             keyBorderType: keyBorderType,
             inputTextStyle: _inputTexStyle,
             inputDecoration: _inputDecoration,
@@ -164,6 +171,7 @@ class _DropdownFormField extends StatelessWidget {
 }
 
 class _TextFormField extends StatelessWidget {
+  final TextEditingController controller;
   final TextInputType keyBorderType;
   final bool password;
   final TextStyle inputTextStyle;
@@ -171,8 +179,10 @@ class _TextFormField extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final TextAlign textAlign;
+  final bool autoFocus;
 
   const _TextFormField({
+    this.controller,
     this.keyBorderType,
     this.password,
     this.inputTextStyle,
@@ -180,11 +190,13 @@ class _TextFormField extends StatelessWidget {
     this.minLines,
     this.maxLines,
     this.textAlign,
+    this.autoFocus: false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       keyboardType: keyBorderType,
       obscureText: password,
       style: inputTextStyle,
@@ -195,6 +207,8 @@ class _TextFormField extends StatelessWidget {
       maxLines:
           (keyBorderType == TextInputType.multiline) ? maxLines : Numbers.one,
       textAlign: textAlign,
+      autofocus: autoFocus,
+      onChanged: (value) => print(value),
     );
   }
 }

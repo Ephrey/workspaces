@@ -3,11 +3,11 @@ const {
   userRegisterValidate,
   userLoginValidate,
 } = require("../validators/user");
-const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
 const {
   USER_REGISTER_ENDPOINT,
   USER_LOGIN_ENDPOINT,
 } = require("../utils/constants/user");
+const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const debug = require("debug")("maket:userRoute");

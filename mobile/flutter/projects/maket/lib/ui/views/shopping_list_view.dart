@@ -29,7 +29,7 @@ class ShoppingListView extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // _ShoppingListInfoBlock(),
+              _ShoppingListInfoBlock(),
               _ShoppingListItems(),
               Separator(),
             ],
@@ -53,7 +53,7 @@ class _ShoppingListInfoBlock extends StatelessWidget {
           children: [
             NavBar(color: kTextPrimaryColor),
             ListName(
-              name: 'Visitor meal after my Parent ...',
+              name: 'Visitor meal after my Parent...',
               color: kTextPrimaryColor,
               fontSize: (Numbers.size(context: context, percent: Numbers.four) -
                   Numbers.two),

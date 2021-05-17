@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
@@ -8,6 +9,7 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/wecome_carousel.dart';
+import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 
 class WelcomeView extends StatelessWidget {
@@ -23,7 +25,12 @@ class WelcomeView extends StatelessWidget {
   }
 }
 
-class _WelcomeViewBody extends StatelessWidget {
+class _WelcomeViewBody extends StatefulWidget {
+  @override
+  __WelcomeViewBodyState createState() => __WelcomeViewBodyState();
+}
+
+class __WelcomeViewBodyState extends State<_WelcomeViewBody> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -47,7 +54,10 @@ class _WelcomeViewActionButtons extends StatelessWidget {
             buttonType: ButtonType.secondary,
             text: 'Log In',
             contentPosition: Position.center,
-            onPressed: () => print('Login'),
+            onPressed: () => pushRoute(
+              context: context,
+              name: AppRoute.signInView,
+            ),
           ),
         ),
         Separator(dimension: Dimension.width),
@@ -56,7 +66,10 @@ class _WelcomeViewActionButtons extends StatelessWidget {
             buttonType: ButtonType.primary,
             text: 'Register',
             contentPosition: Position.center,
-            onPressed: () => print('Register'),
+            onPressed: () => pushRoute(
+              context: context,
+              name: AppRoute.registerView,
+            ),
           ),
         ),
       ],
