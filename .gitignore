@@ -1,3 +1,6 @@
 practices
 web/php/pma
-.DS_Store
+*.DS_Store
+mobile/flutter/courses/.DS_Store
+mobile/flutter/courses/.DS_Store
+mobile/flutter/courses/appbrewery/.DS_Store
