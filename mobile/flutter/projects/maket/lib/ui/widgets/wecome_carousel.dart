@@ -26,7 +26,7 @@ class _WelcomeCarouselState extends State<WelcomeCarousel> {
     CarouselOptions _carouselOption = CarouselOptions(
       viewportFraction: 1.0,
       onPageChanged: _updateCurrentSlide,
-      autoPlay: true,
+      // autoPlay: true,
       height: Math.percentage(
         percent: Numbers.thirty,
         total: ScreenSize(context: context).height,

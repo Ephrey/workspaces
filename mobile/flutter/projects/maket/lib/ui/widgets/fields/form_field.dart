@@ -20,7 +20,10 @@ class FormInput extends StatelessWidget {
   final IconData prefixIcon;
   final TextAlign textAlign;
   final bool withBorder;
+  final TextCapitalization capitalization;
   final bool autoFocus;
+  final Function onChange;
+  final ValidationState state;
 
   FormInput({
     @required this.controller,
@@ -34,8 +37,11 @@ class FormInput extends StatelessWidget {
     this.maxLines: Numbers.six,
     this.prefixIcon,
     this.textAlign: TextAlign.start,
+    this.capitalization: TextCapitalization.words,
     this.withBorder: true,
     this.autoFocus: false,
+    this.onChange,
+    this.state,
   });
 
   @override
@@ -88,7 +94,7 @@ class FormInput extends StatelessWidget {
     );
 
     TextStyle _inputTexStyle = TextStyle(
-      color: kPrimaryColor,
+      color: (state == null) ? kPrimaryColor : getStateColor(state),
       fontSize: _textSize,
     );
 
@@ -103,6 +109,8 @@ class FormInput extends StatelessWidget {
             inputDecoration: _inputDecoration,
             textAlign: textAlign,
             autoFocus: autoFocus,
+            onChange: onChange,
+            capitalization: capitalization,
           );
         case InputType.dropdown:
           return _DropdownFormField(
@@ -180,6 +188,9 @@ class _TextFormField extends StatelessWidget {
   final int maxLines;
   final TextAlign textAlign;
   final bool autoFocus;
+  final Function onChange;
+  final Function validator;
+  final TextCapitalization capitalization;
 
   const _TextFormField({
     this.controller,
@@ -191,6 +202,9 @@ class _TextFormField extends StatelessWidget {
     this.maxLines,
     this.textAlign,
     this.autoFocus: false,
+    this.capitalization,
+    this.onChange,
+    this.validator,
   });
 
   @override
@@ -201,14 +215,14 @@ class _TextFormField extends StatelessWidget {
       obscureText: password,
       style: inputTextStyle,
       cursorColor: kPrimaryColor,
-      textCapitalization: TextCapitalization.words,
+      textCapitalization: capitalization,
       decoration: inputDecoration,
       minLines: minLines,
       maxLines:
           (keyBorderType == TextInputType.multiline) ? maxLines : Numbers.one,
       textAlign: textAlign,
       autofocus: autoFocus,
-      onChanged: (value) => print(value),
+      onChanged: onChange,
     );
   }
 }

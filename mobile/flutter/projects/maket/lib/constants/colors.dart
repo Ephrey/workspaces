@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maket/constants/enums.dart';
 
 const Color kPrimaryColor = Color(0xFF0E0E10);
 const Color kSecondaryColor = Color(0xFFF3F6FA);
@@ -17,3 +18,15 @@ const Color kElevationColor = Color(0xFFEAEAEA);
 const Color kWhite = Color(0xFFFFFFFF);
 
 const Color kTransparentColor = Colors.transparent;
+
+Color getStateColor(ValidationState state) {
+  switch (state) {
+    case ValidationState.success:
+      return kSuccessColor;
+    case ValidationState.error:
+      return kErrorColor;
+    case ValidationState.normal:
+    default:
+      return kPrimaryColor;
+  }
+}
