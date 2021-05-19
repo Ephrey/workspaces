@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
+import 'package:maket/core/models/user_model.dart';
+import 'package:maket/core/viewmodels/register_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
@@ -9,14 +11,17 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/continue_with_text.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
+import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/social_network_icons.dart';
 import 'package:maket/ui/widgets/texts/rich_text.dart';
 import 'package:maket/utils/email.dart';
 import 'package:maket/utils/form.dart';
+import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:provider/provider.dart';
 
 class RegisterView extends StatelessWidget {
   @override
@@ -38,7 +43,12 @@ class _RegisterViewBody extends StatelessWidget {
         ExpandedView(
           flex: 2,
           child: CenteredView(
-            child: ScrollableView(child: _RegisterForm()),
+            child: ScrollableView(
+              child: ChangeNotifierProvider(
+                create: (context) => locator<RegisterViewModel>(),
+                child: _RegisterForm(),
+              ),
+            ),
           ),
         ),
       ],
@@ -63,6 +73,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   ValidationState _passwordState;
 
   bool _canSubmitForm = false;
+  bool _busy = false;
 
   @override
   void initState() {
@@ -194,17 +205,41 @@ class _RegisterFormState extends State<_RegisterForm> {
             ),
           ),
           Separator(),
-          ActionButton(
-            buttonType:
-                _canSubmitForm ? ButtonType.primary : ButtonType.disable,
-            text: 'Create',
-            onPressed: () {
-              print('User Name: ${_userNameController.text}');
-              print('User Email: ${_emailAddressController.text}');
-              print('User Password : ${_passwordController.text}');
-            },
-            contentPosition: Position.center,
-          ),
+          (!_busy)
+              ? ActionButton(
+                  buttonType:
+                      _canSubmitForm ? ButtonType.primary : ButtonType.disable,
+                  text: 'Create',
+                  onPressed: () async {
+                    setState(() {
+                      _busy = true;
+                    });
+                    print('User Name: ${_userNameController.text}');
+                    print('User Email: ${_emailAddressController.text}');
+                    print('User Password : ${_passwordController.text}');
+
+                    final User user = User(
+                      name: _userNameController.text,
+                      email: _emailAddressController.text,
+                      password: _passwordController.text,
+                    );
+
+                    final res = await context
+                        .read<RegisterViewModel>()
+                        .register(user: user);
+
+                    print(res);
+                    if (res) {
+                      pushRoute(
+                          context: context, name: AppRoute.shoppingListsView);
+                    }
+                    setState(() {
+                      _busy = false;
+                    });
+                  },
+                  contentPosition: Position.center,
+                )
+              : Loading(),
           Separator(),
           ContinueWithText(),
           Separator(),
