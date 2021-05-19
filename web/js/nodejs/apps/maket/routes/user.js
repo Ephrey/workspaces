@@ -18,6 +18,8 @@ const router = express.Router();
 router.post(USER_REGISTER_ENDPOINT, async (req, res) => {
   const userDetails = req.body;
 
+  debug(userDetails);
+
   const { error } = userRegisterValidate(userDetails);
   if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
@@ -52,7 +54,7 @@ router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
   if (!isValidPassword)
     return res.status(BAD_REQUEST).send("Invalid Email or Password");
 
-  res.set({ "x-token": user.generateToken() }).send();
+  res.set({ "x-token": req.get("x-token") }).send();
 });
 
 module.exports = router;
