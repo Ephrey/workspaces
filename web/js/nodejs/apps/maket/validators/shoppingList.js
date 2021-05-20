@@ -4,6 +4,8 @@ const {
   SHOPPING_LIST_DESCRIPTION_MIN_LENGTH,
   SHOPPING_LIST_DESCRIPTION_MAX_LENGTH,
   SHOPPING_LIST_MIN_ITEMS,
+  SHOPPING_LIST_MIN_BUDGET,
+  SHOPPING_LIST_MAX_BUDGET,
 } = require("../utils/constants/shoppingList");
 const { ITEM_PRICE_MIN, ITEM_PRICE_MAX } = require("../utils/constants/items");
 const debug = require("debug")("maket:shop_list_validator");
@@ -35,6 +37,10 @@ const validateShoppingList = (shoppingList) => {
       .max(SHOPPING_LIST_DESCRIPTION_MAX_LENGTH)
       .trim()
       .allow("")
+      .required(),
+    budget: Joi.number()
+      .min(SHOPPING_LIST_MIN_BUDGET)
+      .max(SHOPPING_LIST_MAX_BUDGET)
       .required(),
   });
 

@@ -44,8 +44,10 @@
 // SHOPPING SUMMARY
 // to be added
 
-
-// ** HASH PASSWORDS 
-// joi_password_complexity (npm package) : enforce a complex password 
-// bcrypt : to hash password. 
+// ** DONE
+// joi_password_complexity (npm package) : enforce a complex password
+// bcrypt : to hash password.
 // jwt : to authenticate a user
+
+// ** NEXT
+// Add "Budget" field to Shopping List.

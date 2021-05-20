@@ -3,6 +3,8 @@ const {
   SHOPPING_LIST_NAME_MAX_LENGTH,
   SHOPPING_LIST_DESCRIPTION_MIN_LENGTH,
   SHOPPING_LIST_DESCRIPTION_MAX_LENGTH,
+  SHOPPING_LIST_MIN_BUDGET,
+  SHOPPING_LIST_MAX_BUDGET,
 } = require("../utils/constants/shoppingList");
 const {
   ITEM_PRICE_MIN,
@@ -56,6 +58,12 @@ const shoppingListSchema = new mongoose.Schema({
     maxlength: SHOPPING_LIST_DESCRIPTION_MAX_LENGTH,
     default: "",
     trim: true,
+  },
+  budget: {
+    type: Number,
+    min: SHOPPING_LIST_MIN_BUDGET,
+    max: SHOPPING_LIST_MAX_BUDGET,
+    required: true,
   },
   createdDate: {
     type: Date,
