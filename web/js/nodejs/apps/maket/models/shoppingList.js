@@ -64,6 +64,7 @@ const shoppingListSchema = new mongoose.Schema({
     min: SHOPPING_LIST_MIN_BUDGET,
     max: SHOPPING_LIST_MAX_BUDGET,
     required: true,
+    trim: true,
   },
   createdDate: {
     type: Date,
