@@ -5,9 +5,28 @@ import 'package:maket/ui/widgets/empty_shopping_list_view.dart';
 import 'package:maket/ui/widgets/list/list_tile.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/utils/http/http_headers_keys.dart';
+import 'package:maket/utils/local_storage.dart';
 import 'package:maket/utils/numbers.dart';
 
-class ShoppingListsView extends StatelessWidget {
+class ShoppingListsView extends StatefulWidget {
+  @override
+  _ShoppingListsViewState createState() => _ShoppingListsViewState();
+}
+
+class _ShoppingListsViewState extends State<ShoppingListsView> {
+  void _fetchList() async {
+    print('token from LS : Shopping Lists view');
+    print(await LocalStorage.get(HttpHeadersKeys.xToken));
+    print('token from LS : Shopping Lists view');
+  }
+
+  @override
+  void initState() {
+    _fetchList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseView(child: _ShoppingListsViewBody());

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
-import 'package:maket/constants/constants.dart';
+import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/utils/math.dart';

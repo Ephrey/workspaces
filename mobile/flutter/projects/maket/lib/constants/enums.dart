@@ -5,3 +5,4 @@ enum InputType { field, dropdown, textArea }
 enum MessageType { success, warning, error }
 enum ViewState { idle, busy }
 enum ValidationState { normal, success, error }
+enum DataType { string, int, double, bool, stringList }

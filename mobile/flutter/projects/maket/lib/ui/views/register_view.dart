@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
+import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/user_model.dart';
 import 'package:maket/core/viewmodels/register_viewmodel.dart';
@@ -14,13 +15,16 @@ import 'package:maket/ui/widgets/fields/form_field.dart';
 import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/ui/widgets/snackbar_alert.dart';
 import 'package:maket/ui/widgets/social_network_icons.dart';
 import 'package:maket/ui/widgets/texts/rich_text.dart';
 import 'package:maket/utils/email.dart';
 import 'package:maket/utils/form.dart';
+import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:maket/utils/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class RegisterView extends StatelessWidget {
@@ -73,7 +77,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   ValidationState _passwordState;
 
   bool _canSubmitForm = false;
-  bool _busy = false;
+  ViewState _registerViewState = ViewState.idle;
 
   @override
   void initState() {
@@ -162,6 +166,34 @@ class _RegisterFormState extends State<_RegisterForm> {
     _checkIfCanSubmitForm();
   }
 
+  _handleFormSubmit({BuildContext context}) async {
+    setState(() {
+      _registerViewState = ViewState.busy;
+    });
+
+    final User user = User(
+      name: _userNameController.text,
+      email: _emailAddressController.text,
+      password: _passwordController.text,
+    );
+
+    final HttpResponse res =
+        await context.read<RegisterViewModel>().register(user: user);
+
+    if (res.status == true) {
+      return pushRoute(context: context, name: AppRoute.shoppingListsView);
+    } else {
+      showSnackBar(
+        context: context,
+        content: SnackBarAlert(message: res.message),
+        backgroundColor: kErrorColor,
+      );
+      setState(() {
+        _registerViewState = ViewState.idle;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -205,41 +237,15 @@ class _RegisterFormState extends State<_RegisterForm> {
             ),
           ),
           Separator(),
-          (!_busy)
-              ? ActionButton(
+          (_registerViewState == ViewState.busy)
+              ? Loading()
+              : ActionButton(
                   buttonType:
                       _canSubmitForm ? ButtonType.primary : ButtonType.disable,
                   text: 'Create',
-                  onPressed: () async {
-                    setState(() {
-                      _busy = true;
-                    });
-                    print('User Name: ${_userNameController.text}');
-                    print('User Email: ${_emailAddressController.text}');
-                    print('User Password : ${_passwordController.text}');
-
-                    final User user = User(
-                      name: _userNameController.text,
-                      email: _emailAddressController.text,
-                      password: _passwordController.text,
-                    );
-
-                    final res = await context
-                        .read<RegisterViewModel>()
-                        .register(user: user);
-
-                    print(res);
-                    if (res) {
-                      pushRoute(
-                          context: context, name: AppRoute.shoppingListsView);
-                    }
-                    setState(() {
-                      _busy = false;
-                    });
-                  },
+                  onPressed: () => _handleFormSubmit(context: context),
                   contentPosition: Position.center,
-                )
-              : Loading(),
+                ),
           Separator(),
           ContinueWithText(),
           Separator(),
