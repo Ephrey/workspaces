@@ -118,7 +118,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   }
 
   _handleEmailFieldChange(String email) {
-    final bool _isEmailValid = Email.isValid(email);
+    final bool _isEmailValid = Email.isValid(email: email);
 
     if (_isEmailValid && (_emailState == Status.success)) return false;
 
@@ -127,10 +127,10 @@ class _RegisterFormState extends State<_RegisterForm> {
   }
 
   _handlePasswordFieldChange(dynamic password) {
-    final int passwordLength = password.length;
+    final int _passwordLength = password.length;
 
-    final bool _isPasswordValid = (passwordLength >= Forms.passwordMinLength &&
-        passwordLength <= Forms.passwordMaxLength);
+    final bool _isPasswordValid = (_passwordLength >= Forms.passwordMinLength &&
+        _passwordLength <= Forms.passwordMaxLength);
 
     if (_isPasswordValid && _passwordState == Status.success) return false;
 

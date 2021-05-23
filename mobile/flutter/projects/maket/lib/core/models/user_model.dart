@@ -29,3 +29,23 @@ class User {
     };
   }
 }
+
+class UserLogin {
+  final String email;
+  final String password;
+
+  UserLogin({@required this.email, @required this.password})
+      : assert(email != null),
+        assert(password != null);
+
+  factory UserLogin.fromJson(Map<String, String> json) {
+    return UserLogin(email: json['email'], password: json['password']);
+  }
+
+  Map<String, String> toJson() {
+    return {
+      'email': this.email,
+      'password': this.password,
+    };
+  }
+}

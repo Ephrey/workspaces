@@ -11,6 +11,13 @@ abstract class AbstractApi {
   static const String endpoint = 'localhost:3000';
   static const String basePath = '/api/';
 
+  static const String baseUserPath = '/user';
+  static const String loginPath = (baseUserPath + '/me');
+
+  static const Map<String, String> _defaultHeaders = {
+    HttpHeaders.contentTypeHeader: HttpHeadersKeys.json,
+  };
+
   Uri url({String path: '', Map<String, dynamic> params: const {}}) {
     return Uri.http(endpoint, basePath + path, params);
   }
@@ -18,11 +25,14 @@ abstract class AbstractApi {
   Future<http.Response> post({
     @required Uri url,
     @required Map<String, dynamic> body,
+    Map<String, String> headers: const {},
   }) async {
+    headers.addAll(_defaultHeaders);
+
     final http.Response _response = await http.post(
       url,
       body: jsonEncode(body),
-      headers: {HttpHeaders.contentTypeHeader: HttpHeadersKeys.json},
+      headers: headers,
     );
     return _returnResponse(response: _response);
   }
