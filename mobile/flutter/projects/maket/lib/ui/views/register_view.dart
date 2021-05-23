@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
-import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/user_model.dart';
 import 'package:maket/core/viewmodels/register_viewmodel.dart';
@@ -72,9 +71,9 @@ class _RegisterFormState extends State<_RegisterForm> {
   TextEditingController _emailAddressController;
   TextEditingController _passwordController;
 
-  ValidationState _userNameState;
-  ValidationState _emailState;
-  ValidationState _passwordState;
+  Status _userNameState;
+  Status _emailState;
+  Status _passwordState;
 
   bool _canSubmitForm = false;
   ViewState _registerViewState = ViewState.idle;
@@ -95,81 +94,52 @@ class _RegisterFormState extends State<_RegisterForm> {
     super.dispose();
   }
 
-  void _setState(dynamic value, [String field]) {
-    setState(() {
-      switch (field) {
-        case Forms.userNameField:
-          _userNameState = value;
-          break;
-        case Forms.emailField:
-          _emailState = value;
-          break;
-        case Forms.password:
-          _passwordState = value;
-          break;
-        default:
-          _canSubmitForm = value;
-      }
-    });
+  void _setState(callback) {
+    setState(callback);
   }
 
   _checkIfCanSubmitForm() {
     _setState(
-      (_userNameState == ValidationState.success &&
-          _emailState == ValidationState.success &&
-          _passwordState == ValidationState.success),
+      () => _canSubmitForm = (_userNameState == Status.success &&
+          _emailState == Status.success &&
+          _passwordState == Status.success),
     );
   }
 
   _handleNameFieldChange(String userName) {
-    final int length = userName.length;
-    final bool isUserNameValid =
-        (length > Forms.usernameMinLength && length <= Forms.usernameMaxLength);
+    final int nameLength = userName.length;
+    final bool _isNameValid = (nameLength > Forms.usernameMinLength &&
+        nameLength <= Forms.usernameMaxLength);
 
-    if (isUserNameValid && _userNameState == ValidationState.success) {
-      return false;
-    }
+    if (_isNameValid && (_userNameState == Status.success)) return false;
 
-    _setState(
-      ((isUserNameValid) ? ValidationState.success : ValidationState.error),
-      Forms.userNameField,
-    );
-
+    _setState(() => _userNameState = _getFieldState(_isNameValid));
     _checkIfCanSubmitForm();
   }
 
   _handleEmailFieldChange(String email) {
-    final bool _isValid = Email.isValid(email);
+    final bool _isEmailValid = Email.isValid(email);
 
-    if (_isValid && _emailState == ValidationState.success) return false;
+    if (_isEmailValid && (_emailState == Status.success)) return false;
 
-    _setState(
-      (_isValid ? ValidationState.success : ValidationState.error),
-      Forms.emailField,
-    );
+    _setState(() => _emailState = _getFieldState(_isEmailValid));
     _checkIfCanSubmitForm();
   }
 
   _handlePasswordFieldChange(dynamic password) {
-    final int length = password.length;
+    final int passwordLength = password.length;
 
-    final bool isValid = (length >= Forms.passwordMinLength &&
-        length <= Forms.passwordMaxLength);
+    final bool _isPasswordValid = (passwordLength >= Forms.passwordMinLength &&
+        passwordLength <= Forms.passwordMaxLength);
 
-    if (isValid && _passwordState == ValidationState.success) return false;
+    if (_isPasswordValid && _passwordState == Status.success) return false;
 
-    _setState(
-      isValid ? ValidationState.success : ValidationState.error,
-      Forms.password,
-    );
-
+    _setState(() => _passwordState = _getFieldState(_isPasswordValid));
     _checkIfCanSubmitForm();
   }
 
-  _handleFormSubmit({BuildContext context}) async {
-    setState(() {
-      _registerViewState = ViewState.busy;
-    });
+  Future<void> _handleFormSubmit({BuildContext context}) async {
+    _setState(() => _registerViewState = ViewState.busy);
 
     final User user = User(
       name: _userNameController.text,
@@ -177,22 +147,22 @@ class _RegisterFormState extends State<_RegisterForm> {
       password: _passwordController.text,
     );
 
-    final HttpResponse res =
+    final HttpResponse response =
         await context.read<RegisterViewModel>().register(user: user);
 
-    if (res.status == true) {
-      return pushRoute(context: context, name: AppRoute.shoppingListsView);
+    if (response.status == true) {
+      pushRoute(context: context, name: AppRoute.shoppingListsView);
     } else {
       showSnackBar(
         context: context,
-        content: SnackBarAlert(message: res.message),
-        backgroundColor: kErrorColor,
+        content: SnackBarAlert(message: response.message),
+        flavor: Status.error,
       );
-      setState(() {
-        _registerViewState = ViewState.idle;
-      });
+      _setState(() => _registerViewState = ViewState.idle);
     }
   }
+
+  Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
 
   @override
   Widget build(BuildContext context) {

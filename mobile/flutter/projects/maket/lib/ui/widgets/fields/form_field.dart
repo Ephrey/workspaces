@@ -23,7 +23,7 @@ class FormInput extends StatelessWidget {
   final TextCapitalization capitalization;
   final bool autoFocus;
   final Function onChange;
-  final ValidationState state;
+  final Status state;
 
   FormInput({
     @required this.controller,
@@ -94,7 +94,7 @@ class FormInput extends StatelessWidget {
     );
 
     TextStyle _inputTexStyle = TextStyle(
-      color: (state == null) ? kPrimaryColor : getStateColor(state),
+      color: (state == null) ? kPrimaryColor : getStatusColor(state),
       fontSize: _textSize,
     );
 

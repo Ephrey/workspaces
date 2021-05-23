@@ -8,6 +8,7 @@ const Color kTextPrimaryColor = Color(0xFFFAF1E6);
 const Color kTextSecondaryColor = Color(0xFFA0A2A4);
 
 const Color kSuccessColor = Color(0xFF16C79A);
+const Color kWarningColor = Color(0xFFFFCC61);
 const Color kErrorColor = Color(0xFFFB3640);
 
 const Color kBgPrimaryColor = Color(0xFFFAFAFA);
@@ -19,13 +20,15 @@ const Color kWhite = Color(0xFFFFFFFF);
 
 const Color kTransparentColor = Colors.transparent;
 
-Color getStateColor(ValidationState state) {
+Color getStatusColor(Status state) {
   switch (state) {
-    case ValidationState.success:
+    case Status.success:
       return kSuccessColor;
-    case ValidationState.error:
+    case Status.warning:
+      return kWarningColor;
+    case Status.error:
       return kErrorColor;
-    case ValidationState.normal:
+    case Status.normal:
     default:
       return kPrimaryColor;
   }

@@ -53,6 +53,38 @@ class _SignInForm extends StatefulWidget {
 class _SignInFormState extends State<_SignInForm> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+
+  Status _emailState;
+  Status _passwordStatus;
+
+  void _handleEmailField(String email) {
+    print(email);
+  }
+
+  void _handlePasswordField(String password) {
+    print(password);
+  }
+
+  void _setState(callback) {
+    setState(callback);
+  }
+
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -64,9 +96,17 @@ class _SignInFormState extends State<_SignInForm> {
             label: 'Email',
             keyBorderType: TextInputType.emailAddress,
             autoFocus: true,
+            controller: _emailController,
+            onChange: _handleEmailField,
+            capitalization: TextCapitalization.none,
           ),
           Separator(distanceAsPercent: Numbers.three),
-          FormInput(label: 'Password', password: true),
+          FormInput(
+            label: 'Password',
+            password: true,
+            controller: _passwordController,
+            onChange: _handlePasswordField,
+          ),
           Separator(),
           CenteredView(
             child: TextRich(

@@ -8,6 +8,8 @@ const {
   USER_LOGIN_ENDPOINT,
 } = require("../utils/constants/user");
 const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
+const { X_TOKEN } = require("../utils/constants/headersKeys");
+const JsonWebToke = require("../validators/jsonWebToken");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const debug = require("debug")("maket:userRoute");
@@ -54,7 +56,21 @@ router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
   if (!isValidPassword)
     return res.status(BAD_REQUEST).send("Invalid Email or Password");
 
-  res.set({ "x-token": req.get("x-token") }).send();
+  let token = req.get(X_TOKEN);
+
+  if (token) {
+    try {
+      if (JsonWebToke.verify(token)._id != user._id) {
+        token = user.generateToken();
+      }
+    } catch (e) {
+      return res.status(BAD_REQUEST).send("Cannot verify your details");
+    }
+  } else {
+    token = user.generateToken();
+  }
+
+  res.set({ "x-token": token }).send();
 });
 
 module.exports = router;

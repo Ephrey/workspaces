@@ -7,11 +7,11 @@ import 'package:maket/utils/numbers.dart';
 
 class SuccessMessage extends StatelessWidget {
   final String message;
-  final MessageType messageType;
+  final Status messageType;
 
   SuccessMessage({
     @required this.message,
-    this.messageType: MessageType.success,
+    this.messageType: Status.success,
   }) : assert(message != null);
 
   @override
