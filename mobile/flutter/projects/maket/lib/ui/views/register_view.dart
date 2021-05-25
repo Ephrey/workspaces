@@ -23,7 +23,7 @@ import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
-import 'package:maket/utils/show_snackbar.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class RegisterView extends StatelessWidget {
@@ -76,7 +76,6 @@ class _RegisterFormState extends State<_RegisterForm> {
   Status _passwordState;
 
   bool _canSubmitForm = false;
-  ViewState _registerViewState = ViewState.idle;
 
   @override
   void initState() {
@@ -94,9 +93,7 @@ class _RegisterFormState extends State<_RegisterForm> {
     super.dispose();
   }
 
-  void _setState(callback) {
-    setState(callback);
-  }
+  void _setState(callback) => setState(callback);
 
   _checkIfCanSubmitForm() {
     _setState(
@@ -139,26 +136,23 @@ class _RegisterFormState extends State<_RegisterForm> {
   }
 
   Future<void> _handleFormSubmit({BuildContext context}) async {
-    _setState(() => _registerViewState = ViewState.busy);
-
-    final User user = User(
+    final User _user = User(
       name: _userNameController.text,
       email: _emailAddressController.text,
       password: _passwordController.text,
     );
 
-    final HttpResponse response =
-        await context.read<RegisterViewModel>().register(user: user);
+    final HttpResponse _response =
+        await context.read<RegisterViewModel>().register(user: _user);
 
-    if (response.status == true) {
+    if (_response.status == true) {
       pushRoute(context: context, name: AppRoute.shoppingListsView);
     } else {
       showSnackBar(
         context: context,
-        content: SnackBarAlert(message: response.message),
+        content: SnackBarAlert(message: _response.message),
         flavor: Status.error,
       );
-      _setState(() => _registerViewState = ViewState.idle);
     }
   }
 
@@ -207,7 +201,7 @@ class _RegisterFormState extends State<_RegisterForm> {
             ),
           ),
           Separator(),
-          (_registerViewState == ViewState.busy)
+          (context.watch<RegisterViewModel>().state == ViewState.busy)
               ? Loading()
               : ActionButton(
                   buttonType:

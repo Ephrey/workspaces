@@ -15,6 +15,7 @@ void showSnackBar({
       duration: duration,
       padding: EdgeInsets.all(0.0),
       backgroundColor: getStatusColor(flavor),
+      behavior: SnackBarBehavior.fixed,
     ),
   );
 }

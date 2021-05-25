@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/widgets/buttons/plus_button_view.dart';
-import 'package:maket/ui/widgets/empty_shopping_list_view.dart';
 import 'package:maket/ui/widgets/list/list_tile.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/http/http_headers_keys.dart';
 import 'package:maket/utils/local_storage.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:maket/utils/show_modal.dart';
+
+import 'create_shopping_list_and_item_view.dart';
 
 class ShoppingListsView extends StatefulWidget {
   @override
@@ -36,14 +38,19 @@ class _ShoppingListsViewState extends State<ShoppingListsView> {
 class _ShoppingListsViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    bool _hasList = true;
-    bool _isSelecting = true;
+    // bool _hasList = false;
+    // bool _isSelecting = false;
     return Stack(
       children: [
-        if (!_hasList) EmptyShopListsView(),
-        if (_hasList) _ShoppingListTiles(),
-        if (_hasList) SearchView(),
-        if (!_isSelecting) PlusButton(),
+        // EmptyShopListsView(),
+        _ShoppingListTiles(),
+        SearchView(),
+        PlusButton(
+          onTap: () => showModel(
+            context: context,
+            child: CreateShoppingListAndItemView(),
+          ),
+        ),
       ],
     );
   }

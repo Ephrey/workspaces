@@ -7,15 +7,12 @@ class LoginService extends AbstractApi {
   Future<String> login({Map<String, String> userInfo}) async {
     final Uri _url = this.url(path: AbstractApi.loginPath);
 
-    String _token = '';
-    try {
-      _token = await LocalStorage.get(HttpHeadersKeys.xToken);
-    } catch (ex) {}
+    String _token = await LocalStorage.get(HttpHeadersKeys.xToken) ?? '';
 
     final http.Response _response = await this.post(
       url: _url,
       body: userInfo,
-      headers: {'x-token': _token},
+      headers: {HttpHeadersKeys.xToken: _token},
     );
     return _response.headers[HttpHeadersKeys.xToken];
   }

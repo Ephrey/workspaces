@@ -24,9 +24,10 @@ class FormInput extends StatelessWidget {
   final bool autoFocus;
   final Function onChange;
   final Status state;
+  final dynamic selectedValue;
 
   FormInput({
-    @required this.controller,
+    this.controller,
     this.inputType: InputType.field,
     this.label,
     this.password: false,
@@ -42,6 +43,7 @@ class FormInput extends StatelessWidget {
     this.autoFocus: false,
     this.onChange,
     this.state,
+    this.selectedValue,
   });
 
   @override
@@ -117,6 +119,8 @@ class FormInput extends StatelessWidget {
             items: items,
             inputTextStyle: _inputTexStyle,
             inputDecoration: _inputDecoration,
+            onChanged: onChange,
+            selectedValue: selectedValue,
           );
         case InputType.textArea:
           return _TextFormField(
@@ -150,12 +154,14 @@ class _DropdownFormField extends StatelessWidget {
   final InputDecoration inputDecoration;
   final TextStyle inputTextStyle;
   final Function onChanged;
+  final dynamic selectedValue;
 
   const _DropdownFormField({
     this.items,
     this.inputDecoration,
     this.inputTextStyle,
     this.onChanged,
+    this.selectedValue,
   });
 
   @override
@@ -168,11 +174,24 @@ class _DropdownFormField extends StatelessWidget {
       style: inputTextStyle,
       items: items.map<DropdownMenuItem>((value) {
         return DropdownMenuItem<String>(
-          child: Text(value),
+          child: Text(
+            value,
+            style: TextStyle(
+              color: (selectedValue == value) ? kSuccessColor : kPrimaryColor,
+            ),
+          ),
           value: value,
         );
       }).toList(),
-      onChanged: (newValue) => print(newValue),
+      selectedItemBuilder: (_) {
+        return items.map((value) {
+          return Text(
+            selectedValue,
+            style: const TextStyle(color: kSuccessColor),
+          );
+        }).toList();
+      },
+      onChanged: onChanged,
       decoration: inputDecoration,
     );
   }

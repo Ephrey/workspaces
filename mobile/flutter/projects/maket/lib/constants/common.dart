@@ -6,4 +6,9 @@ const double kDefaultActionButtonHeight = 69.0;
 const BorderSide kFocusedInputBorder =
     BorderSide(color: kPrimaryColor, width: 0.7);
 
-const kOneYearDuration = Duration(days: Time.oneYear);
+const Duration kOneYearDuration = Duration(days: Time.oneYear);
+
+const String kTextButtonLogin = 'Log In';
+const String kTextButtonRegister = 'Register';
+const String kTextButtonNext = 'Next';
+const String kTextButtonDone = 'Done';

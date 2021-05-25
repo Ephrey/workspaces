@@ -11,10 +11,10 @@ abstract class AbstractApi {
   static const String endpoint = 'localhost:3000';
   static const String basePath = '/api/';
 
-  static const String baseUserPath = '/user';
+  static const String baseUserPath = 'user';
   static const String loginPath = (baseUserPath + '/me');
 
-  static const Map<String, String> _defaultHeaders = {
+  final Map<String, String> _defaultHeaders = {
     HttpHeaders.contentTypeHeader: HttpHeadersKeys.json,
   };
 
@@ -25,15 +25,16 @@ abstract class AbstractApi {
   Future<http.Response> post({
     @required Uri url,
     @required Map<String, dynamic> body,
-    Map<String, String> headers: const {},
+    Map<String, String> headers,
   }) async {
-    headers.addAll(_defaultHeaders);
+    if (headers != null) _defaultHeaders.addAll(headers);
 
     final http.Response _response = await http.post(
       url,
       body: jsonEncode(body),
-      headers: headers,
+      headers: _defaultHeaders,
     );
+
     return _returnResponse(response: _response);
   }
 

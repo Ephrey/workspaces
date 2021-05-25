@@ -10,4 +10,7 @@ class Forms {
 
   static const int passwordMinLength = Numbers.eight;
   static const int passwordMaxLength = Numbers.fifty;
+
+  static const int itemNameMinLength = Numbers.two;
+  static const int itemNameMaxLength = Numbers.twenty;
 }

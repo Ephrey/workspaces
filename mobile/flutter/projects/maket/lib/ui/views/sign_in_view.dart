@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/user_model.dart';
-import 'package:maket/core/viewmodels/login_viewmodel.dart';
+import 'package:maket/core/viewmodels/sign_in_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
@@ -10,6 +10,7 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/continue_with_text.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
+import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
@@ -20,7 +21,7 @@ import 'package:maket/utils/form.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
-import 'package:maket/utils/show_snackbar.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class SignInView extends StatelessWidget {
@@ -45,7 +46,7 @@ class _SignInViewBody extends StatelessWidget {
           child: CenteredView(
             child: ScrollableView(
               child: ChangeNotifierProvider(
-                create: (context) => locator<LoginViewModel>(),
+                create: (context) => locator<SignInViewModel>(),
                 child: _SignInForm(),
               ),
             ),
@@ -63,8 +64,6 @@ class _SignInForm extends StatefulWidget {
 
 class _SignInFormState extends State<_SignInForm> {
   final _formKey = GlobalKey<FormState>();
-
-  ViewState _loginViewState = ViewState.idle;
 
   TextEditingController _emailController;
   TextEditingController _passwordController;
@@ -104,28 +103,26 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   void _handleSubmitForm({BuildContext context}) async {
-    _loginViewState = ViewState.busy;
-
     final UserLogin useInfo = UserLogin(
       email: _emailController.text,
       password: _passwordController.text,
     );
 
-    final _res = await context.read<LoginViewModel>().login(user: useInfo);
-    if (_res.status) {
+    final _response =
+        await context.read<SignInViewModel>().login(user: useInfo);
+
+    if (_response.status) {
       return pushRoute(context: context, name: AppRoute.shoppingListsView);
     } else {
-      showSnackBar(
+      return showSnackBar(
         context: context,
-        content: SnackBarAlert(message: _res.message),
+        content: SnackBarAlert(message: _response.message),
         flavor: Status.error,
       );
     }
   }
 
-  void _setState(callback) {
-    setState(callback);
-  }
+  void _setState(callback) => setState(callback);
 
   @override
   void initState() {
@@ -174,13 +171,16 @@ class _SignInFormState extends State<_SignInForm> {
             ),
           ),
           Separator(),
-          ActionButton(
-            buttonType:
-                (_canSubmitForm) ? ButtonType.primary : ButtonType.disable,
-            text: 'Sign In',
-            onPressed: () => _handleSubmitForm(context: context),
-            contentPosition: Position.center,
-          ),
+          (context.watch<SignInViewModel>().state == ViewState.busy)
+              ? Loading()
+              : ActionButton(
+                  buttonType: (_canSubmitForm)
+                      ? ButtonType.primary
+                      : ButtonType.disable,
+                  text: 'Sign In',
+                  onPressed: () => _handleSubmitForm(context: context),
+                  contentPosition: Position.center,
+                ),
           Separator(),
           ContinueWithText(),
           Separator(),

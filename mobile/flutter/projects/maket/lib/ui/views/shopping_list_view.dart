@@ -17,7 +17,8 @@ import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/show_modal.dart';
-import 'package:maket/utils/show_snackbar.dart';
+import 'package:maket/utils/snackbar/hide_snackbar.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 
 class ShoppingListView extends StatelessWidget {
   @override
@@ -128,9 +129,7 @@ class _ShoppingListItems extends StatelessWidget {
     showSnackBar(
       context: context,
       content: OnLongPressActions(
-        onCancel: () {
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        },
+        onCancel: () => hideSnackBar(context: context),
       ),
       duration: kOneYearDuration,
     );

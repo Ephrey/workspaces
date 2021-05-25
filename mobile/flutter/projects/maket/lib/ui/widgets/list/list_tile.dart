@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/common.dart';
-import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
@@ -10,7 +9,8 @@ import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/numbers.dart';
-import 'package:maket/utils/show_snackbar.dart';
+import 'package:maket/utils/snackbar/hide_snackbar.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 
 import 'list_subtitle.dart';
 
@@ -19,19 +19,19 @@ class ShoppingListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureHandler(
       child: Container(
-        // color: kSecondaryColor,
+        color: kSecondaryColor,
         child: PaddingView(
           vertical: Numbers.size(context: context, percent: Numbers.two) +
               Numbers.one,
           child: Row(
             children: [
-              _CheckBoxIcon(icon: Icons.check_box),
-              Separator(
-                dimension: Dimension.width,
-                distanceAsPercent: Numbers.seven,
-              ),
+              // _CheckBoxIcon(icon: Icons.check_box),
+              // Separator(
+              //   dimension: Dimension.width,
+              //   distanceAsPercent: Numbers.seven,
+              // ),
               _ListInfo(),
-              // _ArrowIcon(),
+              _ArrowIcon(),
             ],
           ),
         ),
@@ -39,7 +39,8 @@ class ShoppingListTile extends StatelessWidget {
       onTap: () => print('List typed ...'),
       onLongPress: () => showSnackBar(
         context: context,
-        content: OnLongPressActions(),
+        content:
+            OnLongPressActions(onCancel: () => hideSnackBar(context: context)),
         duration: kOneYearDuration,
       ),
     );
