@@ -183,14 +183,16 @@ class _DropdownFormField extends StatelessWidget {
           value: value,
         );
       }).toList(),
-      selectedItemBuilder: (_) {
-        return items.map((value) {
-          return Text(
-            selectedValue,
-            style: const TextStyle(color: kSuccessColor),
-          );
-        }).toList();
-      },
+      selectedItemBuilder: (selectedValue == '')
+          ? null
+          : (_) {
+              return items.map((value) {
+                return Text(
+                  selectedValue,
+                  style: const TextStyle(color: kSuccessColor),
+                );
+              }).toList();
+            },
       onChanged: onChanged,
       decoration: inputDecoration,
     );

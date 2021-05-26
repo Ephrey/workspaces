@@ -5,10 +5,10 @@ import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
+import 'package:maket/ui/views/base/stacked_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
 import 'package:maket/ui/widgets/in_stack_alert.dart';
-import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/main_title.dart';
 import 'package:maket/ui/widgets/model_container.dart';
 import 'package:maket/ui/widgets/separator.dart';
@@ -89,6 +89,8 @@ class _CreateItemFormState extends State<_CreateItemForm> {
   }
 
   Future<void> _handleCreateItem() async {
+    _setState(() => _canSubmitForm = false);
+
     final ItemModel _item = ItemModel(
       name: _nameController.text,
       category: _categoryValue,
@@ -97,9 +99,13 @@ class _CreateItemFormState extends State<_CreateItemForm> {
     final HttpResponse _response =
         await context.read<ItemViewModel>().create(item: _item);
 
-    (_response.status)
-        ? _setAlertFlavor(response: _response)
-        : _setAlertFlavor(response: _response);
+    _setState(() {
+      _isItemCreate = _response.status;
+      _resultMessage = _response.message;
+    });
+
+    if (_response.status) _resetForm();
+    if (!_response.status) _checkCanSubmitForm();
 
     _showAlert = true;
 
@@ -109,19 +115,20 @@ class _CreateItemFormState extends State<_CreateItemForm> {
     );
   }
 
-  void _setAlertFlavor({HttpResponse response}) {
-    _setState(() {
-      _isItemCreate = response.status;
-      _resultMessage = response.message;
-    });
-  }
-
   InStackAlert _getAlertMessage() {
     Status _messageType = _isItemCreate ? Status.success : Status.error;
     return InStackAlert(
       message: _resultMessage,
       messageType: _messageType,
     );
+  }
+
+  void _resetForm() {
+    _setState(() {
+      _createItemFormKey.currentState.reset();
+      _nameController.clear();
+      _canSubmitForm = false;
+    });
   }
 
   void _setState(callback) => setState(callback);
@@ -140,7 +147,7 @@ class _CreateItemFormState extends State<_CreateItemForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return StackedView(
       children: [
         Form(
           key: _createItemFormKey,
@@ -154,6 +161,7 @@ class _CreateItemFormState extends State<_CreateItemForm> {
                 controller: _nameController,
                 onChange: _handleNameFieldChange,
                 state: _nameState,
+                autoFocus: true,
               ),
               Separator(),
               FormInput(
@@ -165,12 +173,10 @@ class _CreateItemFormState extends State<_CreateItemForm> {
                 selectedValue: _categoryValue,
               ),
               Separator(),
-              (context.watch<ItemViewModel>().state == ViewState.busy)
-                  ? Loading()
-                  : _CreateItemFormActionButton(
-                      canSubmit: _canSubmitForm,
-                      onDonePress: _handleCreateItem,
-                    ),
+              _CreateItemFormActionButton(
+                canSubmit: _canSubmitForm,
+                onDonePress: _handleCreateItem,
+              ),
               // Loading(),
             ],
           ),
@@ -198,6 +204,7 @@ class _CreateItemFormActionButton extends StatelessWidget {
             icon: Icons.keyboard_arrow_left,
             contentPosition: Position.center,
             onPressed: () => pop(context: context),
+            disabled: (context.watch<ItemViewModel>().state == ViewState.busy),
           ),
         ),
         Separator(dimension: Dimension.width),
@@ -207,6 +214,7 @@ class _CreateItemFormActionButton extends StatelessWidget {
             text: 'Done',
             contentPosition: Position.center,
             onPressed: onDonePress,
+            loading: (context.watch<ItemViewModel>().state == ViewState.busy),
           ),
         ),
       ],

@@ -10,7 +10,6 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/continue_with_text.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
-import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
@@ -63,8 +62,6 @@ class _SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<_SignInForm> {
-  final _formKey = GlobalKey<FormState>();
-
   TextEditingController _emailController;
   TextEditingController _passwordController;
 
@@ -103,6 +100,8 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   void _handleSubmitForm({BuildContext context}) async {
+    _canSubmitForm = false;
+
     final UserLogin useInfo = UserLogin(
       email: _emailController.text,
       password: _passwordController.text,
@@ -114,6 +113,8 @@ class _SignInFormState extends State<_SignInForm> {
     if (_response.status) {
       return pushRoute(context: context, name: AppRoute.shoppingListsView);
     } else {
+      _checkIfCanSubmitForm();
+
       return showSnackBar(
         context: context,
         content: SnackBarAlert(message: _response.message),
@@ -141,7 +142,6 @@ class _SignInFormState extends State<_SignInForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -171,16 +171,14 @@ class _SignInFormState extends State<_SignInForm> {
             ),
           ),
           Separator(),
-          (context.watch<SignInViewModel>().state == ViewState.busy)
-              ? Loading()
-              : ActionButton(
-                  buttonType: (_canSubmitForm)
-                      ? ButtonType.primary
-                      : ButtonType.disable,
-                  text: 'Sign In',
-                  onPressed: () => _handleSubmitForm(context: context),
-                  contentPosition: Position.center,
-                ),
+          ActionButton(
+            buttonType:
+                (_canSubmitForm) ? ButtonType.primary : ButtonType.disable,
+            text: 'Sign In',
+            onPressed: () => _handleSubmitForm(context: context),
+            contentPosition: Position.center,
+            loading: (context.watch<SignInViewModel>().state == ViewState.busy),
+          ),
           Separator(),
           ContinueWithText(),
           Separator(),
@@ -190,10 +188,8 @@ class _SignInFormState extends State<_SignInForm> {
             child: TextRich(
               mainText: 'Don\'t have an account',
               richText: 'Create',
-              onTap: () => pushRoute(
-                context: context,
-                name: AppRoute.registerView,
-              ),
+              onTap: () =>
+                  pushRoute(context: context, name: AppRoute.registerView),
             ),
           ),
         ],

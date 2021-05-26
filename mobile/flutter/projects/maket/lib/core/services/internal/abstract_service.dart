@@ -22,11 +22,15 @@ abstract class AbstractApi {
     return Uri.http(endpoint, basePath + path, params);
   }
 
-  Future<http.Response> post({
+  Future<dynamic> post({
     @required Uri url,
     @required Map<String, dynamic> body,
     Map<String, String> headers,
   }) async {
+    return Future.delayed(
+      const Duration(seconds: 5),
+      () => Response.build(status: false),
+    );
     if (headers != null) _defaultHeaders.addAll(headers);
 
     final http.Response _response = await http.post(

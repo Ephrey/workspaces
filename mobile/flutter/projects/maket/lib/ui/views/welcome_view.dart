@@ -22,7 +22,7 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  ViewState _welcomeViewState = ViewState.busy;
+  ViewState _welcomeViewState = ViewState.idle;
 
   void _isAlreadyLoggedIn() async {
     _setViewStateToBusy();

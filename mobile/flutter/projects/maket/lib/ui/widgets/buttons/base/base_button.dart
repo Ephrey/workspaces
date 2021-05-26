@@ -3,6 +3,7 @@ import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
+import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
@@ -15,6 +16,7 @@ class BaseActionButton extends StatelessWidget {
   final ButtonType buttonType;
   final Function onPressed;
   final bool disabled;
+  final bool loading;
 
   const BaseActionButton({
     this.icon,
@@ -24,6 +26,7 @@ class BaseActionButton extends StatelessWidget {
     this.buttonType: ButtonType.primary,
     this.onPressed,
     this.disabled: false,
+    this.loading,
   });
 
   @override
@@ -142,7 +145,7 @@ class BaseActionButton extends StatelessWidget {
             : MainAxisAlignment.start,
         children: [
           if (_icon != null && iconPosition == Position.left) _icon,
-          Text(text, style: _textStyle),
+          (!loading) ? Text(text, style: _textStyle) : Loading(),
           if (_icon != null && iconPosition == Position.right) _icon,
         ],
       ),

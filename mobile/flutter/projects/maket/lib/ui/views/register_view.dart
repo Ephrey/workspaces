@@ -11,7 +11,6 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/continue_with_text.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
-import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
@@ -65,8 +64,6 @@ class _RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<_RegisterForm> {
-  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
-
   TextEditingController _userNameController;
   TextEditingController _emailAddressController;
   TextEditingController _passwordController;
@@ -136,6 +133,8 @@ class _RegisterFormState extends State<_RegisterForm> {
   }
 
   Future<void> _handleFormSubmit({BuildContext context}) async {
+    _canSubmitForm = false;
+
     final User _user = User(
       name: _userNameController.text,
       email: _emailAddressController.text,
@@ -148,6 +147,8 @@ class _RegisterFormState extends State<_RegisterForm> {
     if (_response.status == true) {
       pushRoute(context: context, name: AppRoute.shoppingListsView);
     } else {
+      _checkIfCanSubmitForm();
+
       showSnackBar(
         context: context,
         content: SnackBarAlert(message: _response.message),
@@ -161,7 +162,6 @@ class _RegisterFormState extends State<_RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _registerFormKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -201,15 +201,15 @@ class _RegisterFormState extends State<_RegisterForm> {
             ),
           ),
           Separator(),
-          (context.watch<RegisterViewModel>().state == ViewState.busy)
-              ? Loading()
-              : ActionButton(
-                  buttonType:
-                      _canSubmitForm ? ButtonType.primary : ButtonType.disable,
-                  text: 'Create',
-                  onPressed: () => _handleFormSubmit(context: context),
-                  contentPosition: Position.center,
-                ),
+          ActionButton(
+            buttonType:
+                _canSubmitForm ? ButtonType.primary : ButtonType.disable,
+            text: 'Create',
+            onPressed: () => _handleFormSubmit(context: context),
+            contentPosition: Position.center,
+            loading:
+                (context.watch<RegisterViewModel>().state == ViewState.busy),
+          ),
           Separator(),
           ContinueWithText(),
           Separator(),
