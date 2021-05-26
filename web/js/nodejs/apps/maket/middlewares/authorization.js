@@ -15,6 +15,7 @@ module.exports = (req, res, next) => {
 
   try {
     const decodedJwtToken = JsonWebToke.verify(token);
+    debug(decodedJwtToken._id);
     req.body.owner = decodedJwtToken._id;
 
     next();

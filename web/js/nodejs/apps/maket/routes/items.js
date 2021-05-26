@@ -28,6 +28,13 @@ router.post("/", async (req, res) => {
   const { error } = validateItem(req.body);
   if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
+  const itemExist = await ItemModel.exists({
+    name: { $regex: req.body.name, $options: "i" },
+    owner: req.body.owner,
+  });
+
+  if (itemExist) return res.status(BAD_REQUEST).send("Item already exists");
+
   const item = new ItemModel(req.body);
   res.send(await item.save());
 });
