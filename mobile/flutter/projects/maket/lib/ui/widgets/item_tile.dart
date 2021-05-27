@@ -5,7 +5,7 @@ import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 
 class ItemTitle extends StatelessWidget {
-  final dynamic item;
+  final Map item;
   final Function onItemTap;
   final Function onItemLongPress;
 
@@ -15,61 +15,94 @@ class ItemTitle extends StatelessWidget {
     this.onItemLongPress,
   }) : assert(item != null);
 
-  Icon _getLeadingIcon(isSelected, isItemsTitle) {
-    return (isSelected)
-        ? (!isItemsTitle)
-            ? Icon(Icons.check_box, color: kPrimaryColor)
-            : null
-        : (!isItemsTitle)
-            ? (!isSelected)
-                ? null
-                : Icon(Icons.check_box_outline_blank,
-                    color: kTextSecondaryColor)
-            : null;
+  Icon _getCheckBoxIcon({bool isSelected, bool isItemsTitle}) {
+    if (isSelected) {
+      return (!isItemsTitle)
+          ? Icon(Icons.check_box, color: kPrimaryColor)
+          : null;
+    } else {
+      return null;
+    }
+  }
+
+  double _getTileHorizontalPadding({
+    BuildContext context,
+    bool isSelected,
+    bool isItemTitle,
+    double screenHeightTwoPercent,
+  }) {
+    if (isSelected) return Numbers.zero.toDouble();
+
+    if (isItemTitle) {
+      return (screenHeightTwoPercent - Numbers.four);
+    } else {
+      return (Numbers.size(context: context, percent: Numbers.three) -
+          Numbers.three);
+    }
+  }
+
+  Color _getTileBackgroundColor({bool isSelected, bool isItemTitle}) {
+    if (isItemTitle) return null;
+    return (isSelected) ? kBgPrimaryColor : kSecondaryColor;
+  }
+
+  Function _toggleOnTapEvent({
+    bool isSelected,
+    bool isItemTitle,
+    Function callback,
+  }) {
+    if (isSelected || isItemTitle) return null;
+    return callback;
   }
 
   @override
   Widget build(BuildContext context) {
-    bool _isSelected = (item['id'] == "6") ? false : true;
+    bool _isSelected = item['select'] != null ? item['select'] : false;
 
-    double _screenTwoPercent =
+    double _screenHeightTwoPercent =
         Numbers.size(context: context, percent: Numbers.two);
 
     bool _isItemsTitle = item['type'] != null;
 
-    double _horizontalPadding = (_isSelected)
-        ? 0.0
-        : (!_isItemsTitle)
-            ? (Numbers.size(context: context, percent: Numbers.three) -
-                Numbers.three)
-            : (_screenTwoPercent - Numbers.four);
+    double _horizontalPadding = _getTileHorizontalPadding(
+      context: context,
+      isSelected: _isSelected,
+      isItemTitle: _isItemsTitle,
+      screenHeightTwoPercent: _screenHeightTwoPercent,
+    );
 
     TextStyle _itemNameStyle = TextStyle(
       color: (!_isItemsTitle) ? kPrimaryColor : kTextSecondaryColor,
-      fontSize: (_screenTwoPercent - Numbers.two),
+      fontSize: (_screenHeightTwoPercent - Numbers.two),
       fontWeight: (!_isItemsTitle) ? FontWeight.w400 : FontWeight.w700,
     );
 
-    Color _tileColor = (!_isItemsTitle)
-        ? (_isSelected)
-            ? kBgPrimaryColor
-            : kSecondaryColor
-        : null;
-
-    Function _onTap = (_isItemsTitle)
-        ? null
-        : (_isSelected)
-            ? null
-            : () => onItemTap(item);
-
-    Text _price = Text(
-      'R1.003,99',
-      style: TextStyle(
-        color: kPrimaryColor,
-        fontSize: (_screenTwoPercent - Numbers.two),
-        letterSpacing: 0.5,
-      ),
+    Color _tileBackgroundColor = _getTileBackgroundColor(
+      isSelected: _isSelected,
+      isItemTitle: _isItemsTitle,
     );
+
+    Function _onTap = _toggleOnTapEvent(
+      isSelected: _isSelected,
+      isItemTitle: _isItemsTitle,
+      callback: () => onItemTap(item),
+    );
+
+    Icon _checkIcon = _getCheckBoxIcon(
+      isSelected: _isSelected,
+      isItemsTitle: _isItemsTitle,
+    );
+
+    Text _price = (item['price'] != null)
+        ? Text(
+            'R${item['price'] * item['quantity']}',
+            style: TextStyle(
+              color: kPrimaryColor,
+              fontSize: (_screenHeightTwoPercent - Numbers.two),
+              letterSpacing: 0.5,
+            ),
+          )
+        : Text('');
 
     Row _priceAndCheck = (!_isItemsTitle && _isSelected)
         ? Row(
@@ -83,8 +116,8 @@ class ItemTitle extends StatelessWidget {
         : null;
 
     return ListTile(
-      leading: _getLeadingIcon(_isSelected, _isItemsTitle),
-      tileColor: _tileColor,
+      leading: _checkIcon,
+      tileColor: _tileBackgroundColor,
       contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
       title: Text('${item['name']}', style: _itemNameStyle),
       onTap: _onTap,

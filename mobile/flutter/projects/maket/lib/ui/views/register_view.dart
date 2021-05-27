@@ -74,24 +74,6 @@ class _RegisterFormState extends State<_RegisterForm> {
 
   bool _canSubmitForm = false;
 
-  @override
-  void initState() {
-    _userNameController = TextEditingController();
-    _emailAddressController = TextEditingController();
-    _passwordController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _userNameController.dispose();
-    _emailAddressController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _setState(callback) => setState(callback);
-
   _checkIfCanSubmitForm() {
     _setState(
       () => _canSubmitForm = (_userNameState == Status.success &&
@@ -126,7 +108,7 @@ class _RegisterFormState extends State<_RegisterForm> {
     final bool _isPasswordValid = (_passwordLength >= Forms.passwordMinLength &&
         _passwordLength <= Forms.passwordMaxLength);
 
-    if (_isPasswordValid && _passwordState == Status.success) return false;
+    if (_isPasswordValid && (_passwordState == Status.success)) return false;
 
     _setState(() => _passwordState = _getFieldState(_isPasswordValid));
     _checkIfCanSubmitForm();
@@ -158,6 +140,24 @@ class _RegisterFormState extends State<_RegisterForm> {
   }
 
   Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
+
+  @override
+  void initState() {
+    _userNameController = TextEditingController();
+    _emailAddressController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _userNameController.dispose();
+    _emailAddressController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _setState(callback) => setState(callback);
 
   @override
   Widget build(BuildContext context) {

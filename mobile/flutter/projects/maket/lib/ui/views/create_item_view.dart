@@ -44,8 +44,8 @@ class _CreateItemFormState extends State<_CreateItemForm> {
 
   bool _canSubmitForm = false;
   bool _isItemCreate = false;
-  String _resultMessage;
   bool _showAlert = false;
+  String _alertMessage;
 
   TextEditingController _nameController;
   String _categoryValue = '';
@@ -59,79 +59,78 @@ class _CreateItemFormState extends State<_CreateItemForm> {
     final bool _isValidName = (nameLength >= Forms.itemNameMinLength &&
         nameLength <= Forms.itemNameMaxLength);
 
-    if (_isValidName && _nameState == Status.success) return false;
+    if (_isValidName && (_nameState == Status.success)) return false;
 
-    _setState(() {
+    setState(() {
       _nameState = (_isValidName) ? Status.success : Status.error;
     });
-    _checkCanSubmitForm();
+    _checkIfCanSubmitForm();
   }
 
   dynamic _handleCategoryChange(dynamic selectedCategory) {
     final bool _isValid = (selectedCategory != null);
-
-    if (_isValid != null) {
-      _setState(() {
-        _categoryValue = selectedCategory;
-        if (!(_categoryState == Status.error)) _categoryState = Status.success;
-      });
-    } else {
-      _setState(() => _categoryState = Status.error);
+    if (_isValid) _categoryValue = selectedCategory;
+    if (_categoryState != Status.success) {
+      setState(() => _categoryState = _getFieldState(_isValid));
     }
-    _checkCanSubmitForm();
+    _checkIfCanSubmitForm();
   }
 
-  void _checkCanSubmitForm() {
-    _setState(() {
+  Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
+
+  void _checkIfCanSubmitForm() {
+    setState(() {
       _canSubmitForm =
           (_nameState == Status.success && _categoryState == Status.success);
     });
   }
 
   Future<void> _handleCreateItem() async {
-    _setState(() => _canSubmitForm = false);
+    setState(() => _canSubmitForm = false);
 
-    final ItemModel _item = ItemModel(
-      name: _nameController.text,
-      category: _categoryValue,
-    );
+    final HttpResponse _response = await context.read<ItemViewModel>().create(
+          item: ItemModel(
+            name: _nameController.text,
+            category: _categoryValue,
+          ),
+        );
 
-    final HttpResponse _response =
-        await context.read<ItemViewModel>().create(item: _item);
-
-    _setState(() {
+    setState(() {
       _isItemCreate = _response.status;
-      _resultMessage = _response.message;
+      _alertMessage = _response.message;
     });
 
     if (_response.status) _resetForm();
-    if (!_response.status) _checkCanSubmitForm();
+    if (!_response.status) _checkIfCanSubmitForm();
 
     _showAlert = true;
 
     setTimeOut(
-      callback: () => _setState(() => _showAlert = false),
-      waitingSecond: Numbers.three,
+      callback: () => setState(() => _showAlert = false),
+      seconds: Numbers.three,
     );
   }
 
   InStackAlert _getAlertMessage() {
     Status _messageType = _isItemCreate ? Status.success : Status.error;
     return InStackAlert(
-      message: _resultMessage,
+      message: _alertMessage,
       messageType: _messageType,
     );
   }
 
   void _resetForm() {
-    _setState(() {
+    setState(() {
       _createItemFormKey.currentState.reset();
       _nameController.clear();
       _canSubmitForm = false;
     });
   }
 
-  void _setState(callback) => setState(callback);
+  @override
+  void setState(callback) {
+    if (mounted) super.setState(callback);
+  }
 
   @override
   void initState() {

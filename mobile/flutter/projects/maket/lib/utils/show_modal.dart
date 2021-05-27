@@ -4,14 +4,13 @@ void showModel({
   @required BuildContext context,
   @required Widget child,
   bool isScrollControlled: true,
+  bool isDismissible: true,
 }) {
-  print('in show_model.dart');
   showModalBottomSheet(
     backgroundColor: Colors.transparent,
     context: context,
     isScrollControlled: isScrollControlled,
-    builder: (BuildContext context) {
-      return child;
-    },
+    builder: (_) => child,
+    isDismissible: isDismissible,
   );
 }

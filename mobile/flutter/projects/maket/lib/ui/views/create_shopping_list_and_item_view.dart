@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/create_item_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/model_container.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/show_modal.dart';
 
 class CreateShoppingListAndItemView extends StatelessWidget {
@@ -26,7 +28,10 @@ class _CreateShoppingListAndItemButtons extends StatelessWidget {
           buttonType: ButtonType.primary,
           text: 'Create a List',
           contentPosition: Position.center,
-          onPressed: () => print('Create a List'),
+          onPressed: () => pushRoute(
+            context: context,
+            name: AppRoute.createShoppingList,
+          ),
         ),
         Separator(),
         ActionButton(
@@ -37,6 +42,7 @@ class _CreateShoppingListAndItemButtons extends StatelessWidget {
             context: context,
             child: CreateItemView(),
             isScrollControlled: true,
+            isDismissible: false,
           ),
         ),
       ],

@@ -132,6 +132,8 @@ class FormInput extends StatelessWidget {
             maxLines: maxLines,
             password: password,
             textAlign: textAlign,
+            capitalization: capitalization,
+            onChange: onChange,
           );
         default:
           return _TextFormField();

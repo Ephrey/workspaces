@@ -12,19 +12,111 @@ import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/utils/form.dart';
 import 'package:maket/utils/numbers.dart';
 
-class CreateShoppingListView extends StatelessWidget {
+class CreateShoppingListView extends StatefulWidget {
+  @override
+  _CreateShoppingListViewState createState() => _CreateShoppingListViewState();
+}
+
+class _CreateShoppingListViewState extends State<CreateShoppingListView> {
+  static const Duration _duration = const Duration(milliseconds: 500);
+  static const Curve _curve = Curves.ease;
+
+  PageController _pageController;
+  int _initialPage = Numbers.zero;
+
+  TextEditingController _nameController;
+  TextEditingController _descriptionController;
+  List<Map<String, dynamic>> _items = [];
+
+  Status _nameState;
+  Status _descriptionState;
+
+  bool _canMoveToSetItem = false;
+
+  dynamic _handleNameField(String name) {
+    final int _nameLength = name.length;
+
+    final bool _isNameValid = (_nameLength >= Forms.listNameMinLength &&
+        _nameLength <= Forms.listNameMaxLength);
+
+    if (_isNameValid && (_nameState == Status.success)) return false;
+
+    _setState(() => _nameState = _getFieldState(_isNameValid));
+    _checkIfCanGoToSetItems();
+  }
+
+  dynamic _handleDescriptionField(String description) {
+    final int _descriptionLength = description.length;
+
+    final bool _isDescriptionValid =
+        (_descriptionLength >= Forms.listDescriptionMinLength &&
+            _descriptionLength <= Forms.listDescriptionMaxLength);
+
+    if (_isDescriptionValid && (_descriptionState == Status.success))
+      return false;
+
+    _setState(() => _descriptionState = _getFieldState(_isDescriptionValid));
+  }
+
+  void _checkIfCanGoToSetItems() {
+    _setState(() => _canMoveToSetItem = (_nameState == Status.success));
+  }
+
+  Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
+
+  void _moveToAddItemsToList() {
+    _pageController.nextPage(duration: _duration, curve: _curve);
+  }
+
+  void _moveBackToSetListNameAndDescription() {
+    _pageController.previousPage(duration: _duration, curve: _curve);
+  }
+
+  void _setState(callback) => setState(callback);
+
+  @override
+  void initState() {
+    _pageController = PageController(initialPage: _initialPage);
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _items.clear();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseView(
       child: PageView(
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           PaddingView(
-            child: _SetShoppingListNameAndDescriptionViewBody(),
+            child: _SetShoppingListNameAndDescriptionViewBody(
+              nameController: _nameController,
+              descriptionController: _descriptionController,
+              handleNameField: _handleNameField,
+              handleDescriptionField: _handleDescriptionField,
+              next: _moveToAddItemsToList,
+              nameState: _nameState,
+              descriptionState: _descriptionState,
+              canMoveToSetItem: _canMoveToSetItem,
+            ),
           ),
           PaddingView(
-            child: _AddItemsToShoppingListView(),
+            child: _AddItemsToShoppingListView(
+              prev: _moveBackToSetListNameAndDescription,
+            ),
           )
         ],
       ),
@@ -33,30 +125,95 @@ class CreateShoppingListView extends StatelessWidget {
 }
 
 class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final Function handleNameField;
+  final Function handleDescriptionField;
+  final Status nameState;
+  final Status descriptionState;
+  final Function next;
+  final bool canMoveToSetItem;
+
+  _SetShoppingListNameAndDescriptionViewBody({
+    this.nameController,
+    this.descriptionController,
+    this.handleNameField,
+    this.handleDescriptionField,
+    this.nameState,
+    this.descriptionState,
+    this.next,
+    this.canMoveToSetItem,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [NavBar(), _SetShoppingListNameAndDescriptionForm()],
+      children: [
+        NavBar(),
+        _SetShoppingListNameAndDescriptionForm(
+          nameController: nameController,
+          descriptionController: descriptionController,
+          handleNameField: handleNameField,
+          handleDescriptionField: handleDescriptionField,
+          nameState: nameState,
+          descriptionState: descriptionState,
+          next: next,
+          canMoveToSetItem: canMoveToSetItem,
+        )
+      ],
     );
   }
 }
 
 class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final Function handleNameField;
+  final Function handleDescriptionField;
+  final Status nameState;
+  final Status descriptionState;
+  final Function next;
+  final bool canMoveToSetItem;
+
+  _SetShoppingListNameAndDescriptionForm({
+    this.nameController,
+    this.descriptionController,
+    this.handleNameField,
+    this.handleDescriptionField,
+    this.nameState,
+    this.descriptionState,
+    this.next,
+    this.canMoveToSetItem,
+  });
+
   @override
   Widget build(BuildContext context) {
     Widget _form = Column(
       children: [
-        FormInput(label: 'List Name'),
+        FormInput(
+          label: 'List Name',
+          controller: nameController,
+          onChange: handleNameField,
+          state: nameState,
+          autoFocus: true,
+        ),
         Separator(),
         FormInput(
+          controller: descriptionController,
           inputType: InputType.textArea,
           label: 'List Description',
           hintText: 'Type in the description (optional)',
           keyBorderType: TextInputType.multiline,
           minLines: Numbers.four,
+          capitalization: TextCapitalization.sentences,
+          onChange: handleDescriptionField,
+          state: descriptionState,
         ),
         Separator(),
-        _SetListNameAndDescriptionActionButton(),
+        _SetListNameAndDescriptionActionButton(
+          next: next,
+          canMoveToSetItem: canMoveToSetItem,
+        ),
       ],
     );
 
@@ -67,6 +224,11 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
 }
 
 class _SetListNameAndDescriptionActionButton extends StatelessWidget {
+  final Function next;
+  final bool canMoveToSetItem;
+
+  _SetListNameAndDescriptionActionButton({this.next, this.canMoveToSetItem});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -76,19 +238,20 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
             buttonType: ButtonType.secondary,
             text: "Done",
             contentPosition: Position.center,
-            disabled: true,
-            onPressed: () => print('Done creating list ...'),
+            disabled: !canMoveToSetItem,
+            onPressed: () => print('Done! Creating list ...'),
           ),
         ),
         Separator(dimension: Dimension.width),
         ExpandedView(
           child: ActionButton(
-            buttonType: ButtonType.disable,
-            text: "Next",
+            buttonType:
+                (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
+            text: "Add Items",
             icon: Icons.keyboard_arrow_right,
             iconPosition: Position.right,
             contentPosition: Position.center,
-            onPressed: () => print('Done creating list ...'),
+            onPressed: next,
           ),
         ),
       ],
@@ -97,6 +260,9 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
 }
 
 class _AddItemsToShoppingListView extends StatelessWidget {
+  final Function prev;
+  _AddItemsToShoppingListView({this.prev});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -106,7 +272,7 @@ class _AddItemsToShoppingListView extends StatelessWidget {
         Separator(distanceAsPercent: Numbers.two),
         _ItemsList(),
         Separator(distanceAsPercent: Numbers.three),
-        _AddItemsToListActionButton(),
+        _AddItemsToListActionButton(prev: prev),
         Separator(distanceAsPercent: Numbers.two),
       ],
     );
@@ -130,6 +296,9 @@ class _ItemsList extends StatelessWidget {
 }
 
 class _AddItemsToListActionButton extends StatelessWidget {
+  final Function prev;
+  _AddItemsToListActionButton({this.prev});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -140,8 +309,7 @@ class _AddItemsToListActionButton extends StatelessWidget {
             text: "Back",
             icon: Icons.keyboard_arrow_left,
             contentPosition: Position.center,
-            onPressed: () =>
-                print('Go back to set List name and description ...'),
+            onPressed: prev,
           ),
         ),
         Separator(dimension: Dimension.width),

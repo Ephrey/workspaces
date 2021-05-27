@@ -11,8 +11,6 @@ import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/welcome_carousel.dart';
-import 'package:maket/utils/http/http_headers_keys.dart';
-import 'package:maket/utils/local_storage.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 
@@ -26,12 +24,17 @@ class _WelcomeViewState extends State<WelcomeView> {
 
   void _isAlreadyLoggedIn() async {
     _setViewStateToBusy();
-
-    final dynamic token = await LocalStorage.get(HttpHeadersKeys.xToken);
-
-    (token != null && token != false)
-        ? pushRoute(context: context, name: AppRoute.shoppingListsView)
-        : _setViewStateToIdle();
+    Future.delayed(
+      const Duration(seconds: 3),
+      () => pushRoute(context: context, name: AppRoute.shoppingListsView),
+    );
+    // _setViewStateToBusy();
+    //
+    // final dynamic token = await LocalStorage.get(HttpHeadersKeys.xToken);
+    //
+    // (token != null && token != false)
+    //     ? pushRoute(context: context, name: AppRoute.shoppingListsView)
+    //     : _setViewStateToIdle();
   }
 
   void _setViewStateToIdle() {

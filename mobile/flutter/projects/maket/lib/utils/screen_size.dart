@@ -9,6 +9,6 @@ class ScreenSize {
     this.height =
         screenSize.height < 570 ? (screenSize.height + 200) : screenSize.height;
     this.width =
-        screenSize.width <= 320 ? (screenSize.width + 50) : screenSize.width;
+        screenSize.width <= 320 ? (screenSize.width + 100) : screenSize.width;
   }
 }
