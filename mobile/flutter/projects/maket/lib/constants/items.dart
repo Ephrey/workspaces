@@ -96,32 +96,3 @@ const List<Map<String, dynamic>> items = [
     'select': false,
   },
 ];
-
-class Item {
-  static List<Map<String, dynamic>> groupByCategory() {
-    final Map<String, List<Map<String, dynamic>>> _items = {};
-
-    for (final item in items) {
-      if (_items[item['category']] == null) {
-        _items[item['category']] = [item];
-      } else {
-        _items[item['category']].add(item);
-      }
-    }
-
-    final List<Map<String, dynamic>> _sorted = [];
-
-    _items.forEach((category, items) {
-      final title = {'name': category, 'type': 'title'};
-      if (_sorted.indexOf(title) < 0) {
-        _sorted.add(title);
-      }
-
-      for (final item in items) {
-        _sorted.add(item);
-      }
-    });
-
-    return _sorted;
-  }
-}

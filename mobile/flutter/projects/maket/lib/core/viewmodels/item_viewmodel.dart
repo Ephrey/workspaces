@@ -1,3 +1,4 @@
+import 'package:maket/constants/items.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/services/internal/item_service.dart';
 import 'package:maket/core/viewmodels/base_viewmodel.dart';
@@ -21,5 +22,34 @@ class ItemViewModel extends BaseViewModel {
       idle;
       return Response.build(status: false, message: 'Unknown Error.');
     }
+  }
+
+  Future getGroupedByCategory() async {
+    busy;
+    final Map<String, List<Map<String, dynamic>>> _items = {};
+
+    for (final item in items) {
+      if (_items[item['category']] == null) {
+        _items[item['category']] = [item];
+      } else {
+        _items[item['category']].add(item);
+      }
+    }
+
+    final List<Map<String, dynamic>> _sorted = [];
+
+    _items.forEach((category, items) {
+      final title = {'name': category, 'type': 'title'};
+      if (_sorted.indexOf(title) < 0) {
+        _sorted.add(title);
+      }
+
+      for (final item in items) {
+        _sorted.add(item);
+      }
+    });
+
+    idle;
+    return _sorted;
   }
 }

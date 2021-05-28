@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
-import 'package:maket/constants/items.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
@@ -140,7 +139,7 @@ class _ShoppingListItems extends StatelessWidget {
     return ExpandedView(
       child: PaddingView(
         child: ListItems(
-          items: Item.groupByCategory(),
+          items: [], // Item.groupByCategory(),
           onItemTaped: (item) => _handleItemTap(context, item),
           onItemLongPress: (item) => _handleItemLongPress(context, item),
         ),

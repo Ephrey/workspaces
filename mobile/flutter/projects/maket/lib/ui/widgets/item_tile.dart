@@ -121,7 +121,9 @@ class ItemTitle extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
       title: Text('${item['name']}', style: _itemNameStyle),
       onTap: _onTap,
-      onLongPress: _isItemsTitle ? null : () => onItemLongPress(item),
+      onLongPress: (_isItemsTitle || (onItemLongPress == null))
+          ? null
+          : () => onItemLongPress(item),
       trailing: _priceAndCheck,
     );
   }

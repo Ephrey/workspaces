@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/enums.dart';
-import 'package:maket/constants/items.dart';
+import 'package:maket/core/models/item_model.dart';
+import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
@@ -9,10 +10,12 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
+import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/form.dart';
+import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/numbers.dart';
 
 class CreateShoppingListView extends StatefulWidget {
@@ -29,7 +32,9 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
   TextEditingController _nameController;
   TextEditingController _descriptionController;
-  List<Map<String, dynamic>> _items = [];
+  dynamic _shoppingListItems = [];
+
+  List<Map<String, dynamic>> _itemsOnAddItemsToListView = [];
 
   Status _nameState;
   Status _descriptionState;
@@ -75,7 +80,31 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _pageController.previousPage(duration: _duration, curve: _curve);
   }
 
-  void _setState(callback) => setState(callback);
+  Future<void> _getItems() async {
+    final _items = await locator<ItemViewModel>().getGroupedByCategory();
+    _setState(() => _itemsOnAddItemsToListView = _items);
+  }
+
+  void _handlePageChange(int currentPageIndex) {
+    if (currentPageIndex == Numbers.one &&
+        _itemsOnAddItemsToListView.length == Numbers.zero) {
+      _getItems();
+    }
+  }
+
+  void addItemToShoppingList(Map<String, dynamic> item) {
+    final _shoppingListItem =
+        ItemModel.fromJsonListItem(json: item).toJsonListItem();
+
+    _setState(() {
+      item['select'] = true;
+      print(item);
+      // _itemsOnAddItemsToListView[(_itemsOnAddItemsToListView.indexOf(item))] =
+      //     item;
+    });
+  }
+
+  void _setState(Function callback) => setState(callback);
 
   @override
   void initState() {
@@ -90,7 +119,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _pageController.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
-    _items.clear();
+    _itemsOnAddItemsToListView.clear();
     super.dispose();
   }
 
@@ -99,6 +128,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     return BaseView(
       child: PageView(
         controller: _pageController,
+        onPageChanged: _handlePageChange,
         physics: NeverScrollableScrollPhysics(),
         children: [
           PaddingView(
@@ -116,6 +146,8 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
           PaddingView(
             child: _AddItemsToShoppingListView(
               prev: _moveBackToSetListNameAndDescription,
+              items: _itemsOnAddItemsToListView,
+              onItemTap: addItemToShoppingList,
             ),
           )
         ],
@@ -261,7 +293,10 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
 
 class _AddItemsToShoppingListView extends StatelessWidget {
   final Function prev;
-  _AddItemsToShoppingListView({this.prev});
+  final List<Map<String, dynamic>> items;
+  final Function onItemTap;
+
+  _AddItemsToShoppingListView({this.prev, this.items, this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +305,7 @@ class _AddItemsToShoppingListView extends StatelessWidget {
       children: [
         SearchView(),
         Separator(distanceAsPercent: Numbers.two),
-        _ItemsList(),
+        _ItemsList(items: items, onItemTap: onItemTap),
         Separator(distanceAsPercent: Numbers.three),
         _AddItemsToListActionButton(prev: prev),
         Separator(distanceAsPercent: Numbers.two),
@@ -280,17 +315,17 @@ class _AddItemsToShoppingListView extends StatelessWidget {
 }
 
 class _ItemsList extends StatelessWidget {
-  void onItemTap(itemIndex) {
-    print('item click #$itemIndex from Create Shopping List');
-  }
+  final List<Map<String, dynamic>> items;
+  final Function onItemTap;
+
+  _ItemsList({this.items, this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
     return ExpandedView(
-      child: ListItems(
-        items: Item.groupByCategory(),
-        onItemTaped: onItemTap,
-      ),
+      child: (items.length == Numbers.zero)
+          ? Loading()
+          : ListItems(items: items, onItemTaped: onItemTap),
     );
   }
 }
