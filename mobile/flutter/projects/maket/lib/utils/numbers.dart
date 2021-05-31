@@ -43,6 +43,7 @@ class Numbers {
   static const int seventy = 70;
   static const int eighty = 80;
   static const int ninety = 90;
+  static const int fiveHundredThousand = 500000;
 
   /// Get Sizes to use for Elements such as Text font size, height, width, ...
   ///
@@ -65,5 +66,13 @@ class Numbers {
           ? _screenSize.height
           : _screenSize.width,
     );
+  }
+
+  static String asString(int number) {
+    return number.toString();
+  }
+
+  static double asDouble(int number) {
+    return number.toDouble();
   }
 }

@@ -25,7 +25,6 @@ class ListName extends StatelessWidget {
       color: color,
       fontSize: _fontSize,
       fontWeight: fontWeight,
-      letterSpacing: 0.6,
     );
 
     return Text(name, style: _style);

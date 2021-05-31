@@ -24,32 +24,32 @@ class ItemViewModel extends BaseViewModel {
     }
   }
 
-  Future getGroupedByCategory() async {
-    busy;
-    final Map<String, List<Map<String, dynamic>>> _items = {};
+  Future<List<Map<String, dynamic>>> getGroupedByCategory() async {
+    return Future.delayed(const Duration(seconds: 2), () {
+      Map<String, List<Map<String, dynamic>>> _items = {};
 
-    for (final item in items) {
-      if (_items[item['category']] == null) {
-        _items[item['category']] = [item];
-      } else {
-        _items[item['category']].add(item);
-      }
-    }
-
-    final List<Map<String, dynamic>> _sorted = [];
-
-    _items.forEach((category, items) {
-      final title = {'name': category, 'type': 'title'};
-      if (_sorted.indexOf(title) < 0) {
-        _sorted.add(title);
+      for (Map<String, dynamic> item in items) {
+        if (_items[item['category']] == null) {
+          _items[item['category']] = [item];
+        } else {
+          _items[item['category']].add(item);
+        }
       }
 
-      for (final item in items) {
-        _sorted.add(item);
-      }
+      final List<Map<String, dynamic>> _sorted = [];
+
+      _items.forEach((category, items) {
+        Map<String, dynamic> title = {'name': category, 'type': 'title'};
+        if (_sorted.indexOf(title) < 0) {
+          _sorted.add(title);
+        }
+
+        for (Map<String, dynamic> item in items) {
+          _sorted.add(item);
+        }
+      });
+
+      return _sorted;
     });
-
-    idle;
-    return _sorted;
   }
 }

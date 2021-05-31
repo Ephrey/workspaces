@@ -119,7 +119,7 @@ class BaseActionButton extends StatelessWidget {
           : null,
     );
 
-    dynamic _icon = (icon != null)
+    dynamic _icon = (icon != null && loading == false)
         ? PaddingView(
             padding: EdgeInsets.only(
               right: _iconMarginLeft,

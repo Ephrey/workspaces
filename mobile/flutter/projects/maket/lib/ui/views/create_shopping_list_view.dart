@@ -31,18 +31,30 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   int _initialPage = Numbers.zero;
 
   TextEditingController _nameController;
+  TextEditingController _budgetController;
   TextEditingController _descriptionController;
   dynamic _shoppingListItems = [];
 
   List<Map<String, dynamic>> _itemsOnAddItemsToListView = [];
 
   Status _nameState;
+  Status _budgetState;
   Status _descriptionState;
 
-  bool _canMoveToSetItem = false;
+  bool _canCreateList = false;
+  bool _hasItems = false;
+  bool _canSaveList = false;
 
   dynamic _handleNameField(String name) {
     final int _nameLength = name.length;
+
+    if (_nameLength > Forms.listNameMaxLength) {
+      _nameController.text = name.substring(
+        Numbers.zero,
+        Forms.listNameMaxLength,
+      );
+      return false;
+    }
 
     final bool _isNameValid = (_nameLength >= Forms.listNameMinLength &&
         _nameLength <= Forms.listNameMaxLength);
@@ -53,8 +65,23 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _checkIfCanGoToSetItems();
   }
 
+  dynamic _handleBudgetField(String budget) {
+    if (budget == '') budget = Numbers.asString(Forms.minBudget);
+    if (int.parse(budget) > Forms.maxBudget) {
+      _budgetController.text = Numbers.asString(Forms.maxBudget);
+    }
+  }
+
   dynamic _handleDescriptionField(String description) {
     final int _descriptionLength = description.length;
+
+    if (_descriptionLength > Forms.listDescriptionMaxLength) {
+      _descriptionController.text = description.substring(
+        Numbers.zero,
+        Forms.listDescriptionMaxLength,
+      );
+      return false;
+    }
 
     final bool _isDescriptionValid =
         (_descriptionLength >= Forms.listDescriptionMinLength &&
@@ -67,7 +94,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   }
 
   void _checkIfCanGoToSetItems() {
-    _setState(() => _canMoveToSetItem = (_nameState == Status.success));
+    _setState(() => _canCreateList = (_nameState == Status.success));
   }
 
   Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
@@ -81,27 +108,50 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   }
 
   Future<void> _getItems() async {
-    final _items = await locator<ItemViewModel>().getGroupedByCategory();
-    _setState(() => _itemsOnAddItemsToListView = _items);
-  }
+    List<Map<String, dynamic>> _items =
+        await locator<ItemViewModel>().getGroupedByCategory();
 
-  void _handlePageChange(int currentPageIndex) {
-    if (currentPageIndex == Numbers.one &&
-        _itemsOnAddItemsToListView.length == Numbers.zero) {
-      _getItems();
+    final bool _isItemsNotEmpty = (_items.length > Numbers.zero);
+
+    if (_isItemsNotEmpty) {
+      _setState(() {
+        _itemsOnAddItemsToListView = _items;
+        _hasItems = _isItemsNotEmpty;
+      });
     }
   }
 
-  void addItemToShoppingList(Map<String, dynamic> item) {
+  void addItemToShoppingList(Map<String, dynamic> tappedItem) {
     final _shoppingListItem =
-        ItemModel.fromJsonListItem(json: item).toJsonListItem();
+        ItemModel.fromJsonListItem(json: tappedItem).toJsonListItem();
+
+    final int _tappedItemIndex = _itemsOnAddItemsToListView.indexOf(tappedItem);
+
+    final bool _tappedItemState =
+        _itemsOnAddItemsToListView[_tappedItemIndex]['select'];
+
+    if (_tappedItemState) {
+      _removeTappedItemFromShoppingList(_shoppingListItem);
+    } else {
+      _addTappedItemToShoppingList(_shoppingListItem);
+    }
 
     _setState(() {
-      item['select'] = true;
-      print(item);
-      // _itemsOnAddItemsToListView[(_itemsOnAddItemsToListView.indexOf(item))] =
-      //     item;
+      _itemsOnAddItemsToListView[_tappedItemIndex]['select'] =
+          !_tappedItemState;
     });
+  }
+
+  void _removeTappedItemFromShoppingList(Map<String, dynamic> tappedItem) {
+    _shoppingListItems.removeWhere((item) => item['id'] == tappedItem['id']);
+  }
+
+  void _addTappedItemToShoppingList(Map<String, dynamic> tappedItem) {
+    _shoppingListItems.add(tappedItem);
+  }
+
+  void _handleSaveShoppingList() {
+    print('Saving ... Wait a sec.');
   }
 
   void _setState(Function callback) => setState(callback);
@@ -110,7 +160,9 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   void initState() {
     _pageController = PageController(initialPage: _initialPage);
     _nameController = TextEditingController();
+    _budgetController = TextEditingController();
     _descriptionController = TextEditingController();
+    _getItems();
     super.initState();
   }
 
@@ -118,8 +170,10 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
+    _budgetController.dispose();
     _descriptionController.dispose();
     _itemsOnAddItemsToListView.clear();
+    print('dispose');
     super.dispose();
   }
 
@@ -128,19 +182,23 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     return BaseView(
       child: PageView(
         controller: _pageController,
-        onPageChanged: _handlePageChange,
         physics: NeverScrollableScrollPhysics(),
         children: [
           PaddingView(
             child: _SetShoppingListNameAndDescriptionViewBody(
               nameController: _nameController,
+              budgetController: _budgetController,
               descriptionController: _descriptionController,
               handleNameField: _handleNameField,
+              handleBudgetField: _handleBudgetField,
               handleDescriptionField: _handleDescriptionField,
               next: _moveToAddItemsToList,
               nameState: _nameState,
+              budgetState: _budgetState,
               descriptionState: _descriptionState,
-              canMoveToSetItem: _canMoveToSetItem,
+              canMoveToSetItem: _canCreateList,
+              hasItems: _hasItems,
+              saveShoppingList: _handleSaveShoppingList,
             ),
           ),
           PaddingView(
@@ -148,6 +206,8 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
               prev: _moveBackToSetListNameAndDescription,
               items: _itemsOnAddItemsToListView,
               onItemTap: addItemToShoppingList,
+              canMoveToSetItem: _canCreateList,
+              saveShoppingList: _handleSaveShoppingList,
             ),
           )
         ],
@@ -158,23 +218,33 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
 class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
   final TextEditingController nameController;
+  final TextEditingController budgetController;
   final TextEditingController descriptionController;
   final Function handleNameField;
+  final Function handleBudgetField;
   final Function handleDescriptionField;
   final Status nameState;
+  final Status budgetState;
   final Status descriptionState;
   final Function next;
   final bool canMoveToSetItem;
+  final bool hasItems;
+  final Function saveShoppingList;
 
   _SetShoppingListNameAndDescriptionViewBody({
     this.nameController,
+    this.budgetController,
     this.descriptionController,
     this.handleNameField,
+    this.handleBudgetField,
     this.handleDescriptionField,
     this.nameState,
+    this.budgetState,
     this.descriptionState,
     this.next,
     this.canMoveToSetItem,
+    this.hasItems,
+    this.saveShoppingList,
   });
 
   @override
@@ -184,13 +254,18 @@ class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
         NavBar(),
         _SetShoppingListNameAndDescriptionForm(
           nameController: nameController,
+          budgetController: budgetController,
           descriptionController: descriptionController,
           handleNameField: handleNameField,
+          handleBudgetField: handleBudgetField,
           handleDescriptionField: handleDescriptionField,
           nameState: nameState,
+          budgetState: budgetState,
           descriptionState: descriptionState,
           next: next,
           canMoveToSetItem: canMoveToSetItem,
+          hasItems: hasItems,
+          saveShoppingList: saveShoppingList,
         )
       ],
     );
@@ -199,23 +274,33 @@ class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
 
 class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
   final TextEditingController nameController;
+  final TextEditingController budgetController;
   final TextEditingController descriptionController;
   final Function handleNameField;
+  final Function handleBudgetField;
   final Function handleDescriptionField;
   final Status nameState;
+  final Status budgetState;
   final Status descriptionState;
   final Function next;
   final bool canMoveToSetItem;
+  final bool hasItems;
+  final Function saveShoppingList;
 
   _SetShoppingListNameAndDescriptionForm({
     this.nameController,
+    this.budgetController,
     this.descriptionController,
     this.handleNameField,
+    this.handleBudgetField,
     this.handleDescriptionField,
     this.nameState,
+    this.budgetState,
     this.descriptionState,
     this.next,
     this.canMoveToSetItem,
+    this.hasItems,
+    this.saveShoppingList,
   });
 
   @override
@@ -231,10 +316,19 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
         ),
         Separator(),
         FormInput(
+          label: 'Your Budget',
+          hintText: 'Type in your Budget (optional)',
+          controller: budgetController,
+          onChange: handleBudgetField,
+          state: budgetState,
+          keyBorderType: TextInputType.number,
+        ),
+        Separator(),
+        FormInput(
           controller: descriptionController,
           inputType: InputType.textArea,
           label: 'List Description',
-          hintText: 'Type in the description (optional)',
+          hintText: 'Type in the Description (optional)',
           keyBorderType: TextInputType.multiline,
           minLines: Numbers.four,
           capitalization: TextCapitalization.sentences,
@@ -245,6 +339,8 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
         _SetListNameAndDescriptionActionButton(
           next: next,
           canMoveToSetItem: canMoveToSetItem,
+          hasItems: hasItems,
+          saveShoppingList: saveShoppingList,
         ),
       ],
     );
@@ -258,8 +354,15 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
 class _SetListNameAndDescriptionActionButton extends StatelessWidget {
   final Function next;
   final bool canMoveToSetItem;
+  final bool hasItems;
+  final Function saveShoppingList;
 
-  _SetListNameAndDescriptionActionButton({this.next, this.canMoveToSetItem});
+  _SetListNameAndDescriptionActionButton({
+    this.next,
+    this.canMoveToSetItem,
+    this.hasItems,
+    this.saveShoppingList,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -267,25 +370,26 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
       children: [
         ExpandedView(
           child: ActionButton(
-            buttonType: ButtonType.secondary,
+            buttonType: (hasItems) ? ButtonType.secondary : ButtonType.primary,
             text: "Done",
             contentPosition: Position.center,
             disabled: !canMoveToSetItem,
-            onPressed: () => print('Done! Creating list ...'),
+            onPressed: saveShoppingList,
           ),
         ),
-        Separator(dimension: Dimension.width),
-        ExpandedView(
-          child: ActionButton(
-            buttonType:
-                (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
-            text: "Add Items",
-            icon: Icons.keyboard_arrow_right,
-            iconPosition: Position.right,
-            contentPosition: Position.center,
-            onPressed: next,
+        if (hasItems) Separator(dimension: Dimension.width),
+        if (hasItems)
+          ExpandedView(
+            child: ActionButton(
+              buttonType:
+                  (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
+              text: "Add Items",
+              icon: Icons.keyboard_arrow_right,
+              iconPosition: Position.right,
+              contentPosition: Position.center,
+              onPressed: next,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -295,8 +399,16 @@ class _AddItemsToShoppingListView extends StatelessWidget {
   final Function prev;
   final List<Map<String, dynamic>> items;
   final Function onItemTap;
+  final bool canMoveToSetItem;
+  final Function saveShoppingList;
 
-  _AddItemsToShoppingListView({this.prev, this.items, this.onItemTap});
+  _AddItemsToShoppingListView({
+    this.prev,
+    this.items,
+    this.onItemTap,
+    this.canMoveToSetItem,
+    this.saveShoppingList,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +419,11 @@ class _AddItemsToShoppingListView extends StatelessWidget {
         Separator(distanceAsPercent: Numbers.two),
         _ItemsList(items: items, onItemTap: onItemTap),
         Separator(distanceAsPercent: Numbers.three),
-        _AddItemsToListActionButton(prev: prev),
+        _AddItemsToListActionButton(
+          prev: prev,
+          canMoveToSetItem: canMoveToSetItem,
+          saveShoppingList: saveShoppingList,
+        ),
         Separator(distanceAsPercent: Numbers.two),
       ],
     );
@@ -332,7 +448,14 @@ class _ItemsList extends StatelessWidget {
 
 class _AddItemsToListActionButton extends StatelessWidget {
   final Function prev;
-  _AddItemsToListActionButton({this.prev});
+  final bool canMoveToSetItem;
+  final Function saveShoppingList;
+
+  _AddItemsToListActionButton({
+    this.prev,
+    this.canMoveToSetItem,
+    this.saveShoppingList,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -350,10 +473,11 @@ class _AddItemsToListActionButton extends StatelessWidget {
         Separator(dimension: Dimension.width),
         ExpandedView(
           child: ActionButton(
-            buttonType: ButtonType.disable,
+            buttonType:
+                (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
             text: "Done",
             contentPosition: Position.center,
-            onPressed: () => print('Done ! Save List'),
+            onPressed: saveShoppingList,
           ),
         ),
       ],

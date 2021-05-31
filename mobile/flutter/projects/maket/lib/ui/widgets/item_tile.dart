@@ -8,11 +8,13 @@ class ItemTitle extends StatelessWidget {
   final Map item;
   final Function onItemTap;
   final Function onItemLongPress;
+  final bool isLongPress;
 
   const ItemTitle({
     @required this.item,
     this.onItemTap,
     this.onItemLongPress,
+    this.isLongPress: false,
   }) : assert(item != null);
 
   Icon _getCheckBoxIcon({bool isSelected, bool isItemsTitle}) {
@@ -31,8 +33,6 @@ class ItemTitle extends StatelessWidget {
     bool isItemTitle,
     double screenHeightTwoPercent,
   }) {
-    if (isSelected) return Numbers.zero.toDouble();
-
     if (isItemTitle) {
       return (screenHeightTwoPercent - Numbers.four);
     } else {
@@ -51,7 +51,7 @@ class ItemTitle extends StatelessWidget {
     bool isItemTitle,
     Function callback,
   }) {
-    if (isSelected || isItemTitle) return null;
+    if (isItemTitle) return null;
     return callback;
   }
 
@@ -72,9 +72,14 @@ class ItemTitle extends StatelessWidget {
     );
 
     TextStyle _itemNameStyle = TextStyle(
-      color: (!_isItemsTitle) ? kPrimaryColor : kTextSecondaryColor,
+      color: (!_isItemsTitle)
+          ? (_isSelected)
+              ? kTextSecondaryColor
+              : kPrimaryColor
+          : kTextSecondaryColor,
       fontSize: (_screenHeightTwoPercent - Numbers.two),
       fontWeight: (!_isItemsTitle) ? FontWeight.w400 : FontWeight.w700,
+      letterSpacing: 0.5,
     );
 
     Color _tileBackgroundColor = _getTileBackgroundColor(
@@ -97,10 +102,8 @@ class ItemTitle extends StatelessWidget {
         ? Text(
             'R${item['price'] * item['quantity']}',
             style: TextStyle(
-              color: kPrimaryColor,
-              fontSize: (_screenHeightTwoPercent - Numbers.two),
-              letterSpacing: 0.5,
-            ),
+                color: kPrimaryColor,
+                fontSize: (_screenHeightTwoPercent - Numbers.two)),
           )
         : Text('');
 
@@ -116,7 +119,7 @@ class ItemTitle extends StatelessWidget {
         : null;
 
     return ListTile(
-      leading: _checkIcon,
+      leading: isLongPress ? _checkIcon : null,
       tileColor: _tileBackgroundColor,
       contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
       title: Text('${item['name']}', style: _itemNameStyle),

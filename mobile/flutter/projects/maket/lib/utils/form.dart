@@ -15,7 +15,10 @@ class Forms {
   static const int itemNameMaxLength = Numbers.twenty;
 
   static const int listNameMinLength = Numbers.three;
-  static const int listNameMaxLength = Numbers.seventy;
+  static const int listNameMaxLength = Numbers.forty;
+
+  static const int minBudget = Numbers.zero;
+  static const int maxBudget = Numbers.fiveHundredThousand;
 
   static const int listDescriptionMinLength = Numbers.five;
   static const int listDescriptionMaxLength = Numbers.eighty;

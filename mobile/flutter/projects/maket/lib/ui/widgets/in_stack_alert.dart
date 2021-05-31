@@ -17,7 +17,6 @@ class InStackAlert extends StatelessWidget {
       color: kBgPrimaryColor,
       fontSize: 15.0,
       fontWeight: FontWeight.w800,
-      letterSpacing: 0.5,
     );
 
     return Container(
