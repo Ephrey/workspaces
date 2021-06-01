@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/item_model.dart';
+import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/core/viewmodels/item_viewmodel.dart';
+import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
@@ -15,8 +17,10 @@ import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/form.dart';
+import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:provider/provider.dart';
 
 class CreateShoppingListView extends StatefulWidget {
   @override
@@ -33,7 +37,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   TextEditingController _nameController;
   TextEditingController _budgetController;
   TextEditingController _descriptionController;
-  dynamic _shoppingListItems = [];
+  List<Map<String, dynamic>> _shoppingListItems = [];
 
   List<Map<String, dynamic>> _itemsOnAddItemsToListView = [];
 
@@ -43,7 +47,6 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
   bool _canCreateList = false;
   bool _hasItems = false;
-  bool _canSaveList = false;
 
   dynamic _handleNameField(String name) {
     final int _nameLength = name.length;
@@ -150,8 +153,23 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _shoppingListItems.add(tappedItem);
   }
 
-  void _handleSaveShoppingList() {
-    print('Saving ... Wait a sec.');
+  Future<void> _handleSaveShoppingList({BuildContext context}) async {
+    final ShoppingListModel _shoppingList = ShoppingListModel(
+      name: _nameController.text,
+      items: _shoppingListItems,
+      description: _descriptionController.text,
+      budget: Numbers.stringToDouble(_budgetController.text),
+    );
+
+    final HttpResponse _response = await context
+        .read<ShoppingListViewModel>()
+        .create(shoppingList: _shoppingList);
+
+    if (_response.status == true) {
+      print('created...');
+    } else {
+      print(_response.message);
+    }
   }
 
   void _setState(Function callback) => setState(callback);
@@ -179,38 +197,41 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseView(
-      child: PageView(
-        controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-          PaddingView(
-            child: _SetShoppingListNameAndDescriptionViewBody(
-              nameController: _nameController,
-              budgetController: _budgetController,
-              descriptionController: _descriptionController,
-              handleNameField: _handleNameField,
-              handleBudgetField: _handleBudgetField,
-              handleDescriptionField: _handleDescriptionField,
-              next: _moveToAddItemsToList,
-              nameState: _nameState,
-              budgetState: _budgetState,
-              descriptionState: _descriptionState,
-              canMoveToSetItem: _canCreateList,
-              hasItems: _hasItems,
-              saveShoppingList: _handleSaveShoppingList,
+    return ChangeNotifierProvider(
+      create: (context) => locator<ShoppingListViewModel>(),
+      child: BaseView(
+        child: PageView(
+          controller: _pageController,
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            PaddingView(
+              child: _SetShoppingListNameAndDescriptionViewBody(
+                nameController: _nameController,
+                budgetController: _budgetController,
+                descriptionController: _descriptionController,
+                handleNameField: _handleNameField,
+                handleBudgetField: _handleBudgetField,
+                handleDescriptionField: _handleDescriptionField,
+                next: _moveToAddItemsToList,
+                nameState: _nameState,
+                budgetState: _budgetState,
+                descriptionState: _descriptionState,
+                canMoveToSetItem: _canCreateList,
+                hasItems: _hasItems,
+                saveShoppingList: _handleSaveShoppingList,
+              ),
             ),
-          ),
-          PaddingView(
-            child: _AddItemsToShoppingListView(
-              prev: _moveBackToSetListNameAndDescription,
-              items: _itemsOnAddItemsToListView,
-              onItemTap: addItemToShoppingList,
-              canMoveToSetItem: _canCreateList,
-              saveShoppingList: _handleSaveShoppingList,
-            ),
-          )
-        ],
+            PaddingView(
+              child: _AddItemsToShoppingListView(
+                prev: _moveBackToSetListNameAndDescription,
+                items: _itemsOnAddItemsToListView,
+                onItemTap: addItemToShoppingList,
+                canMoveToSetItem: _canCreateList,
+                saveShoppingList: _handleSaveShoppingList,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -374,7 +395,9 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
             text: "Done",
             contentPosition: Position.center,
             disabled: !canMoveToSetItem,
-            onPressed: saveShoppingList,
+            onPressed: () => saveShoppingList(context: context),
+            loading:
+                context.watch<ShoppingListViewModel>().state == ViewState.busy,
           ),
         ),
         if (hasItems) Separator(dimension: Dimension.width),
@@ -388,6 +411,8 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
               iconPosition: Position.right,
               contentPosition: Position.center,
               onPressed: next,
+              disabled: context.watch<ShoppingListViewModel>().state ==
+                  ViewState.busy,
             ),
           ),
       ],
@@ -468,6 +493,8 @@ class _AddItemsToListActionButton extends StatelessWidget {
             icon: Icons.keyboard_arrow_left,
             contentPosition: Position.center,
             onPressed: prev,
+            disabled:
+                context.watch<ShoppingListViewModel>().state == ViewState.busy,
           ),
         ),
         Separator(dimension: Dimension.width),
@@ -477,7 +504,11 @@ class _AddItemsToListActionButton extends StatelessWidget {
                 (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
             text: "Done",
             contentPosition: Position.center,
-            onPressed: saveShoppingList,
+            onPressed: () => saveShoppingList(context: context),
+            loading:
+                context.watch<ShoppingListViewModel>().state == ViewState.busy,
+            disabled:
+                context.watch<ShoppingListViewModel>().state == ViewState.busy,
           ),
         ),
       ],

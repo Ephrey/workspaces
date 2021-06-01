@@ -14,6 +14,8 @@ abstract class AbstractApi {
   static const String baseUserPath = 'user';
   static const String loginPath = (baseUserPath + '/me');
 
+  static const String baseShoppingListPath = 'shopping_list/';
+
   final Map<String, String> _defaultHeaders = {
     HttpHeaders.contentTypeHeader: HttpHeadersKeys.json,
   };

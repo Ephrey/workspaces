@@ -24,6 +24,7 @@ class ItemModel {
     return ItemModel(
       name: json['name'],
       category: json['category'],
+      selected: false,
     );
   }
 
@@ -38,10 +39,11 @@ class ItemModel {
     );
   }
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'name': this.name,
       'category': this.category,
+      'select': this.selected,
     };
   }
 

@@ -75,4 +75,12 @@ class Numbers {
   static double asDouble(int number) {
     return number.toDouble();
   }
+
+  static int parseInt(String string) {
+    return int.parse(string);
+  }
+
+  static double stringToDouble(String string) {
+    return (string == '') ? asDouble(zero) : asDouble(parseInt(string));
+  }
 }
