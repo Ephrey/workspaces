@@ -21,7 +21,7 @@ class Response {
 
 class HttpResponse {
   final bool status;
-  final dynamic data;
+  dynamic data;
   final String message;
   final int code;
 

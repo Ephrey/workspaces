@@ -1,80 +1,26 @@
-List<Map<String, dynamic>> items = [
-  {
-    'id': '1',
-    'name': 'Spinach',
-    'category': 'Vegetable',
-    'select': false,
-  },
-  {
-    'id': '2',
-    'name': 'Orange',
-    'category': 'Fruit',
-    'select': false,
-  },
-  {
-    'id': '3',
-    'name': 'Banana',
-    'category': 'Fruit',
-    'select': false,
-  },
-  {
-    'id': '4',
-    'name': 'Potatoes',
-    'category': 'Vegetable',
-    'select': false,
-  },
-  {
-    'id': '5',
-    'name': 'Sombe',
-    'category': 'Vegetable',
-    'select': false,
-  },
-  {
-    'id': '6',
-    'name': 'Milk',
-    'category': 'Dairy',
-    'select': false,
-  },
-  {
-    'id': '7',
-    'name': 'Yogurt',
-    'category': 'Dairy',
-    'select': false,
-  },
-  {
-    'id': '8',
-    'name': 'Toothpaste',
-    'category': 'Toiletry',
-    'select': false,
-  },
-  {
-    'id': '9',
-    'name': 'Soap',
-    'category': 'Toiletry',
-    'select': false,
-  },
-  {
-    'id': '10',
-    'name': 'Toothbrush',
-    'category': 'Toiletry',
-    'select': false,
-  },
-  {
-    'id': '11',
-    'name': 'Mouthwash',
-    'category': 'Toiletry',
-    'select': false,
-  },
-  {
-    'id': '12',
-    'name': 'Spoon',
-    'category': 'Utensil',
-    'select': false,
-  },
-  {
-    'id': '13',
-    'name': 'Dishes',
-    'category': 'Utensil',
-    'select': false,
-  },
-];
+class ItemConstants {
+  static const String itemGroupTitle = 'itemGroupTitle';
+
+  // item model instance members
+  static const String keySelected = 'selected';
+
+  static List<String> _itemCategories = [
+    'Dairy',
+    'Drinks',
+    'Fruit',
+    'Fabric',
+    'Grain',
+    'Meats',
+    'Paste or Spread',
+    'Protein',
+    'Toiletry',
+    'Utensil',
+    'Vegetable',
+    'Sugary',
+    'Others',
+  ];
+
+  static List<String> getCategories() {
+    return _itemCategories;
+  }
+}

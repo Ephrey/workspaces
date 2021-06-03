@@ -12,9 +12,9 @@ class ItemViewModel extends BaseViewModel {
   Future<HttpResponse> create({ItemModel item}) async {
     busy;
     try {
-      final _createdItem = await _itemService.create(item: item.toJson());
+      await _itemService.create(item: item.toJson());
       idle;
-      return Response.build(data: _createdItem, message: 'Item created');
+      return Response.build(message: 'Item created');
     } on ApiException catch (ex) {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
@@ -24,32 +24,56 @@ class ItemViewModel extends BaseViewModel {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getGroupedByCategory() async {
-    return Future.delayed(const Duration(seconds: 2), () {
-      Map<String, List<Map<String, dynamic>>> _items = {};
+  Future<HttpResponse> getAll() async {
+    busy;
+    try {
+      final _items = await _itemService.getAll();
+      idle;
+      return Response.build(data: _items);
+    } on ApiException catch (ex) {
+      idle;
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      idle;
+      return Response.build(status: false, message: 'Could not get Items');
+    }
+  }
 
-      for (Map<String, dynamic> item in items) {
-        if (_items[item['category']] == null) {
-          _items[item['category']] = [item];
-        } else {
-          _items[item['category']].add(item);
-        }
+  Future<HttpResponse> getShoppingListItemsGroupedByCategory() async {
+    final HttpResponse _response = await getAll();
+
+    if (!_response.status) return _response;
+
+    Map<String, List<ItemModel>> _items = {};
+
+    for (Map<String, dynamic> item in _response.data) {
+      ItemModel _item = ItemModel.fromJsonListItem(json: item);
+
+      if (_items[_item.category] == null) {
+        _items[_item.category] = [_item];
+      } else {
+        _items[_item.category].add(_item);
+      }
+    }
+
+    final List<ItemModel> _itemsGroupedByCategory = [];
+
+    _items.forEach((category, items) {
+      ItemModel _itemsTitle = ItemModel(
+        name: category,
+        category: ItemConstants.itemGroupTitle,
+      );
+
+      if (_itemsGroupedByCategory.indexOf(_itemsTitle) < 0) {
+        _itemsGroupedByCategory.add(_itemsTitle);
       }
 
-      final List<Map<String, dynamic>> _sorted = [];
-
-      _items.forEach((category, items) {
-        Map<String, dynamic> title = {'name': category, 'type': 'title'};
-        if (_sorted.indexOf(title) < 0) {
-          _sorted.add(title);
-        }
-
-        for (Map<String, dynamic> item in items) {
-          _sorted.add(item);
-        }
-      });
-
-      return _sorted;
+      for (ItemModel item in items) {
+        _itemsGroupedByCategory.add(item);
+      }
     });
+
+    _response.data = _itemsGroupedByCategory;
+    return _response;
   }
 }

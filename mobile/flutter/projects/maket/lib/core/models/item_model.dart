@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:maket/constants/items.dart';
 import 'package:maket/utils/numbers.dart';
 
 class ItemModel {
-  final String id;
-  final String name;
-  final String category;
-  final double price;
-  final bool bought;
-  final int quantity;
-  final bool selected;
+  String id;
+  String name;
+  String category;
+  double price;
+  bool bought;
+  int quantity;
+  bool selected;
 
   ItemModel({
     this.id,
@@ -24,13 +25,24 @@ class ItemModel {
     return ItemModel(
       name: json['name'],
       category: json['category'],
-      selected: false,
     );
   }
 
   factory ItemModel.fromJsonListItem({Map<String, dynamic> json}) {
     return ItemModel(
-      id: json['id'],
+      id: json['_id'],
+      name: json['name'],
+      category: json['category'],
+      price: (json['price'] != null) ? json['price'] : Numbers.zero.toDouble(),
+      bought: (json['bought'] != null) ? json['bought'] : false,
+      quantity: (json['quantity'] != null) ? json['quantity'] : Numbers.one,
+      selected: false,
+    );
+  }
+
+  factory ItemModel.fromJsonSaveListItem({Map<String, dynamic> json}) {
+    return ItemModel(
+      id: json['_id'],
       name: json['name'],
       category: json['category'],
       price: (json['price'] != null) ? json['price'] : Numbers.zero.toDouble(),
@@ -43,7 +55,6 @@ class ItemModel {
     return {
       'name': this.name,
       'category': this.category,
-      'select': this.selected,
     };
   }
 
@@ -55,6 +66,17 @@ class ItemModel {
       'price': this.price,
       'bought': this.bought,
       'quantity': this.quantity,
+      'selected': this.selected,
     };
+  }
+
+  static List<Map<String, dynamic>> itemsToJson({List<ItemModel> items}) {
+    List<Map<String, dynamic>> _items = [];
+    for (ItemModel item in items) {
+      Map<String, dynamic> _item = item.toJsonListItem();
+      _item.remove(ItemConstants.keySelected);
+      _items.add(_item);
+    }
+    return _items;
   }
 }

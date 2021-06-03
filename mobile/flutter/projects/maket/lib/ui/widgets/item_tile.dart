@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
+import 'package:maket/constants/items.dart';
+import 'package:maket/core/models/item_model.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 
 class ItemTitle extends StatelessWidget {
-  final Map item;
+  final ItemModel item;
   final Function onItemTap;
   final Function onItemLongPress;
   final bool isLongPress;
@@ -46,6 +48,11 @@ class ItemTitle extends StatelessWidget {
     return (isSelected) ? kBgPrimaryColor : kSecondaryColor;
   }
 
+  double _getItemPrice({ItemModel item}) {
+    if (item.price == null) return Numbers.asDouble(Numbers.zero);
+    return (item.price);
+  }
+
   Function _toggleOnTapEvent({
     bool isSelected,
     bool isItemTitle,
@@ -57,12 +64,12 @@ class ItemTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool _isSelected = item['select'] != null ? item['select'] : false;
+    bool _isSelected = item.selected != null ? item.selected : false;
 
     double _screenHeightTwoPercent =
         Numbers.size(context: context, percent: Numbers.two);
 
-    bool _isItemsTitle = item['type'] != null;
+    bool _isItemsTitle = (item.category == ItemConstants.itemGroupTitle);
 
     double _horizontalPadding = _getTileHorizontalPadding(
       context: context,
@@ -98,20 +105,18 @@ class ItemTitle extends StatelessWidget {
       isItemsTitle: _isItemsTitle,
     );
 
-    Text _price = (item['price'] != null)
-        ? Text(
-            'R${item['price'] * item['quantity']}',
-            style: TextStyle(
-                color: kPrimaryColor,
-                fontSize: (_screenHeightTwoPercent - Numbers.two)),
-          )
-        : Text('');
-
     Row _priceAndCheck = (!_isItemsTitle && _isSelected)
         ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _price,
+              if (_getItemPrice(item: item) > Numbers.asDouble(Numbers.zero))
+                Text(
+                  'R${_getItemPrice(item: item) * item.quantity}',
+                  style: TextStyle(
+                    color: kPrimaryColor,
+                    fontSize: (_screenHeightTwoPercent - Numbers.two),
+                  ),
+                ),
               Separator(dimension: Dimension.width),
               Icon(Icons.check, color: kPrimaryColor),
             ],
@@ -122,7 +127,7 @@ class ItemTitle extends StatelessWidget {
       leading: isLongPress ? _checkIcon : null,
       tileColor: _tileBackgroundColor,
       contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
-      title: Text('${item['name']}', style: _itemNameStyle),
+      title: Text('${item.name}', style: _itemNameStyle),
       onTap: _onTap,
       onLongPress: (_isItemsTitle || (onItemLongPress == null))
           ? null

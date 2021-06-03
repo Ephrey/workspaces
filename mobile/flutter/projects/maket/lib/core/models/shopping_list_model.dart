@@ -1,6 +1,8 @@
+import 'package:maket/core/models/item_model.dart';
+
 class ShoppingListModel {
   final String name;
-  final List<Map<String, dynamic>> items;
+  final List<ItemModel> items;
   final String description;
   final double budget;
   final String createDate;
@@ -25,7 +27,7 @@ class ShoppingListModel {
   Map<String, dynamic> toJson() {
     return {
       "name": this.name,
-      "items": this.items,
+      "items": ItemModel.itemsToJson(items: this.items),
       "description": this.description,
       "budget": this.budget,
     };

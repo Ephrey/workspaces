@@ -14,7 +14,9 @@ abstract class AbstractApi {
   static const String baseUserPath = 'user';
   static const String loginPath = (baseUserPath + '/me');
 
-  static const String baseShoppingListPath = 'shopping_list/';
+  static const String baseItemPath = 'items';
+
+  static const String baseShoppingListPath = 'shopping_list';
 
   final Map<String, String> _defaultHeaders = {
     HttpHeaders.contentTypeHeader: HttpHeadersKeys.json,
@@ -29,15 +31,25 @@ abstract class AbstractApi {
     @required Map<String, dynamic> body,
     Map<String, String> headers,
   }) async {
-    return Future.delayed(
-      const Duration(seconds: 5),
-      () => Response.build(status: false),
-    );
     if (headers != null) _defaultHeaders.addAll(headers);
 
     final http.Response _response = await http.post(
       url,
       body: jsonEncode(body),
+      headers: _defaultHeaders,
+    );
+
+    return _returnResponse(response: _response);
+  }
+
+  Future<dynamic> get({
+    @required Uri url,
+    Map<String, String> headers,
+  }) async {
+    if (headers != null) _defaultHeaders.addAll(headers);
+
+    final http.Response _response = await http.get(
+      url,
       headers: _defaultHeaders,
     );
 

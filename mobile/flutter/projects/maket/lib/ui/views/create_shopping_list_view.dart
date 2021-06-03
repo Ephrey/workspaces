@@ -12,14 +12,16 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
-import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/ui/widgets/snackbar_alert.dart';
 import 'package:maket/utils/form.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/navigation/pop.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class CreateShoppingListView extends StatefulWidget {
@@ -37,9 +39,9 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   TextEditingController _nameController;
   TextEditingController _budgetController;
   TextEditingController _descriptionController;
-  List<Map<String, dynamic>> _shoppingListItems = [];
+  List<ItemModel> _selectedShoppingListItems = [];
 
-  List<Map<String, dynamic>> _itemsOnAddItemsToListView = [];
+  List<ItemModel> _itemsOnAddItemsToListView = [];
 
   Status _nameState;
   Status _budgetState;
@@ -111,52 +113,49 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   }
 
   Future<void> _getItems() async {
-    List<Map<String, dynamic>> _items =
-        await locator<ItemViewModel>().getGroupedByCategory();
+    HttpResponse _response =
+        await locator<ItemViewModel>().getShoppingListItemsGroupedByCategory();
 
-    final bool _isItemsNotEmpty = (_items.length > Numbers.zero);
-
-    if (_isItemsNotEmpty) {
+    if (_response.status) {
       _setState(() {
-        _itemsOnAddItemsToListView = _items;
-        _hasItems = _isItemsNotEmpty;
+        _itemsOnAddItemsToListView = _response.data;
+        _hasItems = _response.status;
       });
+    } else {
+      print(_response.message);
     }
   }
 
-  void addItemToShoppingList(Map<String, dynamic> tappedItem) {
-    final _shoppingListItem =
-        ItemModel.fromJsonListItem(json: tappedItem).toJsonListItem();
-
+  void addItemToShoppingList(ItemModel tappedItem) {
+    print(tappedItem.id);
     final int _tappedItemIndex = _itemsOnAddItemsToListView.indexOf(tappedItem);
 
     final bool _tappedItemState =
-        _itemsOnAddItemsToListView[_tappedItemIndex]['select'];
+        _itemsOnAddItemsToListView[_tappedItemIndex].selected;
 
     if (_tappedItemState) {
-      _removeTappedItemFromShoppingList(_shoppingListItem);
+      _removeTappedItemFromShoppingList(tappedItem);
     } else {
-      _addTappedItemToShoppingList(_shoppingListItem);
+      _addTappedItemToShoppingList(tappedItem);
     }
 
     _setState(() {
-      _itemsOnAddItemsToListView[_tappedItemIndex]['select'] =
-          !_tappedItemState;
+      _itemsOnAddItemsToListView[_tappedItemIndex].selected = !_tappedItemState;
     });
   }
 
-  void _removeTappedItemFromShoppingList(Map<String, dynamic> tappedItem) {
-    _shoppingListItems.removeWhere((item) => item['id'] == tappedItem['id']);
+  void _removeTappedItemFromShoppingList(ItemModel tappedItem) {
+    _selectedShoppingListItems.removeWhere((item) => item.id == tappedItem.id);
   }
 
-  void _addTappedItemToShoppingList(Map<String, dynamic> tappedItem) {
-    _shoppingListItems.add(tappedItem);
+  void _addTappedItemToShoppingList(ItemModel tappedItem) {
+    _selectedShoppingListItems.add(tappedItem);
   }
 
   Future<void> _handleSaveShoppingList({BuildContext context}) async {
     final ShoppingListModel _shoppingList = ShoppingListModel(
       name: _nameController.text,
-      items: _shoppingListItems,
+      items: _selectedShoppingListItems,
       description: _descriptionController.text,
       budget: Numbers.stringToDouble(_budgetController.text),
     );
@@ -166,9 +165,19 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
         .create(shoppingList: _shoppingList);
 
     if (_response.status == true) {
-      print('created...');
+      pop(context: context);
+      pop(context: context);
+      showSnackBar(
+        context: context,
+        content: SnackBarAlert(message: _response.message),
+        flavor: Status.success,
+      );
     } else {
-      print(_response.message);
+      showSnackBar(
+        context: context,
+        content: SnackBarAlert(message: _response.message),
+        flavor: Status.error,
+      );
     }
   }
 
@@ -191,7 +200,6 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _budgetController.dispose();
     _descriptionController.dispose();
     _itemsOnAddItemsToListView.clear();
-    print('dispose');
     super.dispose();
   }
 
@@ -394,7 +402,9 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
             buttonType: (hasItems) ? ButtonType.secondary : ButtonType.primary,
             text: "Done",
             contentPosition: Position.center,
-            disabled: !canMoveToSetItem,
+            disabled: (!canMoveToSetItem ||
+                (context.watch<ShoppingListViewModel>().state ==
+                    ViewState.busy)),
             onPressed: () => saveShoppingList(context: context),
             loading:
                 context.watch<ShoppingListViewModel>().state == ViewState.busy,
@@ -422,7 +432,7 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
 
 class _AddItemsToShoppingListView extends StatelessWidget {
   final Function prev;
-  final List<Map<String, dynamic>> items;
+  final List<ItemModel> items;
   final Function onItemTap;
   final bool canMoveToSetItem;
   final Function saveShoppingList;
@@ -456,7 +466,7 @@ class _AddItemsToShoppingListView extends StatelessWidget {
 }
 
 class _ItemsList extends StatelessWidget {
-  final List<Map<String, dynamic>> items;
+  final List<ItemModel> items;
   final Function onItemTap;
 
   _ItemsList({this.items, this.onItemTap});
@@ -464,9 +474,7 @@ class _ItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpandedView(
-      child: (items.length == Numbers.zero)
-          ? Loading()
-          : ListItems(items: items, onItemTaped: onItemTap),
+      child: ListItems(items: items, onItemTaped: onItemTap),
     );
   }
 }

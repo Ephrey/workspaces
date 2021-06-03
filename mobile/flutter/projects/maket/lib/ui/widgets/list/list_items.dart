@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:maket/core/models/item_model.dart';
 import 'package:maket/ui/widgets/item_tile.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/numbers.dart';
 
 class ListItems extends StatelessWidget {
-  final items;
+  final List<ItemModel> items;
   final Function onItemTaped;
   final Function onItemLongPress;
   final double yPadding;

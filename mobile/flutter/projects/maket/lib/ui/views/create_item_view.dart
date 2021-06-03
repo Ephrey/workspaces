@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/enums.dart';
-import 'package:maket/constants/item_categories.dart';
+import 'package:maket/constants/items.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
@@ -52,6 +52,8 @@ class _CreateItemFormState extends State<_CreateItemForm> {
 
   Status _nameState;
   Status _categoryState;
+
+  List<String> _itemCategories = [];
 
   dynamic _handleNameFieldChange(String name) {
     final int nameLength = name.length;
@@ -127,6 +129,12 @@ class _CreateItemFormState extends State<_CreateItemForm> {
     });
   }
 
+  void _setCategories() {
+    if (_itemCategories.length == 0) {
+      _itemCategories = ItemConstants.getCategories();
+    }
+  }
+
   @override
   void setState(callback) {
     if (mounted) super.setState(callback);
@@ -135,12 +143,14 @@ class _CreateItemFormState extends State<_CreateItemForm> {
   @override
   void initState() {
     _nameController = TextEditingController();
+    _setCategories();
     super.initState();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _itemCategories.clear();
     super.dispose();
   }
 
@@ -165,7 +175,7 @@ class _CreateItemFormState extends State<_CreateItemForm> {
               Separator(),
               FormInput(
                 inputType: InputType.dropdown,
-                items: itemCategories,
+                items: _itemCategories,
                 label: 'Item Category',
                 hintText: 'Select a Category',
                 onChange: _handleCategoryChange,
