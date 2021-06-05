@@ -6,7 +6,6 @@ import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/set_item_price_view.dart';
-import 'package:maket/ui/widgets/buttons/plus_button_view.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
 import 'package:maket/ui/widgets/list/list_name.dart';
@@ -34,7 +33,7 @@ class ShoppingListView extends StatelessWidget {
               Separator(),
             ],
           ),
-          PlusButton(),
+          // PlusButton(),
         ],
       ),
     );

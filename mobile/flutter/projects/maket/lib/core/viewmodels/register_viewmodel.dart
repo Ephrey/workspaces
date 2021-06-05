@@ -31,6 +31,7 @@ class RegisterViewModel extends BaseViewModel {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
+      print(ex);
       idle;
       return Response.build(status: false, message: 'Failed to Register.');
     }

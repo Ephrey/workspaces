@@ -19,7 +19,7 @@ class ShoppingListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureHandler(
       child: Container(
-        color: kSecondaryColor,
+        color: kWhite,
         child: PaddingView(
           vertical: Numbers.size(context: context, percent: Numbers.two) +
               Numbers.one,

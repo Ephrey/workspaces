@@ -22,37 +22,18 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  ViewState _welcomeViewState = ViewState.idle;
+  ViewState _welcomeViewState = ViewState.busy;
 
   void _isAlreadyLoggedIn() async {
-    _setViewStateToBusy();
-
-    final dynamic token = await LocalStorage.get(HttpHeadersKeys.xToken);
-
-    (token != null && token != false)
+    (await LocalStorage.get(HttpHeadersKeys.xToken) != null)
         ? pushRoute(context: context, name: AppRoute.shoppingListsView)
-        : _setViewStateToIdle();
+        : setState(() => _welcomeViewState = ViewState.idle);
   }
-
-  void _setViewStateToIdle() {
-    _setState(() => _welcomeViewState = ViewState.idle);
-  }
-
-  void _setViewStateToBusy() {
-    _setState(() => _welcomeViewState = ViewState.busy);
-  }
-
-  void _setState(Function callback) => setState(callback);
 
   @override
   void initState() {
     _isAlreadyLoggedIn();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override

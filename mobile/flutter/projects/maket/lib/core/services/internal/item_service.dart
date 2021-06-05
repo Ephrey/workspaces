@@ -20,14 +20,12 @@ class ItemService extends AbstractApi {
     return jsonDecode(_response.body);
   }
 
-  Future<dynamic> getAll() async {
+  Future<List<dynamic>> getAll() async {
     final Uri _url = this.url(path: AbstractApi.baseItemPath);
-
-    final String _token = await LocalStorage.get(HttpHeadersKeys.xToken);
 
     final http.Response _response = await this.get(
       url: _url,
-      headers: {HttpHeadersKeys.xToken: _token},
+      headers: {HttpHeadersKeys.xToken: await this.getToken()},
     );
 
     return jsonDecode(_response.body);

@@ -3,6 +3,7 @@ import 'package:maket/constants/colors.dart';
 import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/navigation/pop.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:maket/utils/snackbar/hide_snackbar.dart';
 
 class NavBar extends StatelessWidget {
   final Function onTap;
@@ -21,7 +22,12 @@ class NavBar extends StatelessWidget {
           color: color,
           size: Numbers.size(context: context, percent: Numbers.four),
         ),
-        onTap: (onTap != null) ? onTap : () => pop(context: context),
+        onTap: (onTap != null)
+            ? onTap
+            : () {
+                pop(context: context);
+                hideSnackBar(context: context);
+              },
       ),
     );
   }

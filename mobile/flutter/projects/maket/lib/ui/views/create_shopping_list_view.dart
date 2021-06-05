@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:maket/constants/colors.dart';
+import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
@@ -117,17 +119,33 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
         await locator<ItemViewModel>().getShoppingListItemsGroupedByCategory();
 
     if (_response.status) {
-      _setState(() {
-        _itemsOnAddItemsToListView = _response.data;
-        _hasItems = _response.status;
-      });
-    } else {
-      print(_response.message);
+      if (!_notifyIfEmptyItems(_response.data)) {
+        _setState(() {
+          _itemsOnAddItemsToListView = _response.data;
+          _hasItems = _response.status;
+        });
+      }
     }
   }
 
+  bool _notifyIfEmptyItems(List items) {
+    final _hasNoItems = items.length == Numbers.zero;
+
+    if (_hasNoItems) {
+      showSnackBar(
+        duration: Duration(seconds: Numbers.five),
+        flavor: Status.warning,
+        context: context,
+        content: SnackBarAlert(
+          message: kEmptyListWarningMessage,
+          textColor: kPrimaryColor,
+        ),
+      );
+    }
+    return _hasNoItems;
+  }
+
   void addItemToShoppingList(ItemModel tappedItem) {
-    print(tappedItem.id);
     final int _tappedItemIndex = _itemsOnAddItemsToListView.indexOf(tappedItem);
 
     final bool _tappedItemState =
@@ -164,8 +182,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
         .read<ShoppingListViewModel>()
         .create(shoppingList: _shoppingList);
 
-    if (_response.status == true) {
-      pop(context: context);
+    if (_response.status) {
       pop(context: context);
       showSnackBar(
         context: context,

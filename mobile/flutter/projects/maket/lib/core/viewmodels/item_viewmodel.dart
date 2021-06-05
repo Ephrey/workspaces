@@ -27,13 +27,14 @@ class ItemViewModel extends BaseViewModel {
   Future<HttpResponse> getAll() async {
     busy;
     try {
-      final _items = await _itemService.getAll();
+      final List<dynamic> _items = await _itemService.getAll();
       idle;
       return Response.build(data: _items);
     } on ApiException catch (ex) {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
+      print(ex);
       idle;
       return Response.build(status: false, message: 'Could not get Items');
     }

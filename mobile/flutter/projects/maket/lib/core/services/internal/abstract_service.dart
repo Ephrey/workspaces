@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:maket/handlers/exception/api_exception.dart';
 import 'package:maket/utils/http/http_headers_keys.dart';
 import 'package:maket/utils/http/http_responses.dart';
+import 'package:maket/utils/local_storage.dart';
 
 abstract class AbstractApi {
   static const String endpoint = 'localhost:3000';
@@ -26,7 +27,7 @@ abstract class AbstractApi {
     return Uri.http(endpoint, basePath + path, params);
   }
 
-  Future<dynamic> post({
+  Future<http.Response> post({
     @required Uri url,
     @required Map<String, dynamic> body,
     Map<String, String> headers,
@@ -42,7 +43,7 @@ abstract class AbstractApi {
     return _returnResponse(response: _response);
   }
 
-  Future<dynamic> get({
+  Future<http.Response> get({
     @required Uri url,
     Map<String, String> headers,
   }) async {
@@ -60,5 +61,9 @@ abstract class AbstractApi {
     return (response.statusCode == Response.success)
         ? response
         : throw ApiException(code: response.statusCode, message: response.body);
+  }
+
+  Future<String> getToken() async {
+    return await LocalStorage.get(HttpHeadersKeys.xToken) ?? '';
   }
 }

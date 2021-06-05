@@ -10,7 +10,6 @@ class ShoppingListViewModel extends BaseViewModel {
       locator<ShoppingListService>();
 
   Future<HttpResponse> create({ShoppingListModel shoppingList}) async {
-    print(shoppingList.toJson());
     busy;
     try {
       await _shoppingListService.create(shoppingList: shoppingList.toJson());
@@ -25,6 +24,22 @@ class ShoppingListViewModel extends BaseViewModel {
       idle;
 
       return Response.build(status: false, message: 'Failed to create.');
+    }
+  }
+
+  Future<HttpResponse> getAll() async {
+    busy;
+    try {
+      final List<dynamic> _shoppingLists = await _shoppingListService.getAll();
+      return Response.build(data: _shoppingLists);
+    } on ApiException catch (ex) {
+      idle;
+
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      idle;
+      print(ex);
+      return Response.build(status: false, message: 'Failed to get List.');
     }
   }
 }

@@ -6,12 +6,14 @@ const Color kSecondaryColor = Color(0xFFF3F6FA);
 
 const Color kTextPrimaryColor = Color(0xFFFAF1E6);
 const Color kTextSecondaryColor = Color(0xFFA0A2A4);
+const Color kTextActionColor = Color(0xFF157DF9);
 
 const Color kSuccessColor = Color(0xFF16C79A);
 const Color kWarningColor = Color(0xFFFFCC61);
 const Color kErrorColor = Color(0xFFFB3640);
 
-const Color kBgPrimaryColor = Color(0xFFFAFAFA);
+// const Color kBgPrimaryColor = Color(0xFFFAFAFA);
+const Color kBgPrimaryColor = Color(0xFFF2F2F7);
 const Color kBgSecondaryColor = Color(0xFFF7F7F7);
 
 const Color kElevationColor = Color(0xFFEAEAEA);

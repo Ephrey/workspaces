@@ -20,12 +20,12 @@ class LocalStorage {
     }
   }
 
-  static dynamic get(String key) async {
+  static Future<String> get(String key) async {
     SharedPreferences storage = await _instance();
     try {
       return storage.get(key);
     } catch (ex) {
-      return false;
+      return null;
     }
   }
 

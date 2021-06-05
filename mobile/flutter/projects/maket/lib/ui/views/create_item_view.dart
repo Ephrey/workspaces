@@ -150,7 +150,6 @@ class _CreateItemFormState extends State<_CreateItemForm> {
   @override
   void dispose() {
     _nameController.dispose();
-    _itemCategories.clear();
     super.dispose();
   }
 
