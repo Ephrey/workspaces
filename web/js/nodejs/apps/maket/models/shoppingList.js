@@ -7,6 +7,10 @@ const {
   SHOPPING_LIST_MAX_BUDGET,
 } = require("../utils/constants/shoppingList");
 const {
+  ITEM_MIN_LENGTH,
+  ITEM_MAX_LENGTH,
+  ITEM_CATEGORY_MIN_LENGTH,
+  ITEM_CATEGORY_MAX_LENGTH,
   ITEM_PRICE_MIN,
   ITEM_PRICE_MAX,
   ITEM_DEFAULT_QUANTITY,
@@ -15,9 +19,23 @@ const mongoose = require("mongoose");
 
 const shoppingListItemSchema = new mongoose.Schema(
   {
-    _id: {
+    id: {
       type: mongoose.Types.ObjectId,
       required: false,
+    },
+    name: {
+      type: String,
+      minlength: ITEM_MIN_LENGTH,
+      maxlength: ITEM_MAX_LENGTH,
+      required: true,
+      trim: true,
+    },
+    category: {
+      type: String,
+      minlength: ITEM_CATEGORY_MIN_LENGTH,
+      maxlength: ITEM_CATEGORY_MAX_LENGTH,
+      default: "other",
+      trim: true,
     },
     price: {
       type: Number,
@@ -35,7 +53,7 @@ const shoppingListItemSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { strictQuery: true }
+  { strictQuery: true, _id: false }
 );
 
 const shoppingListSchema = new mongoose.Schema(
@@ -55,6 +73,7 @@ const shoppingListSchema = new mongoose.Schema(
     items: {
       type: [shoppingListItemSchema],
       required: true,
+      default: [],
     },
     description: {
       type: String,

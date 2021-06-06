@@ -16,7 +16,7 @@ const router = express.Router();
 router.use(authorization);
 
 router.get("/", async (req, res) => {
-  res.send(await ItemModel.find({}));
+  res.send(await ItemModel.find({}).where("owner").equals(req.body.owner));
 });
 
 router.get("/:id", validateId, async (req, res) => {
@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
   if (error) return res.status(BAD_REQUEST).send(error.details[0].message);
 
   const itemExist = await ItemModel.exists({
-    name: { $regex: req.body.name, $options: "i" },
+    name: req.body.name,
     owner: req.body.owner,
   });
 

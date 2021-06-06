@@ -16,8 +16,8 @@ class ShoppingListService extends AbstractApi {
     return _response;
   }
 
-  Future<List<dynamic>> getAll() async {
-    final Uri _url = this.url(path: AbstractApi.baseShoppingListPath);
+  Future<List<dynamic>> getAllListBodies() async {
+    final Uri _url = this.url(path: AbstractApi.shoppingListBodiesPath);
 
     final http.Response _response = await this.get(
       url: _url,

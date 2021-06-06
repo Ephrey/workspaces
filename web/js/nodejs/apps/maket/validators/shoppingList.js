@@ -7,12 +7,20 @@ const {
   SHOPPING_LIST_MIN_BUDGET,
   SHOPPING_LIST_MAX_BUDGET,
 } = require("../utils/constants/shoppingList");
-const { ITEM_PRICE_MIN, ITEM_PRICE_MAX } = require("../utils/constants/items");
+const {
+  ITEM_PRICE_MIN,
+  ITEM_PRICE_MAX,
+  ITEM_MIN_LENGTH,
+  ITEM_MAX_LENGTH,
+  ITEM_CATEGORY_MIN_LENGTH,
+  ITEM_CATEGORY_MAX_LENGTH,
+} = require("../utils/constants/items");
 const debug = require("debug")("maket:shop_list_validator");
 const Joi = require("joi");
 
 const validateShoppingList = (shoppingList) => {
   const schema = Joi.object({
+    owner: Joi.objectId().required(),
     name: Joi.string()
       .min(SHOPPING_LIST_NAME_MIN_LENGTH)
       .max(SHOPPING_LIST_NAME_MAX_LENGTH)
@@ -21,13 +29,21 @@ const validateShoppingList = (shoppingList) => {
     items: Joi.array()
       .items(
         Joi.object({
-          _id: Joi.objectId().required(),
+          id: Joi.objectId().required(),
+          name: Joi.string()
+            .min(ITEM_MIN_LENGTH)
+            .max(ITEM_MAX_LENGTH)
+            .required(),
+          category: Joi.string()
+            .min(ITEM_CATEGORY_MIN_LENGTH)
+            .max(ITEM_CATEGORY_MAX_LENGTH)
+            .required(),
           price: Joi.number()
             .min(ITEM_PRICE_MIN)
             .max(ITEM_PRICE_MAX)
             .required(),
           bought: Joi.boolean().required(),
-          quantity: Joi.number().required().default(),
+          quantity: Joi.number().required(),
         })
       )
       .min(SHOPPING_LIST_MIN_ITEMS)

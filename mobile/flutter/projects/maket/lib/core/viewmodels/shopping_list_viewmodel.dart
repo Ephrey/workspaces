@@ -27,18 +27,21 @@ class ShoppingListViewModel extends BaseViewModel {
     }
   }
 
-  Future<HttpResponse> getAll() async {
+  Future<HttpResponse> getAllListBodies() async {
     busy;
     try {
-      final List<dynamic> _shoppingLists = await _shoppingListService.getAll();
-      return Response.build(data: _shoppingLists);
+      final List<dynamic> _shoppingListBodies =
+          await _shoppingListService.getAllListBodies();
+
+      idle;
+      return Response.build(data: _shoppingListBodies);
     } on ApiException catch (ex) {
       idle;
 
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
       idle;
-      print(ex);
+
       return Response.build(status: false, message: 'Failed to get List.');
     }
   }

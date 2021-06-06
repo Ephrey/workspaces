@@ -56,8 +56,8 @@ class _ListInfo extends StatelessWidget {
         children: [
           ListName(name: 'Birthday Party'),
           Separator(distanceAsPercent: Numbers.one),
-          ListSubTitle(text: 'Lorem ipsum dolor sit amet. Lorem ipsum dolor.'),
-          Separator(distanceAsPercent: Numbers.two),
+          ListSubTitle(text: 'Subtitle'),
+          Separator(distanceAsPercent: Numbers.one),
           ListItemCountAndCreateDate(),
         ],
       ),

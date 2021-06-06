@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/enums.dart';
+import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/ui/widgets/dot_separator.dart';
 import 'package:maket/ui/widgets/list/list_subtitle.dart';
 import 'package:maket/ui/widgets/separator.dart';
@@ -7,8 +8,9 @@ import 'package:maket/utils/numbers.dart';
 
 class ListItemCountAndCreateDate extends StatelessWidget {
   final double fontSize;
+  final ShoppingListModel list;
 
-  ListItemCountAndCreateDate({this.fontSize});
+  ListItemCountAndCreateDate({this.fontSize, this.list});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class ListItemCountAndCreateDate extends StatelessWidget {
         DotSeparator(),
         _separator,
         ListSubTitle(
-          text: '10 Feb. 2021',
+          text: '2020-01-26',
           fontWeight: FontWeight.w700,
           fontSize: fontSize,
         ),

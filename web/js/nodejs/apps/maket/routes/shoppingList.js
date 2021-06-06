@@ -16,7 +16,17 @@ const router = express.Router();
 router.use(authorization);
 
 router.get("/", async (req, res) => {
-  res.send(await ShoppingListModel.find({ owner: req.body.owner }));
+  res.send(
+    await ShoppingListModel.find({ owner: req.body.owner }).sort("-createdDate")
+  );
+});
+
+router.get("/body", async (req, res) => {
+  res.send(
+    await ShoppingListModel.find({ owner: req.body.owner })
+      .sort("-createdDate")
+      .select("-items -owner -__v")
+  );
 });
 
 router.get("/:id", validateId, async (req, res) => {

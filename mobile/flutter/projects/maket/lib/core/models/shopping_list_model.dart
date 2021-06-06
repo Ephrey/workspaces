@@ -19,8 +19,8 @@ class ShoppingListModel {
     return ShoppingListModel(
       name: json['name'],
       description: json['description'],
-      budget: json['budget'],
-      createDate: json['createDate'],
+      budget: json['budget'].toDouble(),
+      createDate: json['createdDate'],
     );
   }
 
@@ -31,5 +31,17 @@ class ShoppingListModel {
       "description": this.description,
       "budget": this.budget,
     };
+  }
+
+  static List<ShoppingListModel> shoppingListBodiesFromJson({
+    List<dynamic> jsonShoppingListBodies,
+  }) {
+    List<ShoppingListModel> _shoppingListBodies = [];
+
+    for (Map<String, dynamic> listBody in jsonShoppingListBodies) {
+      _shoppingListBodies.add(ShoppingListModel.fromJson(json: listBody));
+    }
+
+    return _shoppingListBodies;
   }
 }
