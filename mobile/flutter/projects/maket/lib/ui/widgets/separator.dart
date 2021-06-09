@@ -7,10 +7,12 @@ import 'package:maket/utils/screen_size.dart';
 class Separator extends StatelessWidget {
   final int distanceAsPercent;
   final Dimension dimension;
+  final bool thin;
 
   Separator({
     this.distanceAsPercent: Numbers.four,
     this.dimension: Dimension.height,
+    this.thin: false,
   });
 
   @override
@@ -23,7 +25,7 @@ class Separator extends StatelessWidget {
 
     final double _percentage = Math.percentage(
       percent: distanceAsPercent,
-      total: _size,
+      total: _size / ((thin) ? 5 : 1),
     );
 
     return (dimension == Dimension.height)

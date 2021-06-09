@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void showModel({
+void showModal({
   @required BuildContext context,
   @required Widget child,
   bool isScrollControlled: true,

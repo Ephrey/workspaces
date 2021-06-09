@@ -8,13 +8,14 @@ class BaseViewModel extends ChangeNotifier {
   ViewState get state => _state;
 
   /// [idle] : set the current view to not busy (hide loading widget)
-  void get idle => setState(viewState: ViewState.idle);
+  void get idle => _setState(viewState: ViewState.idle);
 
   /// [busy] :  set the current view to busy (show loading widget)
-  void get busy => setState(viewState: ViewState.busy);
+  void get busy => _setState(viewState: ViewState.busy);
 
-  void setState({ViewState viewState}) {
+  void _setState({ViewState viewState}) {
     _state = viewState;
+    print(viewState);
     notifyListeners();
   }
 }

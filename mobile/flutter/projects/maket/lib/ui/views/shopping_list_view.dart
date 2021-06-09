@@ -117,7 +117,7 @@ class _Spent extends StatelessWidget {
 
 class _ShoppingListItems extends StatelessWidget {
   void _handleItemTap(BuildContext context, item) {
-    showModel(
+    showModal(
       context: context,
       child: SetItemPriceView(item: item),
     );

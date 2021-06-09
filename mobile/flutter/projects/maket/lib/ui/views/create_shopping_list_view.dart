@@ -184,6 +184,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
     if (_response.status) {
       pop(context: context);
+      await locator<ShoppingListViewModel>().getAllListBodies();
       showSnackBar(
         context: context,
         content: SnackBarAlert(message: _response.message),
@@ -222,8 +223,8 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => locator<ShoppingListViewModel>(),
+    return ChangeNotifierProvider<ShoppingListViewModel>.value(
+      value: locator<ShoppingListViewModel>(),
       child: BaseView(
         child: PageView(
           controller: _pageController,

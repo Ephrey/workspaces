@@ -8,17 +8,7 @@ class SearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 62.0,
-      decoration: BoxDecoration(
-        color: kBgPrimaryColor,
-        boxShadow: [
-          // BoxShadow(
-          //   color: kElevationColor,
-          //   blurRadius: 2.0,
-          //   spreadRadius: 0.0,
-          //   offset: Offset(0.0, 5.0),
-          // )
-        ],
-      ),
+      decoration: BoxDecoration(color: kBgPrimaryColor),
       child: PaddingView(
         child: FormInput(
           hintText: 'Search for an Item',

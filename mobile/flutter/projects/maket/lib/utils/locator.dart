@@ -14,7 +14,8 @@ void setupLocator() {
   locator.registerFactory<RegisterViewModel>(() => RegisterViewModel());
   locator.registerFactory<SignInViewModel>(() => SignInViewModel());
   locator.registerFactory<ItemViewModel>(() => ItemViewModel());
-  locator.registerFactory<ShoppingListViewModel>(() => ShoppingListViewModel());
+  locator.registerLazySingleton<ShoppingListViewModel>(
+      () => ShoppingListViewModel());
 
   locator.registerLazySingleton<RegisterService>(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService());

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/common.dart';
+import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
@@ -15,6 +16,10 @@ import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'list_subtitle.dart';
 
 class ShoppingListTile extends StatelessWidget {
+  final ShoppingListModel list;
+
+  ShoppingListTile({this.list});
+
   @override
   Widget build(BuildContext context) {
     return GestureHandler(
@@ -30,7 +35,7 @@ class ShoppingListTile extends StatelessWidget {
               //   dimension: Dimension.width,
               //   distanceAsPercent: Numbers.seven,
               // ),
-              _ListInfo(),
+              _ListInfo(list: list),
               _ArrowIcon(),
             ],
           ),
@@ -48,15 +53,20 @@ class ShoppingListTile extends StatelessWidget {
 }
 
 class _ListInfo extends StatelessWidget {
+  final ShoppingListModel list;
+
+  _ListInfo({this.list});
+
   @override
   Widget build(BuildContext context) {
     return ExpandedView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListName(name: 'Birthday Party'),
-          Separator(distanceAsPercent: Numbers.one),
-          ListSubTitle(text: 'Subtitle'),
+          ListName(name: list.name),
+          if (list.description.isNotEmpty)
+            Separator(distanceAsPercent: Numbers.one),
+          if (list.description.isNotEmpty) ListSubTitle(text: list.description),
           Separator(distanceAsPercent: Numbers.one),
           ListItemCountAndCreateDate(),
         ],
