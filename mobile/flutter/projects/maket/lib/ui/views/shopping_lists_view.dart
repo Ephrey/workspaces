@@ -150,7 +150,7 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
     _viewModel.unselectAllShoppingLists();
     _setState(() {
       _longPressTriggered = false;
-      _isAllListsSelected = true;
+      _isAllListsSelected = false;
     });
     hideSnackBar(context: context);
   }
@@ -173,16 +173,33 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
     );
   }
 
-  void _deleteSelectedLists() {
-    _viewModel.deleteSelectedShoppingLists();
+  Future<void> _deleteSelectedLists() async {
+    final HttpResponse _res = await _viewModel.deleteSelectedShoppingLists();
+
     _cancelSelection();
+
     pop(context: context);
+
+    if (_res.status) {
+      showSnackBar(
+        context: context,
+        flavor: Status.success,
+        content: SnackBarAlert(message: _res.message),
+      );
+    } else {
+      showSnackBar(
+        context: context,
+        flavor: Status.error,
+        content: SnackBarAlert(message: _res.message),
+      );
+    }
   }
 
   void _onListTapped({ShoppingListModel list}) {
     if (_longPressTriggered) {
       _viewModel.selectShoppingList(list: list);
       _viewModel.countSelectedList();
+      _isAllListsSelected = false;
     }
   }
 

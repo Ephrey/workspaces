@@ -4,6 +4,7 @@ import 'package:maket/core/viewmodels/base_viewmodel.dart';
 import 'package:maket/handlers/exception/api_exception.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/numbers.dart';
 
 class ShoppingListViewModel extends BaseViewModel {
   final ShoppingListService _service = locator<ShoppingListService>();
@@ -16,10 +17,15 @@ class ShoppingListViewModel extends BaseViewModel {
 
   int get getSelectedListCounter => _selectedListCounter;
 
+  bool get hasLists => response.data.length > Numbers.zero;
+
   Future<HttpResponse> create({ShoppingListModel shoppingList}) async {
     busy;
     try {
-      await _service.create(shoppingList: shoppingList.toJson());
+      final Map<String, dynamic> _newlyCreatedList =
+          await _service.create(shoppingList: shoppingList.toJson());
+
+      await _addNewlyCreatedListToLocalLists(newList: _newlyCreatedList);
 
       idle;
       return Response.build(message: 'List Successfully Created.');
@@ -37,15 +43,15 @@ class ShoppingListViewModel extends BaseViewModel {
   Future<void> getAllListBodies() async {
     busy;
     try {
-      List<dynamic> _shoppingListBodiesJson = await _service.getAllListBodies();
+      if (!hasLists) {
+        List<dynamic> _shoppingListJson = await _service.getAllListBodies();
 
-      List<ShoppingListModel> _shoppingLists =
-          ShoppingListModel.shoppingListBodiesFromJson(
-        jsonShoppingListBodies: _shoppingListBodiesJson,
-      );
+        List<ShoppingListModel> _shoppingLists =
+            ShoppingListModel.shoppingListBodiesFromJson(
+                jsonShoppingListBodies: _shoppingListJson);
 
-      _response = Response.build(data: _shoppingLists);
-
+        _response = Response.build(data: _shoppingLists);
+      }
       idle;
     } on ApiException catch (ex) {
       _response =
@@ -62,56 +68,53 @@ class ShoppingListViewModel extends BaseViewModel {
 
   Future<void> selectShoppingList({ShoppingListModel list}) async {
     busy;
-    List<ShoppingListModel> _lists = [];
-
-    for (ShoppingListModel oldList in _response.data) {
-      if (oldList.id == list.id) {
-        oldList.selected = !list.selected;
-        _lists.add(oldList);
-      } else {
-        _lists.add(oldList);
+    _response.data.forEach((ShoppingListModel currentList) {
+      if (currentList.id == list.id) {
+        currentList.selected = !list.selected;
       }
-    }
-    _response.data = _lists;
+      return currentList;
+    });
     idle;
   }
 
   Future<void> unselectAllShoppingLists() async {
     busy;
-    List<ShoppingListModel> _lists = [];
-
-    for (ShoppingListModel list in _response.data) {
-      list.selected = false;
-      _lists.add(list);
-    }
-
-    _response.data = _lists;
+    _response.data.forEach((ShoppingListModel currentList) {
+      currentList.selected = false;
+      return currentList;
+    });
     idle;
   }
 
   Future<void> selectAllShoppingLists({bool shouldSelect}) async {
     busy;
-    List<ShoppingListModel> _lists = [];
-
-    for (ShoppingListModel list in _response.data) {
-      list.selected = shouldSelect;
-      _lists.add(list);
-    }
-
-    _response.data = _lists;
+    _response.data.forEach((ShoppingListModel currentList) {
+      currentList.selected = shouldSelect;
+      return currentList;
+    });
     idle;
   }
 
-  Future<void> deleteSelectedShoppingLists() async {
+  Future<HttpResponse> deleteSelectedShoppingLists() async {
     busy;
-    List<ShoppingListModel> _lists = [];
+    try {
+      final List<String> _listIds = _getSelectedListsIds();
 
-    for (ShoppingListModel list in _response.data) {
-      if (!list.selected) _lists.add(list);
+      final String _response = await _service.deleteMany(listIds: _listIds);
+
+      await _removeSelectedListsFromCurrentLists(selectedListIds: _listIds);
+
+      idle;
+      return Response.build(message: _response);
+    } on ApiException catch (ex) {
+      idle;
+
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      idle;
+
+      return Response.build(status: false, message: 'Lists not deleted');
     }
-
-    _response.data = _lists;
-    idle;
   }
 
   Future<void> countSelectedList() async {
@@ -122,5 +125,38 @@ class ShoppingListViewModel extends BaseViewModel {
     }
     _selectedListCounter = _counter;
     idle;
+  }
+
+  // Local Methods
+
+  List<String> _getSelectedListsIds() {
+    busy;
+    List<String> _selectedListsIds = [];
+
+    for (ShoppingListModel list in _response.data) {
+      if (list.selected) _selectedListsIds.add(list.id);
+    }
+
+    idle;
+    return _selectedListsIds;
+  }
+
+  Future<void> _removeSelectedListsFromCurrentLists({
+    List<String> selectedListIds,
+  }) async {
+    _response.data.removeWhere((ShoppingListModel currentList) {
+      return selectedListIds.contains(currentList.id);
+    });
+  }
+
+  Future<void> _addNewlyCreatedListToLocalLists({
+    Map<String, dynamic> newList,
+  }) async {
+    final ShoppingListModel _newListFromJson =
+        ShoppingListModel.fromJson(json: newList);
+
+    (hasLists)
+        ? _response.data.insert(Numbers.zero, _newListFromJson)
+        : response.data = [_newListFromJson];
   }
 }

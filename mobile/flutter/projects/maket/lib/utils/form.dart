@@ -1,6 +1,8 @@
 import 'package:maket/utils/numbers.dart';
 
 class Forms {
+  Forms._();
+
   static const String userNameField = 'username';
   static const String emailField = 'email';
   static const String password = 'password';
@@ -21,5 +23,5 @@ class Forms {
   static const int maxBudget = Numbers.fiveHundredThousand;
 
   static const int listDescriptionMinLength = Numbers.five;
-  static const int listDescriptionMaxLength = Numbers.eighty;
+  static const int listDescriptionMaxLength = Numbers.hundred;
 }

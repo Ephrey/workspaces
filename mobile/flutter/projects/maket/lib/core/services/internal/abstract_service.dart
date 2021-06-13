@@ -19,6 +19,8 @@ abstract class AbstractApi {
 
   static const String baseShoppingListPath = 'shopping_list';
   static const String shoppingListBodiesPath = baseShoppingListPath + '/body';
+  static const String shoppingDeleteManyPath =
+      baseShoppingListPath + '/delete/many';
 
   final Map<String, String> _defaultHeaders = {
     HttpHeaders.contentTypeHeader: HttpHeadersKeys.json,
@@ -52,6 +54,22 @@ abstract class AbstractApi {
 
     final http.Response _response = await http.get(
       url,
+      headers: _defaultHeaders,
+    );
+
+    return _returnResponse(response: _response);
+  }
+
+  Future<http.Response> delete({
+    @required Uri url,
+    Map<String, dynamic> body,
+    Map<String, String> headers,
+  }) async {
+    if (headers != null) _defaultHeaders.addAll(headers);
+
+    final http.Response _response = await http.delete(
+      url,
+      body: jsonEncode(body),
       headers: _defaultHeaders,
     );
 
