@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 router.get("/body", async (req, res) => {
   res.send(
     await ShoppingListModel.find({ owner: req.body.owner })
-      .sort("-createdDate")
+      .sort("-_id")
       .select("-items -owner -__v")
   );
 });
@@ -101,6 +101,31 @@ router.put("/:id/item/:itemId", validateId, async (req, res) => {
   );
 
   res.send(updatedShoppingList);
+});
+
+router.delete("/delete/many", async (req, res) => {
+  const body = req.body;
+  const listIds = body.listIds;
+
+  const response = await ShoppingListModel.deleteMany({ owner: body.owner }).in(
+    "_id",
+    listIds
+  );
+
+  debug(response.n);
+  debug(response.ok);
+  debug(response.deletedCount);
+  debug(body.owner);
+  debug(listIds);
+
+  const deletedCount = response.deletedCount;
+
+  const deletedPlural = deletedCount > 1 ? "s" : "";
+  const noDeletedPlural = listIds.length > 1 ? "s" : "";
+
+  response.ok === 1 && response.n > 0 && deletedCount > 0
+    ? res.send(`Shopping List${deletedPlural} deleted.`)
+    : res.status(BAD_REQUEST).send(`List${noDeletedPlural} not deleted.`);
 });
 
 router.delete("/:id", validateId, async (req, res) => {
