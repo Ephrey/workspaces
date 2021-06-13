@@ -28,11 +28,15 @@ class ListItems extends StatelessWidget {
       itemBuilder: (BuildContext context, int itemIndex) {
         return ItemTitle(
           item: items[itemIndex],
+          itemIndex: itemIndex,
           onItemTap: onItemTaped,
           onItemLongPress: onItemLongPress,
         );
       },
-      separatorBuilder: (_, __) => Separator(distanceAsPercent: Numbers.one),
+      separatorBuilder: (_, __) => Separator(
+        distanceAsPercent: Numbers.one,
+        thin: true,
+      ),
     );
   }
 }

@@ -17,6 +17,7 @@ class BaseActionButton extends StatelessWidget {
   final Function onPressed;
   final bool disabled;
   final bool loading;
+  final Status status;
 
   const BaseActionButton({
     this.icon,
@@ -27,6 +28,7 @@ class BaseActionButton extends StatelessWidget {
     this.onPressed,
     this.disabled: false,
     this.loading,
+    this.status,
   });
 
   @override
@@ -86,6 +88,10 @@ class BaseActionButton extends StatelessWidget {
       _buttonBgColor = kBgPrimaryColor;
     }
 
+    if (status != Status.normal) {
+      _buttonBgColor = getStatusColor(status);
+    }
+
     TextStyle _textStyle = TextStyle(
       color: _textColor,
       fontSize: Math.percentage(
@@ -121,18 +127,12 @@ class BaseActionButton extends StatelessWidget {
 
     dynamic _icon = (icon != null && loading == false)
         ? PaddingView(
-            padding: EdgeInsets.only(
-              right: _iconMarginLeft,
-              left: _iconMarginRight,
-            ),
-            child: Icon(
-              icon,
-              color: _textColor,
-              size: Math.percentage(
-                percent: Numbers.eighty,
-                total: _buttonHeight,
-              ),
-            ),
+            padding:
+                EdgeInsets.only(right: _iconMarginLeft, left: _iconMarginRight),
+            child: Icon(icon,
+                color: _textColor,
+                size: Math.percentage(
+                    percent: Numbers.eighty, total: _buttonHeight)),
           )
         : null;
 

@@ -11,6 +11,7 @@ class ActionButton extends BaseActionButton {
   final Position iconPosition;
   final bool disabled;
   final bool loading;
+  final Status status;
 
   ActionButton({
     this.buttonType: ButtonType.primary,
@@ -21,6 +22,7 @@ class ActionButton extends BaseActionButton {
     this.iconPosition: Position.left,
     this.disabled: false,
     this.loading: false,
+    this.status: Status.normal,
   })  : assert(text != null),
         assert(onPressed != null);
 }

@@ -1,28 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
+import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/gesture_handler.dart';
+import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/numbers.dart';
+import 'package:provider/provider.dart';
 
 class OnLongPressActions extends StatelessWidget {
   final Function onCancel;
+  final Function selectAllList;
+  final Function onDelete;
 
-  OnLongPressActions({this.onCancel});
+  OnLongPressActions({this.onCancel, this.selectAllList, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ChangeNotifierProvider<ShoppingListViewModel>.value(
+      value: locator<ShoppingListViewModel>(),
       child: PaddingView(
-        vertical: Numbers.two.toDouble(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureHandler(child: _Text(text: 'Cancel'), onTap: onCancel),
-            _Text(text: '2'),
-            _ActionButtons(),
-          ],
+        vertical: Numbers.asDouble(Numbers.three),
+        child: Consumer<ShoppingListViewModel>(
+          builder: (_, viewModel, child) {
+            final int _counter = viewModel.getSelectedListCounter;
+            final bool _hasSelectedList = (_counter > Numbers.zero);
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (child != null) child,
+                if (_hasSelectedList) _Text(text: '$_counter'),
+                _ActionButtons(
+                  selectAllList: selectAllList,
+                  onDelete: onDelete,
+                  hasSelectedList: _hasSelectedList,
+                ),
+              ],
+            );
+          },
+          child: GestureHandler(child: _Text(text: 'Cancel'), onTap: onCancel),
         ),
       ),
     );
@@ -44,21 +63,35 @@ class _Text extends StatelessWidget {
       fontWeight: FontWeight.w600,
     );
 
-    return GestureHandler(
-      child: Text(text, style: _style),
-      onTap: onTap,
-    );
+    return GestureHandler(child: Text('$text', style: _style), onTap: onTap);
   }
 }
 
 class _ActionButtons extends StatelessWidget {
+  final Function selectAllList;
+  final Function onDelete;
+  final bool hasSelectedList;
+
+  _ActionButtons({this.selectAllList, this.onDelete, this.hasSelectedList});
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _Icon(icon: Icons.check_box_outlined),
-        Separator(dimension: Dimension.width),
-        _Icon(icon: Icons.delete_forever_outlined),
+        if (hasSelectedList)
+          GestureHandler(
+            child: _Icon(icon: FontAwesomeIcons.trashAlt),
+            onTap: onDelete,
+          ),
+        if (hasSelectedList)
+          Separator(
+            dimension: Dimension.width,
+            distanceAsPercent: Numbers.eight,
+          ),
+        GestureHandler(
+          child: _Icon(icon: FontAwesomeIcons.checkSquare),
+          onTap: selectAllList,
+        ),
       ],
     );
   }
@@ -66,14 +99,18 @@ class _ActionButtons extends StatelessWidget {
 
 class _Icon extends StatelessWidget {
   final IconData icon;
-
   const _Icon({@required this.icon}) : assert(icon != null);
 
   @override
   Widget build(BuildContext context) {
-    final double _iconSize =
-        (Numbers.size(context: context, percent: Numbers.four) - Numbers.three);
-
-    return Icon(icon, color: kTextPrimaryColor, size: _iconSize);
+    return Icon(
+      icon,
+      color: kTextPrimaryColor,
+      size: (Numbers.size(
+        context: context,
+        percent: Numbers.six,
+        dimension: Dimension.width,
+      )),
+    );
   }
 }

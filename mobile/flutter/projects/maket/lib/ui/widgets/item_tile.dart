@@ -8,12 +8,14 @@ import 'package:maket/utils/numbers.dart';
 
 class ItemTitle extends StatelessWidget {
   final ItemModel item;
+  final int itemIndex;
   final Function onItemTap;
   final Function onItemLongPress;
   final bool isLongPress;
 
   const ItemTitle({
     @required this.item,
+    this.itemIndex,
     this.onItemTap,
     this.onItemLongPress,
     this.isLongPress: false,
@@ -35,17 +37,13 @@ class ItemTitle extends StatelessWidget {
     bool isItemTitle,
     double screenHeightTwoPercent,
   }) {
-    if (isItemTitle) {
-      return (screenHeightTwoPercent - Numbers.four);
-    } else {
-      return (Numbers.size(context: context, percent: Numbers.three) -
-          Numbers.three);
-    }
+    return (Numbers.size(context: context, percent: Numbers.three) -
+        Numbers.three);
   }
 
   Color _getTileBackgroundColor({bool isSelected, bool isItemTitle}) {
     if (isItemTitle) return null;
-    return (isSelected) ? kBgPrimaryColor : kSecondaryColor;
+    return (isSelected) ? kBgSecondaryColor : kWhite;
   }
 
   double _getItemPrice({ItemModel item}) {
@@ -126,7 +124,13 @@ class ItemTitle extends StatelessWidget {
     return ListTile(
       leading: isLongPress ? _checkIcon : null,
       tileColor: _tileBackgroundColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
+      contentPadding: EdgeInsets.only(
+        top: (_isItemsTitle && (itemIndex != Numbers.zero))
+            ? _horizontalPadding - Numbers.fifteen
+            : Numbers.asDouble(Numbers.zero),
+        left: _horizontalPadding,
+        right: _horizontalPadding,
+      ),
       title: Text('${item.name}', style: _itemNameStyle),
       onTap: _onTap,
       onLongPress: (_isItemsTitle || (onItemLongPress == null))

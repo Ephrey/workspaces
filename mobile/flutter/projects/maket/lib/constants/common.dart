@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/utils/time.dart';
 
+const String kAppName = 'Makèt';
+
+const String kAppSlogan = 'Shopping Made Easy';
+
 const double kDefaultActionButtonHeight = 69.0;
 const BorderSide kFocusedInputBorder =
     BorderSide(color: kPrimaryColor, width: 0.7);
 
 const double kFloatingContainerBorderRadius = 10.0;
 const double kLetterSpacing = 0.5;
+
+const double kTextHeight = 1.6;
 
 const Duration kOneYearDuration = Duration(days: Time.oneYear);
 
@@ -21,6 +27,9 @@ const String kTextCreateLists = 'Add a List';
 const String kEmptyListWarningMessage =
     'You have no Items to add to this list. '
     'Next create items and add them later.';
+
+const kDeleteListWarningText = 'This action is irreversible. '
+    'All selected Shopping Lists will be deleted.';
 
 const TextStyle kCreateListAndItemsButtonStyle = TextStyle(
   color: kTextActionColor,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
-import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
@@ -48,23 +47,27 @@ class FormInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double _screenWidth = ScreenSize(context: context).width;
+    double _textFieldPadding = Numbers.size(
+          context: context,
+          percent: Numbers.five,
+          dimension: Dimension.width,
+        ) -
+        Numbers.one;
 
-    double _textFieldPadding =
-        (Math.percentage(percent: Numbers.five, total: _screenWidth) -
-            Numbers.one);
+    double _textSize = Numbers.size(
+          context: context,
+          percent: Numbers.four,
+          dimension: Dimension.width,
+        ) -
+        Numbers.one;
 
-    double _textSize =
-        (Math.percentage(percent: Numbers.four, total: _screenWidth) -
-            Numbers.one);
+    // TextStyle _labelTextStyle = TextStyle(
+    //   color: kPrimaryColor,
+    //   fontSize: _textFieldPadding,
+    //   fontWeight: FontWeight.w600,
+    // );
 
-    TextStyle _labelTextStyle = TextStyle(
-      color: kPrimaryColor,
-      fontSize: _textFieldPadding,
-      fontWeight: FontWeight.w600,
-    );
-
-    OutlineInputBorder _borderStyle = OutlineInputBorder(
+    UnderlineInputBorder _borderStyle = UnderlineInputBorder(
       borderRadius: BorderRadius.zero,
       borderSide: BorderSide(
         color: (withBorder) ? kTextSecondaryColor : kTransparentColor,
@@ -74,8 +77,11 @@ class FormInput extends StatelessWidget {
     InputDecoration _inputDecoration = InputDecoration(
       prefixIcon: (prefixIcon != null)
           ? Icon(prefixIcon,
-              size:
-                  Math.percentage(percent: Numbers.eight, total: _screenWidth),
+              size: Numbers.size(
+                context: context,
+                percent: Numbers.eight,
+                dimension: Dimension.width,
+              ),
               color: kTextSecondaryColor)
           : null,
       hintText: (hintText != null) ? hintText : 'Type in your $label',
@@ -85,7 +91,7 @@ class FormInput extends StatelessWidget {
       ),
       contentPadding: EdgeInsets.symmetric(
         vertical: _textFieldPadding,
-        horizontal: _textFieldPadding,
+        // horizontal: _textFieldPadding,
       ),
       border: _borderStyle,
       disabledBorder: _borderStyle,
@@ -143,8 +149,8 @@ class FormInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label != null) Text(label, style: _labelTextStyle),
-        if (label != null) Separator(distanceAsPercent: Numbers.one),
+        // if (label != null) Text(label, style: _labelTextStyle),
+        // if (label != null) Separator(distanceAsPercent: Numbers.one),
         _getInput(inputType)
       ],
     );

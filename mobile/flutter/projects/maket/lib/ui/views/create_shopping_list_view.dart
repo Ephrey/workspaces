@@ -13,9 +13,9 @@ import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
+import 'package:maket/ui/widgets/fields/search_input_placeholder.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
-import 'package:maket/ui/widgets/search_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
 import 'package:maket/utils/form.dart';
@@ -226,6 +226,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     return ChangeNotifierProvider<ShoppingListViewModel>.value(
       value: locator<ShoppingListViewModel>(),
       child: BaseView(
+        safeAreaBottom: false,
         child: PageView(
           controller: _pageController,
           physics: NeverScrollableScrollPhysics(),
@@ -247,14 +248,12 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
                 saveShoppingList: _handleSaveShoppingList,
               ),
             ),
-            PaddingView(
-              child: _AddItemsToShoppingListView(
-                prev: _moveBackToSetListNameAndDescription,
-                items: _itemsOnAddItemsToListView,
-                onItemTap: addItemToShoppingList,
-                canMoveToSetItem: _canCreateList,
-                saveShoppingList: _handleSaveShoppingList,
-              ),
+            _AddItemsToShoppingListView(
+              prev: _moveBackToSetListNameAndDescription,
+              items: _itemsOnAddItemsToListView,
+              onItemTap: addItemToShoppingList,
+              canMoveToSetItem: _canCreateList,
+              saveShoppingList: _handleSaveShoppingList,
             )
           ],
         ),
@@ -377,7 +376,7 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
           label: 'List Description',
           hintText: 'Type in the Description (optional)',
           keyBorderType: TextInputType.multiline,
-          minLines: Numbers.four,
+          minLines: Numbers.one,
           capitalization: TextCapitalization.sentences,
           onChange: handleDescriptionField,
           state: descriptionState,
@@ -468,14 +467,16 @@ class _AddItemsToShoppingListView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SearchView(),
+        SearchInputPlaceholder(hint: 'Search Items'),
         Separator(distanceAsPercent: Numbers.two),
         _ItemsList(items: items, onItemTap: onItemTap),
-        Separator(distanceAsPercent: Numbers.three),
-        _AddItemsToListActionButton(
-          prev: prev,
-          canMoveToSetItem: canMoveToSetItem,
-          saveShoppingList: saveShoppingList,
+        Separator(distanceAsPercent: Numbers.three, thin: true),
+        PaddingView(
+          child: _AddItemsToListActionButton(
+            prev: prev,
+            canMoveToSetItem: canMoveToSetItem,
+            saveShoppingList: saveShoppingList,
+          ),
         ),
         Separator(distanceAsPercent: Numbers.two),
       ],

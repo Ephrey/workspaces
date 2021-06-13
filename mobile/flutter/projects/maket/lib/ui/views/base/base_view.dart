@@ -4,6 +4,8 @@ import 'package:maket/ui/views/base/scrollable_view.dart';
 
 class BaseView extends StatelessWidget {
   final Widget child;
+  final AppBar appBar;
+  final Color backgroundColor;
   final bool centered;
   final bool withSafeArea;
   final bool safeAreaLeft;
@@ -13,6 +15,8 @@ class BaseView extends StatelessWidget {
 
   BaseView({
     @required this.child,
+    this.appBar,
+    this.backgroundColor,
     this.centered: false,
     this.withSafeArea: true,
     this.safeAreaLeft: true,
@@ -24,6 +28,8 @@ class BaseView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar,
+      backgroundColor: backgroundColor,
       body: (withSafeArea)
           ? SafeArea(
               left: safeAreaLeft,

@@ -14,7 +14,7 @@ class EmptyShopListsView extends StatelessWidget {
   EmptyShopListsView({
     this.title: 'Your Shopping Lists will \n appear here.',
     this.subtitle:
-        'To create Lists and Items, click either of the buttons below.',
+        'To create Lists or Items, click either of the buttons below.',
   });
 
   @override

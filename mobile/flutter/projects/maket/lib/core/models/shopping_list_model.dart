@@ -1,26 +1,32 @@
 import 'package:maket/core/models/item_model.dart';
 
 class ShoppingListModel {
-  final String name;
-  final List<ItemModel> items;
-  final String description;
-  final double budget;
-  final String createDate;
+  String id;
+  String name;
+  List<ItemModel> items;
+  String description;
+  double budget;
+  String createDate;
+  bool selected;
 
   ShoppingListModel({
+    this.id,
     this.name,
     this.items,
     this.description,
     this.budget,
     this.createDate,
+    this.selected: false,
   });
 
   factory ShoppingListModel.fromJson({Map<String, dynamic> json}) {
     return ShoppingListModel(
+      id: json['_id'],
       name: json['name'],
       description: json['description'],
       budget: json['budget'].toDouble(),
       createDate: json['createdDate'],
+      selected: false,
     );
   }
 

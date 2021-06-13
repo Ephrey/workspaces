@@ -12,7 +12,7 @@ class PaddingView extends StatelessWidget {
   PaddingView({
     @required this.child,
     this.horizontal,
-    this.vertical: 0.0,
+    this.vertical: 10.0,
     this.padding,
   }) : assert(child != null);
 
@@ -24,7 +24,7 @@ class PaddingView extends StatelessWidget {
             horizontal: (horizontal != null)
                 ? horizontal
                 : Math.percentage(
-                    percent: Numbers.seven,
+                    percent: Numbers.five,
                     total: ScreenSize(context: context).width,
                   ),
             vertical: vertical,

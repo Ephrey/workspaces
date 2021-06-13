@@ -8,36 +8,35 @@ import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/create_item_view.dart';
+import 'package:maket/ui/widgets/alert_before_delete.dart';
+import 'package:maket/ui/widgets/app_bar.dart';
 import 'package:maket/ui/widgets/buttons/create_items.dart';
 import 'package:maket/ui/widgets/buttons/create_list.dart';
 import 'package:maket/ui/widgets/empty_shopping_list_view.dart';
+import 'package:maket/ui/widgets/fields/search_input_placeholder.dart';
 import 'package:maket/ui/widgets/floating_container.dart';
 import 'package:maket/ui/widgets/list/list_tile.dart';
 import 'package:maket/ui/widgets/loading.dart';
-import 'package:maket/ui/widgets/search_view.dart';
+import 'package:maket/ui/widgets/model_container.dart';
+import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
+import 'package:maket/ui/widgets/snackbar_alert.dart';
+import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/navigation/pop.dart';
 import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/show_modal.dart';
+import 'package:maket/utils/snackbar/hide_snackbar.dart';
+import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
-class ShoppingListsView extends StatelessWidget {
+class ShoppingListsView extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      child: BaseView(safeAreaBottom: false, child: _ShoppingListsViewBody()),
-      onWillPop: () async => false,
-    );
-  }
+  _ShoppingListsViewState createState() => _ShoppingListsViewState();
 }
 
-class _ShoppingListsViewBody extends StatefulWidget {
-  @override
-  __ShoppingListsViewBodyState createState() => __ShoppingListsViewBodyState();
-}
-
-class __ShoppingListsViewBodyState extends State<_ShoppingListsViewBody> {
+class _ShoppingListsViewState extends State<ShoppingListsView> {
   @override
   void initState() {
     locator<ShoppingListViewModel>().getAllListBodies();
@@ -48,67 +47,180 @@ class __ShoppingListsViewBodyState extends State<_ShoppingListsViewBody> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ShoppingListViewModel>(
       create: (context) => locator<ShoppingListViewModel>(),
-      child: Consumer<ShoppingListViewModel>(
-        builder: (context, viewModel, child) {
-          dynamic _shoppingLists = viewModel.response.data;
-
-          print('*** ${_shoppingLists.length} ***');
-          final _hasLists = _shoppingLists.length > Numbers.zero;
-          final _isLoading = viewModel.state == ViewState.busy;
-
-          List<Widget> _view = [
-            if (!_isLoading && _hasLists)
-              _ShoppingListTiles(lists: _shoppingLists),
-            if (_hasLists) SearchView(),
-            if (child != null) child,
-          ];
-
-          if (_isLoading) _view.add(Loading());
-
-          if (!_isLoading && !_hasLists) _view.add(EmptyShopListsView());
-
-          return Stack(children: _view);
-        },
-        child: _ButtonsCreateItemsAndLists(),
+      child: WillPopScope(
+        child: Consumer<ShoppingListViewModel>(
+          builder: (_, viewModel, child) {
+            return BaseView(
+              safeAreaBottom: false,
+              appBar: (viewModel.response.data.length > Numbers.zero)
+                  ? appBar(title: SearchInputPlaceholder(hint: 'Search Lists'))
+                  : null,
+              child: child,
+            );
+          },
+          child: _ShoppingListsViewBody(),
+        ),
+        onWillPop: () async => false,
       ),
     );
   }
 }
 
-class _ShoppingListTiles extends StatelessWidget {
-  final List<dynamic> lists;
+class _ShoppingListsViewBody extends StatelessWidget {
+  void _showAlert({HttpResponse response, BuildContext context}) {
+    Future.delayed(
+      Duration(),
+      () => showSnackBar(
+        flavor: Status.error,
+        context: context,
+        content: SnackBarAlert(message: response.message),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ShoppingListViewModel>(
+      builder: (_, viewModel, child) {
+        final HttpResponse _response = viewModel.response;
+
+        dynamic _shoppingLists = _response.data;
+
+        final bool _hasLists = _shoppingLists.length > Numbers.zero;
+
+        final bool _isLoading = viewModel.state == ViewState.busy;
+
+        List<Widget> _view = [];
+
+        if (!_response.status && viewModel.state == ViewState.idle) {
+          _showAlert(response: _response, context: context);
+        } else {
+          if (!_isLoading && _hasLists)
+            _view.add(_ShoppingListTiles(lists: _shoppingLists));
+        }
+
+        if (child != null) _view.add(child);
+
+        if (_isLoading) _view.add(Loading());
+
+        if (!_isLoading && !_hasLists) _view.add(EmptyShopListsView());
+
+        return Stack(children: _view);
+      },
+      child: _ButtonsCreateItemsAndLists(),
+    );
+  }
+}
+
+class _ShoppingListTiles extends StatefulWidget {
+  final List<ShoppingListModel> lists;
 
   _ShoppingListTiles({this.lists});
 
   @override
-  Widget build(BuildContext context) {
-    List<ShoppingListModel> _lists =
-        ShoppingListModel.shoppingListBodiesFromJson(
-      jsonShoppingListBodies: lists,
-    );
+  __ShoppingListTilesState createState() => __ShoppingListTilesState();
+}
 
+class __ShoppingListTilesState extends State<_ShoppingListTiles> {
+  bool _longPressTriggered = false;
+  bool _isAllListsSelected = false;
+
+  ShoppingListViewModel _viewModel = locator<ShoppingListViewModel>();
+
+  void _onListLongPressed({ShoppingListModel list}) {
+    _setState(() => _longPressTriggered = true);
+    _viewModel.selectShoppingList(list: list);
+    _viewModel.countSelectedList();
+    _showOnLongPressedSnackAction();
+  }
+
+  void _showOnLongPressedSnackAction() {
+    showSnackBar(
+      context: context,
+      content: OnLongPressActions(
+        onCancel: _cancelSelection,
+        selectAllList: _selectAllShoppingLists,
+        onDelete: _showBeforeDeleteWarning,
+      ),
+      duration: kOneYearDuration,
+    );
+  }
+
+  void _cancelSelection() {
+    _viewModel.unselectAllShoppingLists();
+    _setState(() {
+      _longPressTriggered = false;
+      _isAllListsSelected = true;
+    });
+    hideSnackBar(context: context);
+  }
+
+  void _selectAllShoppingLists() {
+    _viewModel.selectAllShoppingLists(shouldSelect: !_isAllListsSelected);
+    _viewModel.countSelectedList();
+    _setState(() => _isAllListsSelected = !_isAllListsSelected);
+  }
+
+  void _showBeforeDeleteWarning() {
+    showModal(
+      context: context,
+      child: ModalContainer(
+        content: AlertBeforeDelete(
+          subTitle: kDeleteListWarningText,
+          onYesPressed: _deleteSelectedLists,
+        ),
+      ),
+    );
+  }
+
+  void _deleteSelectedLists() {
+    _viewModel.deleteSelectedShoppingLists();
+    _cancelSelection();
+    pop(context: context);
+  }
+
+  void _onListTapped({ShoppingListModel list}) {
+    if (_longPressTriggered) {
+      _viewModel.selectShoppingList(list: list);
+      _viewModel.countSelectedList();
+    }
+  }
+
+  void _setState(Function callback) => super.setState(callback);
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.separated(
       itemBuilder: (_, index) {
         if (index == Numbers.zero) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Separator(distanceAsPercent: Numbers.seven),
-              ShoppingListTile(list: _lists[index]),
-              Separator(),
-              _HistoryListTitle(),
-              Separator(distanceAsPercent: Numbers.two),
+              ShoppingListTile(
+                list: widget.lists[index],
+                onTap: _onListTapped,
+                onLongPress: _onListLongPressed,
+                longPressTriggered: _longPressTriggered,
+              ),
+              Separator(distanceAsPercent: Numbers.three),
+              if (widget.lists.length > Numbers.one) _HistoryListTitle(),
+              Separator(distanceAsPercent: Numbers.one, thin: true),
             ],
           );
         }
 
-        if (index != _lists.length) {
-          return ShoppingListTile(list: _lists[index]);
+        if (index != widget.lists.length) {
+          return ShoppingListTile(
+            list: widget.lists[index],
+            onTap: _onListTapped,
+            onLongPress: _onListLongPressed,
+            longPressTriggered: _longPressTriggered,
+          );
         } else {
           return Separator(distanceAsPercent: Numbers.eight);
         }
       },
-      itemCount: _lists.length + Numbers.one,
+      itemCount: widget.lists.length + Numbers.one,
       separatorBuilder: (_, __) => Separator(
         distanceAsPercent: Numbers.one,
         thin: true,
@@ -152,16 +264,12 @@ class _ButtonsCreateItemsAndLists extends StatelessWidget {
 class _HistoryListTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return PaddingView(
-      child: Text(
-        'History',
-        style: TextStyle(
-          fontSize: 20.0,
-          color: kTextSecondaryColor,
-          fontWeight: FontWeight.w800,
-          letterSpacing: kLetterSpacing,
-        ),
-      ),
+    final TextStyle _style = TextStyle(
+      fontSize: Numbers.size(context: context, percent: Numbers.two),
+      color: kTextSecondaryColor,
+      fontWeight: FontWeight.w800,
+      letterSpacing: kLetterSpacing,
     );
+    return PaddingView(child: Text('History', style: _style));
   }
 }

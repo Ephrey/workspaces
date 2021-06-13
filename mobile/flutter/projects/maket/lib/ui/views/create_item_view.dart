@@ -23,7 +23,7 @@ import 'package:provider/provider.dart';
 class CreateItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ModelContainer(
+    return ModalContainer(
       content: ScrollableView(
         child: ChangeNotifierProvider(
           create: (context) => locator<ItemViewModel>(),

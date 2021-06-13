@@ -1,53 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
-import 'package:maket/constants/common.dart';
+import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
 import 'package:maket/ui/widgets/list/list_name.dart';
-import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/gesture_handler.dart';
 import 'package:maket/utils/numbers.dart';
-import 'package:maket/utils/snackbar/hide_snackbar.dart';
-import 'package:maket/utils/snackbar/show_snackbar.dart';
 
 import 'list_subtitle.dart';
 
 class ShoppingListTile extends StatelessWidget {
   final ShoppingListModel list;
+  final Function onTap;
+  final Function onLongPress;
+  final bool longPressTriggered;
 
-  ShoppingListTile({this.list});
+  ShoppingListTile({
+    this.list,
+    this.onTap,
+    this.onLongPress,
+    this.longPressTriggered,
+  });
+
+  dynamic _getIcon({bool selected}) {
+    return (selected && longPressTriggered)
+        ? Icons.check_circle_rounded
+        : Icons.radio_button_unchecked_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureHandler(
       child: Container(
-        color: kWhite,
+        color: (!list.selected) ? kWhite : kSecondaryColor,
         child: PaddingView(
           vertical: Numbers.size(context: context, percent: Numbers.two) +
               Numbers.one,
           child: Row(
             children: [
-              // _CheckBoxIcon(icon: Icons.check_box),
-              // Separator(
-              //   dimension: Dimension.width,
-              //   distanceAsPercent: Numbers.seven,
-              // ),
+              if (list.selected || longPressTriggered)
+                _CheckBoxIcon(
+                  icon: _getIcon(selected: list.selected),
+                  color: list.selected ? kPrimaryColor : kElevationColor,
+                ),
+              if (list.selected || longPressTriggered)
+                Separator(
+                  dimension: Dimension.width,
+                  distanceAsPercent: Numbers.seven,
+                ),
               _ListInfo(list: list),
-              _ArrowIcon(),
+              if (!longPressTriggered) _ArrowIcon(),
             ],
           ),
         ),
       ),
-      onTap: () => print('List typed ...'),
-      onLongPress: () => showSnackBar(
-        context: context,
-        content:
-            OnLongPressActions(onCancel: () => hideSnackBar(context: context)),
-        duration: kOneYearDuration,
-      ),
+      onTap: () => onTap(list: list),
+      onLongPress: (!longPressTriggered) ? () => onLongPress(list: list) : null,
     );
   }
 }
@@ -91,14 +102,12 @@ class _ArrowIcon extends StatelessWidget {
 
 class _CheckBoxIcon extends StatelessWidget {
   final IconData icon;
+  final Color color;
 
-  _CheckBoxIcon({@required this.icon}) : assert(icon != null);
+  _CheckBoxIcon({@required this.icon, this.color}) : assert(icon != null);
 
   @override
   Widget build(BuildContext context) {
-    return GestureHandler(
-      child: Icon(icon, color: kPrimaryColor),
-      onTap: () => print('Icon tapped ...'),
-    );
+    return GestureHandler(child: Icon(icon, color: color));
   }
 }

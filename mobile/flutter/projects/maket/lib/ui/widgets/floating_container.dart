@@ -10,12 +10,14 @@ final double _horizontal = Numbers.asDouble(Numbers.eighteen);
 final double _vertical = Numbers.asDouble(Numbers.twentyFive);
 
 class FloatingContainer extends StatelessWidget {
-  final AlignmentGeometry position;
   final Widget content;
+  final AlignmentGeometry position;
+  final Color flavor;
 
   FloatingContainer({
-    this.position: Alignment.bottomCenter,
     @required this.content,
+    this.position: Alignment.bottomCenter,
+    this.flavor: kWhite,
   });
 
   @override
@@ -28,7 +30,7 @@ class FloatingContainer extends StatelessWidget {
         child: Container(
           width: ScreenSize(context: context).width,
           decoration: BoxDecoration(
-            color: kWhite,
+            color: flavor,
             borderRadius: BorderRadius.circular(
               kFloatingContainerBorderRadius,
             ),
