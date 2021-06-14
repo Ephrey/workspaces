@@ -11,6 +11,8 @@ const {
 const ShoppingListModel = require("../models/shoppingList");
 const authorization = require("../middlewares/authorization");
 const express = require("express");
+
+const mongoose = require("mongoose");
 const router = express.Router();
 
 router.use(authorization);
@@ -22,11 +24,21 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/body", async (req, res) => {
-  res.send(
-    await ShoppingListModel.find({ owner: req.body.owner })
-      .sort("-_id")
-      .select("-items -owner -__v")
-  );
+  const shoppingListBodies = await ShoppingListModel.aggregate([
+    { $match: { owner: mongoose.Types.ObjectId(req.body.owner) } },
+    {
+      $project: {
+        name: 1,
+        itemCount: { $size: "$items" },
+        description: 1,
+        budget: 1,
+        createdDate: 1,
+      },
+    },
+    { $sort: { _id: -1 } },
+  ]);
+
+  res.send(shoppingListBodies);
 });
 
 router.get("/:id", validateId, async (req, res) => {
@@ -111,12 +123,6 @@ router.delete("/delete/many", async (req, res) => {
     "_id",
     listIds
   );
-
-  debug(response.n);
-  debug(response.ok);
-  debug(response.deletedCount);
-  debug(body.owner);
-  debug(listIds);
 
   const deletedCount = response.deletedCount;
 
