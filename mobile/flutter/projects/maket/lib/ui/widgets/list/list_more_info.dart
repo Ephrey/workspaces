@@ -12,6 +12,10 @@ class ListItemCountAndCreateDate extends StatelessWidget {
 
   ListItemCountAndCreateDate({this.fontSize, this.list});
 
+  String _isPlural() {
+    return (list.itemsCount > Numbers.one ? 's' : '');
+  }
+
   @override
   Widget build(BuildContext context) {
     dynamic _separator = Separator(
@@ -23,7 +27,7 @@ class ListItemCountAndCreateDate extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ListSubTitle(
-          text: '0 item',
+          text: '${list.itemsCount} item${_isPlural()}',
           fontWeight: FontWeight.w700,
           fontSize: fontSize,
         ),

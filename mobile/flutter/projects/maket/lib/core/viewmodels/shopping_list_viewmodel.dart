@@ -11,7 +11,7 @@ class ShoppingListViewModel extends BaseViewModel {
 
   HttpResponse _response = Response.build();
 
-  int _selectedListCounter = 0;
+  int _selectedListCounter = Numbers.zero;
 
   HttpResponse get response => _response;
 

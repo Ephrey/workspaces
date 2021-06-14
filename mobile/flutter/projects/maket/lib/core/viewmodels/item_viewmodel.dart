@@ -5,14 +5,22 @@ import 'package:maket/core/viewmodels/base_viewmodel.dart';
 import 'package:maket/handlers/exception/api_exception.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/numbers.dart';
 
 class ItemViewModel extends BaseViewModel {
   ItemService _itemService = locator<ItemService>();
+
+  HttpResponse _response = Response.build();
+
+  HttpResponse get response => _response;
+
+  bool get hasItems => _response.data.length > Numbers.zero;
 
   Future<HttpResponse> create({ItemModel item}) async {
     busy;
     try {
       await _itemService.create(item: item.toJson());
+      _resetLocalItemList();
       idle;
       return Response.build(message: 'Item created');
     } on ApiException catch (ex) {
@@ -27,7 +35,15 @@ class ItemViewModel extends BaseViewModel {
   Future<HttpResponse> getAll() async {
     busy;
     try {
+      if (hasItems) {
+        idle;
+        return response;
+      }
+
       final List<dynamic> _items = await _itemService.getAll();
+
+      _response.data = _items;
+
       idle;
       return Response.build(data: _items);
     } on ApiException catch (ex) {
@@ -41,6 +57,7 @@ class ItemViewModel extends BaseViewModel {
   }
 
   Future<HttpResponse> getShoppingListItemsGroupedByCategory() async {
+    print(response.data.length);
     final HttpResponse _response = await getAll();
 
     if (!_response.status) return _response;
@@ -76,5 +93,10 @@ class ItemViewModel extends BaseViewModel {
 
     _response.data = _itemsGroupedByCategory;
     return _response;
+  }
+
+  // local helper functions.
+  void _resetLocalItemList() {
+    _response = Response.build();
   }
 }

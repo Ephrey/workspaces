@@ -79,7 +79,7 @@ class _ListInfo extends StatelessWidget {
             Separator(distanceAsPercent: Numbers.one),
           if (list.description.isNotEmpty) ListSubTitle(text: list.description),
           Separator(distanceAsPercent: Numbers.one),
-          ListItemCountAndCreateDate(),
+          ListItemCountAndCreateDate(list: list),
         ],
       ),
     );

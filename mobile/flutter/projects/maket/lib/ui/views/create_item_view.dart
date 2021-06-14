@@ -25,8 +25,8 @@ class CreateItemView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ModalContainer(
       content: ScrollableView(
-        child: ChangeNotifierProvider(
-          create: (context) => locator<ItemViewModel>(),
+        child: ChangeNotifierProvider<ItemViewModel>.value(
+          value: locator<ItemViewModel>(),
           child: _CreateItemForm(),
         ),
       ),

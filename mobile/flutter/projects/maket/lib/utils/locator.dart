@@ -13,7 +13,7 @@ final GetIt locator = GetIt.instance;
 void setupLocator() {
   locator.registerFactory<RegisterViewModel>(() => RegisterViewModel());
   locator.registerFactory<SignInViewModel>(() => SignInViewModel());
-  locator.registerFactory<ItemViewModel>(() => ItemViewModel());
+  locator.registerLazySingleton<ItemViewModel>(() => ItemViewModel());
   locator.registerLazySingleton<ShoppingListViewModel>(
       () => ShoppingListViewModel());
 
