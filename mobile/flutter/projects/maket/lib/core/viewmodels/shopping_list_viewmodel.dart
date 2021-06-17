@@ -1,6 +1,8 @@
+import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/core/services/internal/shopping_list_service.dart';
 import 'package:maket/core/viewmodels/base_viewmodel.dart';
+import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/handlers/exception/api_exception.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
@@ -11,13 +13,31 @@ class ShoppingListViewModel extends BaseViewModel {
 
   HttpResponse _response = Response.build();
 
-  int _selectedListCounter = Numbers.zero;
+  HttpResponse _responseListItems = Response.build();
 
   HttpResponse get response => _response;
 
+  HttpResponse get responseListItems => _responseListItems;
+
+  int _selectedListCounter = Numbers.zero;
+
+  bool _isAllListSelected = false;
+
+  double _spent = Numbers.asDouble(Numbers.zero);
+
   int get getSelectedListCounter => _selectedListCounter;
 
-  bool get hasLists => response.data.length > Numbers.zero;
+  bool get hasLists => listSize > Numbers.zero;
+
+  bool get hasItems => itemsSize > Numbers.zero;
+
+  int get listSize => response.data.length;
+
+  int get itemsSize => responseListItems.data.length;
+
+  bool get isAllSelected => _isAllListSelected;
+
+  String get getSpent => _spent.toStringAsFixed(2);
 
   Future<HttpResponse> create({ShoppingListModel shoppingList}) async {
     busy;
@@ -66,6 +86,61 @@ class ShoppingListViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> getListItems({String listId}) async {
+    busy;
+    try {
+      List<ItemModel> _items = ItemViewModel.orderItemsByCategories(
+        items: await _service.getItemsById(listId: listId),
+      );
+
+      _responseListItems = Response.build(data: _items);
+      idle;
+    } on ApiException catch (ex) {
+      print(ex.message);
+      _responseListItems =
+          Response.build(status: false, code: ex.code, message: ex.message);
+      idle;
+    } catch (ex) {
+      print(ex);
+      _responseListItems =
+          Response.build(status: false, message: 'Can\'t get the Lists');
+      idle;
+    }
+  }
+
+  Future<HttpResponse> setListItemPrice({ItemModel item}) async {
+    // return Future.delayed(Duration(seconds: 3), () {
+    //   print(item.id);
+    //   print(item.price);
+    //   print(item.quantity);
+    //   return Response.build();
+    //
+    //   return Response.build();
+    // });
+
+    try {
+      _responseListItems.data.forEach((ItemModel currentItem) {
+        if (currentItem.id == item.id) {
+          currentItem.price = item.price;
+          currentItem.quantity = item.quantity;
+          currentItem.bought = true;
+          currentItem.selected = true;
+        }
+      });
+
+      _calculateSpent();
+
+      idle;
+      return Response.build(message: 'Item Price Set');
+    } on ApiException catch (ex) {
+      print('api ex. ${ex.message}');
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      print(ex);
+      return Response.build(status: false, message: 'Failed to set the Price');
+    }
+  }
+
   Future<void> selectShoppingList({ShoppingListModel list}) async {
     busy;
     _response.data.forEach((ShoppingListModel currentList) {
@@ -83,13 +158,14 @@ class ShoppingListViewModel extends BaseViewModel {
       currentList.selected = false;
       return currentList;
     });
+    _isAllListSelected = false;
     idle;
   }
 
-  Future<void> selectAllShoppingLists({bool shouldSelect}) async {
+  Future<void> selectAllShoppingLists() async {
     busy;
     _response.data.forEach((ShoppingListModel currentList) {
-      currentList.selected = shouldSelect;
+      currentList.selected = !isAllSelected;
       return currentList;
     });
     idle;
@@ -127,6 +203,10 @@ class ShoppingListViewModel extends BaseViewModel {
     idle;
   }
 
+  void setIsAllSelected() {
+    _isAllListSelected = (listSize == getSelectedListCounter);
+  }
+
   // Local Methods
 
   List<String> _getSelectedListsIds() {
@@ -158,5 +238,13 @@ class ShoppingListViewModel extends BaseViewModel {
     (hasLists)
         ? _response.data.insert(Numbers.zero, _newListFromJson)
         : response.data = [_newListFromJson];
+  }
+
+  void _calculateSpent() {
+    responseListItems.data.forEach((ItemModel item) {
+      if (item.selected && item.price > 0.0 && item.bought) {
+        _spent = (_spent + item.price);
+      }
+    });
   }
 }

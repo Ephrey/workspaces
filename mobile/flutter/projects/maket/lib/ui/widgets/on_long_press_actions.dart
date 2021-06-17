@@ -72,7 +72,11 @@ class _ActionButtons extends StatelessWidget {
   final Function onDelete;
   final bool hasSelectedList;
 
-  _ActionButtons({this.selectAllList, this.onDelete, this.hasSelectedList});
+  _ActionButtons({
+    this.selectAllList,
+    this.onDelete,
+    this.hasSelectedList,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +93,10 @@ class _ActionButtons extends StatelessWidget {
             distanceAsPercent: Numbers.eight,
           ),
         GestureHandler(
-          child: _Icon(icon: FontAwesomeIcons.checkSquare),
+          child: _Icon(
+              icon: (context.watch<ShoppingListViewModel>().isAllSelected)
+                  ? FontAwesomeIcons.solidCheckSquare
+                  : FontAwesomeIcons.checkSquare),
           onTap: selectAllList,
         ),
       ],

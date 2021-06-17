@@ -4,6 +4,8 @@ import 'package:maket/utils/math.dart';
 import 'package:maket/utils/screen_size.dart';
 
 class Numbers {
+  Numbers._();
+
   static const int zero = 0;
   static const int one = 1;
   static const int two = 2;
@@ -82,6 +84,15 @@ class Numbers {
   }
 
   static double stringToDouble(String string) {
-    return (string == '') ? asDouble(zero) : asDouble(parseInt(string));
+    return (!isNumeric(string)) ? asDouble(zero) : parseDouble(string);
+  }
+
+  static double parseDouble(dynamic value) {
+    return double.parse(value);
+  }
+
+  static bool isNumeric(String value) {
+    if (value == null) return false;
+    return double.tryParse(value) != null;
   }
 }

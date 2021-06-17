@@ -12,7 +12,7 @@ import 'package:maket/ui/widgets/alert_before_delete.dart';
 import 'package:maket/ui/widgets/app_bar.dart';
 import 'package:maket/ui/widgets/buttons/create_items.dart';
 import 'package:maket/ui/widgets/buttons/create_list.dart';
-import 'package:maket/ui/widgets/empty_shopping_list_view.dart';
+import 'package:maket/ui/widgets/empty_message_alert_view.dart';
 import 'package:maket/ui/widgets/fields/search_input_placeholder.dart';
 import 'package:maket/ui/widgets/floating_container.dart';
 import 'package:maket/ui/widgets/list/list_tile.dart';
@@ -103,7 +103,7 @@ class _ShoppingListsViewBody extends StatelessWidget {
 
         if (_isLoading) _view.add(Loading());
 
-        if (!_isLoading && !_hasLists) _view.add(EmptyShopListsView());
+        if (!_isLoading && !_hasLists) _view.add(EmptyMessageAlert());
 
         return Stack(children: _view);
       },
@@ -123,7 +123,6 @@ class _ShoppingListTiles extends StatefulWidget {
 
 class __ShoppingListTilesState extends State<_ShoppingListTiles> {
   bool _longPressTriggered = false;
-  bool _isAllListsSelected = false;
 
   ShoppingListViewModel _viewModel = locator<ShoppingListViewModel>();
 
@@ -150,15 +149,14 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
     _viewModel.unselectAllShoppingLists();
     _setState(() {
       _longPressTriggered = false;
-      _isAllListsSelected = false;
     });
     hideSnackBar(context: context);
   }
 
   void _selectAllShoppingLists() {
-    _viewModel.selectAllShoppingLists(shouldSelect: !_isAllListsSelected);
+    _viewModel.selectAllShoppingLists();
     _viewModel.countSelectedList();
-    _setState(() => _isAllListsSelected = !_isAllListsSelected);
+    _viewModel.setIsAllSelected();
   }
 
   void _showBeforeDeleteWarning() {
@@ -199,7 +197,13 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
     if (_longPressTriggered) {
       _viewModel.selectShoppingList(list: list);
       _viewModel.countSelectedList();
-      _isAllListsSelected = false;
+      _viewModel.setIsAllSelected();
+    } else {
+      pushRoute(
+        context: context,
+        name: AppRoute.shoppingListView,
+        arguments: list,
+      );
     }
   }
 

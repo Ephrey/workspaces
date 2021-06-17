@@ -24,9 +24,23 @@ const String kTextButtonDone = 'Done';
 const String kTextCreateItems = 'Create Items';
 const String kTextCreateLists = 'Add a List';
 
-const String kEmptyListWarningMessage =
+const String kEmptyListItemsWarningMessage =
     'You have no Items to add to this list. '
     'Next create items and add them later.';
+
+const String kTitleTextEmptyShoppingLists =
+    'Your Shopping Lists will \n appear here.';
+
+const String kSubTitleTextEmptyShoppingLists = 'To create Lists or Items, '
+    'click either of the buttons below.';
+
+const String kTitleTextNoItemsForList = 'Your Shopping List is empty';
+const String kSubTitleTextNoItemsForList = 'Click "Add Item" button below '
+    'to add items to this list.';
+
+const String kOnErrorReloadMessage = 'Ooops Sorry !';
+const String kOnErrorReloadSubMessage = 'Close and'
+    'Reopen the App then try again.';
 
 const kDeleteListWarningText = 'This action is irreversible. '
     'All selected Shopping Lists will be deleted.';

@@ -116,7 +116,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
   Future<void> _getItems() async {
     HttpResponse _response =
-        await locator<ItemViewModel>().getShoppingListItemsGroupedByCategory();
+        await locator<ItemViewModel>().getAllItemsGroupedByCategories();
 
     if (_response.status) {
       if (!_notifyIfEmptyItems(_response.data)) {
@@ -137,7 +137,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
         flavor: Status.warning,
         context: context,
         content: SnackBarAlert(
-          message: kEmptyListWarningMessage,
+          message: kEmptyListItemsWarningMessage,
           textColor: kPrimaryColor,
         ),
       );
@@ -367,7 +367,7 @@ class _SetShoppingListNameAndDescriptionForm extends StatelessWidget {
           controller: budgetController,
           onChange: handleBudgetField,
           state: budgetState,
-          keyBorderType: TextInputType.number,
+          keyBorderType: TextInputType.numberWithOptions(decimal: true),
         ),
         Separator(),
         FormInput(
@@ -493,7 +493,11 @@ class _ItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpandedView(
-      child: ListItems(items: items, onItemTaped: onItemTap),
+      child: ListItems(
+        items: items,
+        onItemTaped: onItemTap,
+        bottomPadding: false,
+      ),
     );
   }
 }

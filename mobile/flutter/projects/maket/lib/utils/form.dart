@@ -24,4 +24,7 @@ class Forms {
 
   static const int listDescriptionMinLength = Numbers.five;
   static const int listDescriptionMaxLength = Numbers.hundred;
+
+  static const double minItemPrice = 1.0;
+  static const double maxItemPrice = 500000.00;
 }

@@ -10,22 +10,32 @@ class ListItems extends StatelessWidget {
   final Function onItemLongPress;
   final double yPadding;
   final double xPadding;
+  final bool bottomPadding;
 
-  const ListItems({
-    @required this.items,
-    @required this.onItemTaped,
-    this.onItemLongPress,
-    this.yPadding: 0.0,
-    this.xPadding: 0.0,
-  }) : assert(items != null);
+  const ListItems(
+      {@required this.items,
+      @required this.onItemTaped,
+      this.onItemLongPress,
+      this.yPadding: 0.0,
+      this.xPadding: 0.0,
+      this.bottomPadding: true})
+      : assert(items != null);
 
   @override
   Widget build(BuildContext context) {
+    final int _itemsSize = items.length;
+    final int _itemCount =
+        _itemsSize + ((bottomPadding) ? Numbers.one : Numbers.zero);
+
     return ListView.separated(
       padding: EdgeInsets.symmetric(vertical: yPadding, horizontal: xPadding),
       addAutomaticKeepAlives: false,
-      itemCount: items.length,
+      itemCount: _itemCount,
       itemBuilder: (BuildContext context, int itemIndex) {
+        if (_itemsSize == itemIndex && bottomPadding) {
+          return Separator(distanceAsPercent: Numbers.eleven);
+        }
+
         return ItemTitle(
           item: items[itemIndex],
           itemIndex: itemIndex,

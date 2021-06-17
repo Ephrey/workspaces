@@ -104,6 +104,7 @@ class FormInput extends StatelessWidget {
     TextStyle _inputTexStyle = TextStyle(
       color: (state == null) ? kPrimaryColor : getStatusColor(state),
       fontSize: _textSize,
+      fontWeight: (state == Status.success) ? FontWeight.w800 : FontWeight.w500,
     );
 
     Widget _getInput(InputType type) {

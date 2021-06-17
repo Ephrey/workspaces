@@ -56,15 +56,20 @@ class ItemViewModel extends BaseViewModel {
     }
   }
 
-  Future<HttpResponse> getShoppingListItemsGroupedByCategory() async {
-    print(response.data.length);
+  Future<HttpResponse> getAllItemsGroupedByCategories() async {
     final HttpResponse _response = await getAll();
 
     if (!_response.status) return _response;
 
+    _response.data = orderItemsByCategories(items: _response.data);
+
+    return _response;
+  }
+
+  static List<ItemModel> orderItemsByCategories({List<dynamic> items}) {
     Map<String, List<ItemModel>> _items = {};
 
-    for (Map<String, dynamic> item in _response.data) {
+    for (Map<String, dynamic> item in items) {
       ItemModel _item = ItemModel.fromJsonListItem(json: item);
 
       if (_items[_item.category] == null) {
@@ -74,7 +79,7 @@ class ItemViewModel extends BaseViewModel {
       }
     }
 
-    final List<ItemModel> _itemsGroupedByCategory = [];
+    List<ItemModel> _itemsGroupedByCategory = [];
 
     _items.forEach((category, items) {
       ItemModel _itemsTitle = ItemModel(
@@ -91,11 +96,11 @@ class ItemViewModel extends BaseViewModel {
       }
     });
 
-    _response.data = _itemsGroupedByCategory;
-    return _response;
+    return _itemsGroupedByCategory;
   }
 
   // local helper functions.
+
   void _resetLocalItemList() {
     _response = Response.build();
   }

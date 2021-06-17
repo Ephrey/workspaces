@@ -9,6 +9,7 @@ class ShoppingListModel {
   double budget;
   String createDate;
   bool selected;
+  double spent;
 
   ShoppingListModel({
     this.id,
@@ -19,6 +20,7 @@ class ShoppingListModel {
     this.budget,
     this.createDate,
     this.selected: false,
+    this.spent: 0.0,
   });
 
   factory ShoppingListModel.fromJson({Map<String, dynamic> json}) {
@@ -32,6 +34,7 @@ class ShoppingListModel {
       budget: json['budget'].toDouble(),
       createDate: json['createdDate'],
       selected: false,
+      spent: (json['spent'] != null) ? json['spent'] : 0.0,
     );
   }
 

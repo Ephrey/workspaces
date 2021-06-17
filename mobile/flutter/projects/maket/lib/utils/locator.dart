@@ -7,6 +7,7 @@ import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/core/viewmodels/register_viewmodel.dart';
 import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/core/viewmodels/sign_in_viewmodel.dart';
+import 'package:maket/utils/date.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -22,4 +23,5 @@ void setupLocator() {
   locator.registerLazySingleton<ItemService>(() => ItemService());
   locator
       .registerLazySingleton<ShoppingListService>(() => ShoppingListService());
+  locator.registerLazySingleton<Date>(() => Date());
 }

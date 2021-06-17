@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
+import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/widgets/separator.dart';
@@ -7,14 +8,13 @@ import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
 
-class EmptyShopListsView extends StatelessWidget {
+class EmptyMessageAlert extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  EmptyShopListsView({
-    this.title: 'Your Shopping Lists will \n appear here.',
-    this.subtitle:
-        'To create Lists or Items, click either of the buttons below.',
+  EmptyMessageAlert({
+    this.title: kTitleTextEmptyShoppingLists,
+    this.subtitle: kSubTitleTextEmptyShoppingLists,
   });
 
   @override
@@ -35,7 +35,7 @@ class EmptyShopListsView extends StatelessWidget {
           _Text(text: title, fontSize: _titleSize),
           Separator(
             dimension: Dimension.height,
-            distanceAsPercent: Numbers.three,
+            distanceAsPercent: Numbers.two,
           ),
           _Text(text: subtitle, fontSize: _subTitleSize),
         ],
