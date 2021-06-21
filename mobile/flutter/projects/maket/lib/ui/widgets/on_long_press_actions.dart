@@ -25,7 +25,7 @@ class OnLongPressActions extends StatelessWidget {
         vertical: Numbers.asDouble(Numbers.three),
         child: Consumer<ShoppingListViewModel>(
           builder: (_, viewModel, child) {
-            final int _counter = viewModel.getSelectedListCounter;
+            final int _counter = viewModel.selectedElementsCounter;
             final bool _hasSelectedList = (_counter > Numbers.zero);
 
             return Row(

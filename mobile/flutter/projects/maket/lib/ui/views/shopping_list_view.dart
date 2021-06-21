@@ -10,6 +10,8 @@ import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/stacked_view.dart';
 import 'package:maket/ui/views/set_item_price_view.dart';
+import 'package:maket/ui/widgets/add_item_to_shopping_list.dart';
+import 'package:maket/ui/widgets/alert_before_delete.dart';
 import 'package:maket/ui/widgets/buttons/add_item_to_list_button.dart';
 import 'package:maket/ui/widgets/empty_message_alert_view.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
@@ -17,22 +19,128 @@ import 'package:maket/ui/widgets/list/list_more_info.dart';
 import 'package:maket/ui/widgets/list/list_name.dart';
 import 'package:maket/ui/widgets/list/list_subtitle.dart';
 import 'package:maket/ui/widgets/loading.dart';
+import 'package:maket/ui/widgets/model_container.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/navigation/pop.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/show_modal.dart';
 import 'package:maket/utils/snackbar/hide_snackbar.dart';
 import 'package:maket/utils/snackbar/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
-class ShoppingListView extends StatelessWidget {
+class ShoppingListView extends StatefulWidget {
   final ShoppingListModel list;
 
   ShoppingListView({this.list});
+
+  @override
+  _ShoppingListViewState createState() => _ShoppingListViewState();
+}
+
+class _ShoppingListViewState extends State<ShoppingListView> {
+  ShoppingListViewModel _viewModel = locator<ShoppingListViewModel>();
+
+  bool isLoading = false;
+
+  List<ItemModel> _selectedMissingItems = [];
+
+  Future<dynamic> _showAddItemsToList() async {
+    _setState(() => isLoading = true);
+
+    HttpResponse _response = await _viewModel.getMissingItemsFromList();
+
+    if (!_response.status) {
+      _showErrorMessage(message: _response.message);
+      return false;
+    }
+
+    if (_response.status && !_response.data.isNotEmpty) {
+      _showWarningMessage(message: 'All Items have been added to this list.');
+      return false;
+    }
+
+    _hideLoading();
+
+    showModal(
+      context: context,
+      backgroundColor: kBgPrimaryColor,
+      child: AddItemsToShoppingListView(
+        items: _response.data,
+        onBackButtonPress: () => pop(context: context),
+        canSubmit: false,
+        onItemTap: _addItemToShoppingList,
+        saveShoppingList: _addMissingItemsToList,
+      ),
+    );
+  }
+
+  Future<void> _addItemToShoppingList(ItemModel selectedItem) async {
+    if (selectedItem.selected) {
+      _selectedMissingItems.add(selectedItem);
+    } else {
+      _selectedMissingItems.removeWhere((item) => item.id == selectedItem.id);
+    }
+  }
+
+  Future<void> _addMissingItemsToList({BuildContext context}) async {
+    _selectedMissingItems.forEach((ItemModel item) => item.selected = false);
+
+    HttpResponse _response = await _viewModel.addMissingItemsToShoppingList(
+      items: _selectedMissingItems,
+      listId: widget.list.id,
+    );
+
+    pop(context: context);
+
+    if (!_response.status) {
+      _showErrorMessage(message: _response.message);
+    }
+
+    if (_response.status) {
+      _showAlert(
+        context: context,
+        message: _response.message,
+        status: Status.success,
+      );
+    }
+
+    _selectedMissingItems.clear();
+  }
+
+  void _showErrorMessage({String message}) {
+    _hideLoading();
+    _showAlert(context: context, message: message, status: Status.error);
+  }
+
+  void _showWarningMessage({String message}) {
+    _hideLoading();
+    _showAlert(context: context, message: message, status: Status.warning);
+  }
+
+  void _showAlert({BuildContext context, String message, Status status}) {
+    showSnackBar(
+      context: context,
+      flavor: status,
+      content: SnackBarAlert(
+        message: message,
+        textColor: getStatusTextColor(status),
+      ),
+    );
+  }
+
+  _setState(fn) {
+    setState(fn);
+    super.setState(fn);
+  }
+
+  void _hideLoading() {
+    _setState(() => isLoading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +151,15 @@ class ShoppingListView extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _ShoppingListInfoBlock(list: list),
-              _ShoppingListItems(listId: list.id),
+              _ShoppingListInfoBlock(list: widget.list),
+              _ShoppingListItems(listId: widget.list.id),
               // Separator(distanceAsPercent: Numbers.ten),
             ],
           ),
-          AddItemToListButton(), // PlusButton(),
+          AddItemToListButton(
+            onTap: () => _showAddItemsToList(),
+            isLoading: isLoading,
+          ), // PlusButton(),
         ],
       ),
     );
@@ -111,11 +222,12 @@ class _ShoppingListMoreInfo extends StatelessWidget {
             fontSize: Numbers.size(context: context, percent: Numbers.two) -
                 Numbers.four,
             list: list,
+            showSpent: false,
           ),
         ),
         ChangeNotifierProvider<ShoppingListViewModel>.value(
           value: locator<ShoppingListViewModel>(),
-          child: _Spent(spent: 0.0),
+          child: _Spent(),
         ),
       ],
     );
@@ -123,10 +235,6 @@ class _ShoppingListMoreInfo extends StatelessWidget {
 }
 
 class _Spent extends StatelessWidget {
-  final double spent;
-
-  _Spent({this.spent});
-
   @override
   Widget build(BuildContext context) {
     TextStyle _spentAmountStyle = TextStyle(
@@ -136,19 +244,23 @@ class _Spent extends StatelessWidget {
           (Numbers.size(context: context, percent: Numbers.two) - Numbers.two),
     );
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        const Text('spt.', style: TextStyle(color: kTextSecondaryColor)),
-        Separator(
-          dimension: Dimension.width,
-          distanceAsPercent: Numbers.one,
-        ),
-        Text('R${context.watch<ShoppingListViewModel>().getSpent}',
-            style: _spentAmountStyle),
-      ],
-    );
+    return (context.watch<ShoppingListViewModel>().getSpent != "0.00")
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              const Text('spt.', style: TextStyle(color: kTextSecondaryColor)),
+              Separator(
+                dimension: Dimension.width,
+                distanceAsPercent: Numbers.one,
+              ),
+              Text(
+                'R${context.watch<ShoppingListViewModel>().getSpent}',
+                style: _spentAmountStyle,
+              ),
+            ],
+          )
+        : Text('');
   }
 }
 
@@ -162,18 +274,74 @@ class _ShoppingListItems extends StatefulWidget {
 }
 
 class __ShoppingListItemsState extends State<_ShoppingListItems> {
-  void _handleItemTap(ItemModel item) {
-    showModal(context: context, child: SetItemPriceView(item: item));
+  ShoppingListViewModel _viewModel = locator<ShoppingListViewModel>();
+
+  bool _itemSelectionTriggered = false;
+
+  Future<void> _handleItemTap(ItemModel item) async {
+    if (!_itemSelectionTriggered) {
+      _showSetItemPriceView(item: item);
+    } else {
+      await _selectItem(item: item);
+    }
   }
 
-  void _handleItemLongPress(ItemModel item) {
+  void _showSetItemPriceView({ItemModel item}) {
+    showModal(
+      context: context,
+      child: SetItemPriceView(item: item, listId: widget.listId),
+    );
+  }
+
+  Future<void> _handleItemLongPress(ItemModel item) async {
+    if (_itemSelectionTriggered) return false;
+
+    _toggleSelectionState();
+
+    await _selectItem(item: item);
+
     showSnackBar(
       context: context,
       content: OnLongPressActions(
-        onCancel: () => hideSnackBar(context: context),
+        onCancel: _handleSelectionCancel,
+        selectAllList: _selectAllItems,
+        onDelete: _deleteAllSelectedItems,
       ),
       duration: kOneYearDuration,
     );
+  }
+
+  Future<void> _handleSelectionCancel() async {
+    _toggleSelectionState();
+    await _viewModel.unSelectAllListItems();
+    hideSnackBar(context: context);
+  }
+
+  Future<void> _selectItem({ItemModel item}) async {
+    await _viewModel.selectListItems(item: item);
+  }
+
+  Future<void> _selectAllItems() async {
+    await _viewModel.selectAllItems();
+  }
+
+  void _deleteAllSelectedItems() {
+    showModal(
+      context: context,
+      child: ModalContainer(
+        content: AlertBeforeDelete(
+          subTitle: kDeleteItemsWarningText,
+          onYesPressed: () async {
+            await _viewModel.deleteAllSelectedItems();
+            pop(context: context);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _toggleSelectionState() {
+    _setState(() => _itemSelectionTriggered = !_itemSelectionTriggered);
   }
 
   void _shoErrorMessage({HttpResponse response}) {
@@ -184,22 +352,22 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
         ));
   }
 
-  @override
-  void initState() {
-    _future(() => locator<ShoppingListViewModel>().getListItems(
-          listId: widget.listId,
-        ));
-    super.initState();
-  }
-
   void _future(Function callback) {
     Future.delayed(Duration.zero, callback);
+  }
+
+  void _setState(Function fn) => super.setState(fn);
+
+  @override
+  void initState() {
+    _future(() => _viewModel.getListItems(listId: widget.listId));
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ShoppingListViewModel>.value(
-      value: locator<ShoppingListViewModel>(),
+      value: _viewModel,
       child: ExpandedView(
         child: Consumer<ShoppingListViewModel>(
           builder: (_, viewModel, loader) {

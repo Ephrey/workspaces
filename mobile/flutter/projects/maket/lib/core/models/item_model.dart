@@ -29,13 +29,15 @@ class ItemModel {
   }
 
   factory ItemModel.fromJsonListItem({Map<String, dynamic> json}) {
+    double price = (json['price'] != null)
+        ? json['price'].toDouble()
+        : Numbers.asDouble(Numbers.zero);
+
     return ItemModel(
       id: (json['_id'] != null) ? json['_id'] : json['id'],
       name: json['name'],
       category: json['category'],
-      price: (json['price'] != null)
-          ? json['price'].toDouble()
-          : Numbers.zero.toDouble(),
+      price: price,
       bought: (json['bought'] != null) ? json['bought'] : false,
       quantity: (json['quantity'] != null) ? json['quantity'] : Numbers.one,
       selected: false,
@@ -72,12 +74,35 @@ class ItemModel {
     };
   }
 
-  static List<Map<String, dynamic>> itemsToJson({List<ItemModel> items}) {
+  Map<String, dynamic> toJsonForQueryParamsOnSetPrice() {
+    return {
+      'price': '${this.price}',
+      'bought': '${this.bought}',
+      'quantity': '${this.quantity}',
+    };
+  }
+
+  static List<Map<String, dynamic>> itemsToJson({
+    List<ItemModel> items,
+    bool removeSelectedField: true,
+    bool removeTitles: false,
+  }) {
     List<Map<String, dynamic>> _items = [];
+
     for (ItemModel item in items) {
       Map<String, dynamic> _item = item.toJsonListItem();
-      _item.remove(ItemConstants.keySelected);
-      _items.add(_item);
+
+      if (removeSelectedField) {
+        _item.remove(ItemConstants.keySelected);
+      }
+
+      if (removeTitles) {
+        if (item.category != ItemConstants.itemGroupTitle) {
+          _items.add(_item);
+        }
+      } else {
+        _items.add(_item);
+      }
     }
     return _items;
   }

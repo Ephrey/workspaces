@@ -35,17 +35,12 @@ class ItemViewModel extends BaseViewModel {
   Future<HttpResponse> getAll() async {
     busy;
     try {
-      if (hasItems) {
-        idle;
-        return response;
-      }
-
       final List<dynamic> _items = await _itemService.getAll();
 
-      _response.data = _items;
+      _response = Response.build(data: _items);
 
       idle;
-      return Response.build(data: _items);
+      return _response;
     } on ApiException catch (ex) {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
@@ -56,10 +51,14 @@ class ItemViewModel extends BaseViewModel {
     }
   }
 
-  Future<HttpResponse> getAllItemsGroupedByCategories() async {
+  Future<dynamic> getAllItemsGroupedByCategories() async {
     final HttpResponse _response = await getAll();
 
     if (!_response.status) return _response;
+
+    if (_response.data.first is ItemModel) {
+      return _response;
+    }
 
     _response.data = orderItemsByCategories(items: _response.data);
 

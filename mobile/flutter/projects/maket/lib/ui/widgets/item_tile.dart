@@ -24,7 +24,7 @@ class ItemTitle extends StatelessWidget {
   Icon _getCheckBoxIcon({bool isSelected, bool isItemsTitle}) {
     if (isSelected) {
       return (!isItemsTitle)
-          ? Icon(Icons.check_box, color: kPrimaryColor)
+          ? Icon(Icons.check_circle_rounded, color: kPrimaryColor)
           : null;
     } else {
       return null;
@@ -67,6 +67,8 @@ class ItemTitle extends StatelessWidget {
     double _screenHeightTwoPercent =
         Numbers.size(context: context, percent: Numbers.two);
 
+    final _fontSize = (_screenHeightTwoPercent - Numbers.two);
+
     bool _isItemsTitle = (item.category == ItemConstants.itemGroupTitle);
 
     double _horizontalPadding = _getTileHorizontalPadding(
@@ -80,11 +82,15 @@ class ItemTitle extends StatelessWidget {
       color: (!_isItemsTitle)
           ? (_isSelected)
               ? kTextSecondaryColor
-              : kPrimaryColor
+              : (item.bought)
+                  ? kTextSecondaryColor
+                  : kPrimaryColor
           : kTextSecondaryColor,
-      fontSize: (_screenHeightTwoPercent - Numbers.two),
+      fontSize: _fontSize,
       fontWeight: (!_isItemsTitle) ? FontWeight.w400 : FontWeight.w700,
       letterSpacing: 0.5,
+      decoration:
+          (item.bought) ? TextDecoration.lineThrough : TextDecoration.none,
     );
 
     Color _tileBackgroundColor = _getTileBackgroundColor(
@@ -103,23 +109,17 @@ class ItemTitle extends StatelessWidget {
       isItemsTitle: _isItemsTitle,
     );
 
-    Row _priceAndCheck = (!_isItemsTitle && _isSelected)
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_getItemPrice(item: item) > Numbers.asDouble(Numbers.zero))
-                Text(
-                  'R${_getItemPrice(item: item) * item.quantity}',
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: (_screenHeightTwoPercent - Numbers.two),
-                  ),
-                ),
-              Separator(dimension: Dimension.width),
-              Icon(Icons.check, color: kPrimaryColor),
-            ],
-          )
-        : null;
+    List<Widget> _priceAndCheck = [];
+
+    if (item.bought && !_isItemsTitle && !_isSelected) {
+      _priceAndCheck.add(CustomChip(item: item));
+      _priceAndCheck.add(Separator(dimension: Dimension.width, thin: true));
+      _priceAndCheck.add(_ItemPrice(item: item, fontSize: _fontSize));
+    }
+
+    if (_isSelected) {
+      _priceAndCheck.add(Icon(Icons.check, color: kPrimaryColor));
+    }
 
     return ListTile(
       leading: isLongPress ? _checkIcon : null,
@@ -136,7 +136,40 @@ class ItemTitle extends StatelessWidget {
       onLongPress: (_isItemsTitle || (onItemLongPress == null))
           ? null
           : () => onItemLongPress(item),
-      trailing: _priceAndCheck,
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: _priceAndCheck),
+    );
+  }
+}
+
+class _ItemPrice extends StatelessWidget {
+  final ItemModel item;
+  final double fontSize;
+
+  const _ItemPrice({this.item, this.fontSize});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'R${Numbers.stringAsFixed(number: item.price * item.quantity)}',
+      style: TextStyle(color: kPrimaryColor, fontSize: fontSize),
+    );
+  }
+}
+
+class CustomChip extends StatelessWidget {
+  const CustomChip({@required this.item});
+
+  final ItemModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      label: Text(
+        '${item.price} x ${item.quantity}',
+        style: TextStyle(fontSize: Numbers.asDouble(Numbers.ten)),
+      ),
+      padding: EdgeInsets.all(Numbers.asDouble(Numbers.two)),
+      backgroundColor: kSecondaryColor,
     );
   }
 }

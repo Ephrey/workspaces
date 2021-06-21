@@ -35,7 +35,7 @@ const String kSubTitleTextEmptyShoppingLists = 'To create Lists or Items, '
     'click either of the buttons below.';
 
 const String kTitleTextNoItemsForList = 'Your Shopping List is empty';
-const String kSubTitleTextNoItemsForList = 'Click "Add Item" button below '
+const String kSubTitleTextNoItemsForList = 'Click the "+" button below '
     'to add items to this list.';
 
 const String kOnErrorReloadMessage = 'Ooops Sorry !';
@@ -44,6 +44,9 @@ const String kOnErrorReloadSubMessage = 'Close and'
 
 const kDeleteListWarningText = 'This action is irreversible. '
     'All selected Shopping Lists will be deleted.';
+
+const kDeleteItemsWarningText = 'This action is irreversible. '
+    'All selected "Items" will be permanently removed from this list.';
 
 const TextStyle kCreateListAndItemsButtonStyle = TextStyle(
   color: kTextActionColor,

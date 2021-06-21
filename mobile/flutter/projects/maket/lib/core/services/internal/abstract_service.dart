@@ -27,7 +27,7 @@ abstract class AbstractApi {
   };
 
   Uri url({String path: '', Map<String, dynamic> params: const {}}) {
-    return Uri.http(endpoint, basePath + path, params);
+    return Uri.http(endpoint, (basePath + path), params);
   }
 
   Future<http.Response> post({
@@ -70,6 +70,22 @@ abstract class AbstractApi {
     final http.Response _response = await http.delete(
       url,
       body: jsonEncode(body),
+      headers: _defaultHeaders,
+    );
+
+    return _returnResponse(response: _response);
+  }
+
+  Future<http.Response> put({
+    @required Uri url,
+    Map<String, dynamic> body: const {},
+    Map<String, String> headers,
+  }) async {
+    if (headers != null) _defaultHeaders.addAll(headers);
+
+    final http.Response _response = await http.put(
+      url,
+      body: (body.isNotEmpty) ? jsonEncode(body) : null,
       headers: _defaultHeaders,
     );
 

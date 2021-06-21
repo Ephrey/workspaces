@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
+import 'package:maket/ui/widgets/loading.dart';
 import 'package:maket/utils/math.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
@@ -10,6 +11,7 @@ class CircleButton extends StatelessWidget {
   final Color backgroundColor;
   final Function onTap;
   final double buttonSize;
+  final bool isLoading;
 
   const CircleButton({
     @required this.icon,
@@ -17,6 +19,7 @@ class CircleButton extends StatelessWidget {
     this.backgroundColor: kBgPrimaryColor,
     this.onTap,
     this.buttonSize,
+    this.isLoading: false,
   }) : assert(icon != null);
 
   @override
@@ -41,12 +44,14 @@ class CircleButton extends StatelessWidget {
     );
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: (isLoading) ? null : onTap,
       child: Container(
         width: _buttonSize,
         height: _buttonSize,
         decoration: _boxDecoration,
-        child: Icon(icon, color: iconColor, size: _iconSize),
+        child: (isLoading)
+            ? Loading()
+            : Icon(icon, color: iconColor, size: _iconSize),
       ),
     );
   }

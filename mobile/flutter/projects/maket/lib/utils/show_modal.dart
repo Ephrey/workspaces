@@ -5,9 +5,10 @@ void showModal({
   @required Widget child,
   bool isScrollControlled: true,
   bool isDismissible: true,
+  Color backgroundColor: Colors.transparent,
 }) {
   showModalBottomSheet(
-    backgroundColor: Colors.transparent,
+    backgroundColor: backgroundColor,
     context: context,
     isScrollControlled: isScrollControlled,
     builder: (_) => child,

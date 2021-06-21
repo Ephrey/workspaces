@@ -1,3 +1,4 @@
+import 'package:maket/constants/items.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/core/services/internal/shopping_list_service.dart';
@@ -15,17 +16,19 @@ class ShoppingListViewModel extends BaseViewModel {
 
   HttpResponse _responseListItems = Response.build();
 
+  Map<String, List<ItemModel>> _localListItems = {};
+
   HttpResponse get response => _response;
 
   HttpResponse get responseListItems => _responseListItems;
 
-  int _selectedListCounter = Numbers.zero;
+  int _selectedElementsCounter = Numbers.zero;
 
-  bool _isAllListSelected = false;
+  bool _isAllElementSelected = false;
 
   double _spent = Numbers.asDouble(Numbers.zero);
 
-  int get getSelectedListCounter => _selectedListCounter;
+  int get selectedElementsCounter => _selectedElementsCounter;
 
   bool get hasLists => listSize > Numbers.zero;
 
@@ -35,9 +38,11 @@ class ShoppingListViewModel extends BaseViewModel {
 
   int get itemsSize => responseListItems.data.length;
 
-  bool get isAllSelected => _isAllListSelected;
+  bool get isAllSelected => _isAllElementSelected;
 
-  String get getSpent => _spent.toStringAsFixed(2);
+  String get getSpent => Numbers.stringAsFixed(number: _spent);
+
+  Map<String, int> listItemsCount = {};
 
   Future<HttpResponse> create({ShoppingListModel shoppingList}) async {
     busy;
@@ -79,6 +84,7 @@ class ShoppingListViewModel extends BaseViewModel {
 
       idle;
     } catch (ex) {
+      print(ex);
       _response =
           Response.build(status: false, message: 'Failed to get Lists.');
 
@@ -89,11 +95,19 @@ class ShoppingListViewModel extends BaseViewModel {
   Future<void> getListItems({String listId}) async {
     busy;
     try {
-      List<ItemModel> _items = ItemViewModel.orderItemsByCategories(
-        items: await _service.getItemsById(listId: listId),
-      );
+      if (_localListItems.containsKey(listId)) {
+        _setListItemsToResponse(items: _localListItems[listId]);
+      } else {
+        List<ItemModel> _items = ItemViewModel.orderItemsByCategories(
+          items: await _service.getItemsById(listId: listId),
+        );
 
-      _responseListItems = Response.build(data: _items);
+        _setListItemsToResponse(items: _items);
+        _saveListItemsToLocal(listId: listId);
+      }
+      _resetSpent();
+      _calculateSpent();
+
       idle;
     } on ApiException catch (ex) {
       print(ex.message);
@@ -108,35 +122,34 @@ class ShoppingListViewModel extends BaseViewModel {
     }
   }
 
-  Future<HttpResponse> setListItemPrice({ItemModel item}) async {
-    // return Future.delayed(Duration(seconds: 3), () {
-    //   print(item.id);
-    //   print(item.price);
-    //   print(item.quantity);
-    //   return Response.build();
-    //
-    //   return Response.build();
-    // });
-
+  Future<HttpResponse> setListItemPrice({ItemModel item, String listId}) async {
     try {
+      await _service.setItemPrice(listId: listId, item: item);
+
       _responseListItems.data.forEach((ItemModel currentItem) {
         if (currentItem.id == item.id) {
           currentItem.price = item.price;
           currentItem.quantity = item.quantity;
-          currentItem.bought = true;
-          currentItem.selected = true;
+          currentItem.bought = item.bought;
         }
       });
 
+      _resetSpent();
       _calculateSpent();
+      _increaseListSpent(listId: listId);
+
+      final String _responseMessage =
+          (item.bought) ? 'Item price set' : 'Item Price removed';
 
       idle;
-      return Response.build(message: 'Item Price Set');
+      return Response.build(message: _responseMessage);
     } on ApiException catch (ex) {
+      idle;
       print('api ex. ${ex.message}');
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
-      print(ex);
+      idle;
+      print('** $ex');
       return Response.build(status: false, message: 'Failed to set the Price');
     }
   }
@@ -158,7 +171,7 @@ class ShoppingListViewModel extends BaseViewModel {
       currentList.selected = false;
       return currentList;
     });
-    _isAllListSelected = false;
+    _isAllElementSelected = false;
     idle;
   }
 
@@ -199,12 +212,122 @@ class ShoppingListViewModel extends BaseViewModel {
     for (ShoppingListModel list in _response.data) {
       if (list.selected) _counter++;
     }
-    _selectedListCounter = _counter;
+    _selectedElementsCounter = _counter;
     idle;
   }
 
   void setIsAllSelected() {
-    _isAllListSelected = (listSize == getSelectedListCounter);
+    _isAllElementSelected = (listSize == selectedElementsCounter);
+  }
+
+  Future<HttpResponse> getMissingItemsFromList() async {
+    HttpResponse _response = await locator<ItemViewModel>().getAll();
+
+    List<Map<String, dynamic>> _items = [];
+
+    _response.data.forEach((dynamic item) {
+      bool _inList = false;
+
+      _responseListItems.data.forEach((ItemModel itemInList) {
+        if (itemInList.id == item['_id']) _inList = true;
+      });
+
+      if (!_inList) _items.add(item);
+    });
+
+    _response.data = ItemViewModel.orderItemsByCategories(items: _items);
+
+    return _response;
+  }
+
+  Future<HttpResponse> addMissingItemsToShoppingList({
+    List<ItemModel> items,
+    String listId,
+  }) async {
+    busy;
+    try {
+      final _responseMessage =
+          await _service.addItemsToList(listId: listId, items: items);
+
+      _responseListItems.data.addAll(items);
+
+      List<Map<String, dynamic>> _itemsToJson = ItemModel.itemsToJson(
+        items: _responseListItems.data,
+        removeSelectedField: false,
+        removeTitles: true,
+      );
+
+      List<ItemModel> _itemsOrderedByCategories =
+          ItemViewModel.orderItemsByCategories(items: _itemsToJson);
+
+      _setListItemsToResponse(items: _itemsOrderedByCategories);
+      _saveListItemsToLocal(listId: listId);
+
+      _response.data.forEach((ShoppingListModel list) {
+        if (list.id == listId) {
+          list.itemsCount = (list.itemsCount + items.length);
+          listItemsCount[listId] = list.itemsCount;
+        }
+      });
+
+      idle;
+      return Response.build(message: _responseMessage);
+    } on ApiException catch (ex) {
+      idle;
+
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      idle;
+
+      return Response.build(status: false, message: 'Could not add the Items');
+    }
+  }
+
+  Future<void> selectListItems({ItemModel item}) async {
+    _responseListItems.data.forEach((ItemModel currentItem) {
+      if (currentItem.id == item.id) {
+        currentItem.selected = !item.selected;
+      }
+    });
+    if (_isAllElementSelected) _isAllElementSelected = false;
+
+    _calculateSelectedItems();
+
+    idle;
+  }
+
+  Future<void> selectAllItems() async {
+    _responseListItems.data.forEach((ItemModel currentItem) {
+      if (currentItem.category != ItemConstants.itemGroupTitle) {
+        if (_isAllElementSelected) {
+          currentItem.selected = false;
+        } else {
+          currentItem.selected = true;
+        }
+      }
+    });
+
+    _isAllElementSelected = !_isAllElementSelected;
+
+    _calculateSelectedItems();
+    idle;
+  }
+
+  Future<void> unSelectAllListItems() async {
+    _responseListItems.data.forEach((ItemModel currentItem) {
+      currentItem.selected = false;
+    });
+    _selectedElementsCounter = Numbers.zero;
+    idle;
+  }
+
+  Future<void> deleteAllSelectedItems() async {
+    _responseListItems.data.removeWhere((ItemModel currentItem) {
+      return currentItem.selected;
+    });
+    _isAllElementSelected = false;
+    _selectedElementsCounter = Numbers.zero;
+    unSelectAllListItems();
   }
 
   // Local Methods
@@ -242,9 +365,41 @@ class ShoppingListViewModel extends BaseViewModel {
 
   void _calculateSpent() {
     responseListItems.data.forEach((ItemModel item) {
-      if (item.selected && item.price > 0.0 && item.bought) {
-        _spent = (_spent + item.price);
+      if (item.price > Numbers.asDouble(Numbers.zero) && item.bought) {
+        _spent = (_spent + (item.price * item.quantity));
       }
     });
+  }
+
+  void _calculateSelectedItems() {
+    int _selectedItemsCounter = 0;
+
+    _responseListItems.data.forEach((ItemModel currentItem) {
+      if (currentItem.selected) {
+        _selectedItemsCounter++;
+      }
+    });
+
+    _selectedElementsCounter = _selectedItemsCounter;
+  }
+
+  void _resetSpent() {
+    _spent = Numbers.asDouble(Numbers.zero);
+  }
+
+  void _increaseListSpent({String listId}) {
+    _response.data.forEach((ShoppingListModel list) {
+      if (list.id == listId) {
+        list.spent = _spent;
+      }
+    });
+  }
+
+  void _saveListItemsToLocal({String listId}) {
+    _localListItems[listId] = responseListItems.data;
+  }
+
+  void _setListItemsToResponse({List<ItemModel> items}) {
+    _responseListItems = Response.build(data: items);
   }
 }

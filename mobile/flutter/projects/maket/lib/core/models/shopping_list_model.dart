@@ -27,14 +27,14 @@ class ShoppingListModel {
     return ShoppingListModel(
       id: json['_id'],
       name: json['name'],
-      itemsCount: (json['itemCount'] != null)
-          ? json['itemCount']
+      itemsCount: (json['itemsCount'] != null)
+          ? json['itemsCount']
           : json['items'].length,
       description: json['description'],
       budget: json['budget'].toDouble(),
       createDate: json['createdDate'],
       selected: false,
-      spent: (json['spent'] != null) ? json['spent'] : 0.0,
+      spent: (json['spent'] != null) ? json['spent'].toDouble() : 0.0,
     );
   }
 

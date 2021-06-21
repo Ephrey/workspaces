@@ -95,4 +95,8 @@ class Numbers {
     if (value == null) return false;
     return double.tryParse(value) != null;
   }
+
+  static String stringAsFixed({dynamic number, int fraction: two}) {
+    return number.toStringAsFixed(fraction);
+  }
 }

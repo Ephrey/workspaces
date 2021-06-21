@@ -7,8 +7,9 @@ import 'package:maket/utils/numbers.dart';
 
 class AddItemToListButton extends StatelessWidget {
   final Function onTap;
+  final bool isLoading;
 
-  AddItemToListButton({this.onTap});
+  AddItemToListButton({this.onTap, this.isLoading});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +21,9 @@ class AddItemToListButton extends StatelessWidget {
           buttonSize: (Numbers.size(context: context, percent: Numbers.eight)),
           iconColor: kTextPrimaryColor,
           icon: Icons.add,
-          backgroundColor: kPrimaryColor,
+          backgroundColor: (isLoading) ? kBgPrimaryColor : kPrimaryColor,
           onTap: onTap,
+          isLoading: isLoading,
         ),
         position: Alignment.bottomRight,
       ),

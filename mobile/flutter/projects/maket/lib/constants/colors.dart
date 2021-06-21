@@ -35,3 +35,15 @@ Color getStatusColor(Status state) {
       return kPrimaryColor;
   }
 }
+
+Color getStatusTextColor(Status state) {
+  switch (state) {
+    case Status.warning:
+      return kPrimaryColor;
+    case Status.success:
+    case Status.error:
+    case Status.normal:
+    default:
+      return kTextPrimaryColor;
+  }
+}

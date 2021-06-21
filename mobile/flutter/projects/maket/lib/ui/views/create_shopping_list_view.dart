@@ -11,10 +11,9 @@ import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
+import 'package:maket/ui/widgets/add_item_to_shopping_list.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/fields/form_field.dart';
-import 'package:maket/ui/widgets/fields/search_input_placeholder.dart';
-import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
@@ -73,9 +72,16 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   }
 
   dynamic _handleBudgetField(String budget) {
-    if (budget == '') budget = Numbers.asString(Forms.minBudget);
-    if (int.parse(budget) > Forms.maxBudget) {
-      _budgetController.text = Numbers.asString(Forms.maxBudget);
+    double _budget = Numbers.stringToDouble(budget);
+
+    bool _isValidBudget = (_budget > Forms.minBudget);
+
+    if (_isValidBudget && (_budgetState == Status.success)) return false;
+
+    if (_isValidBudget) {
+      _setState(() => _budgetState = Status.success);
+    } else {
+      _setState(() => _budgetState = Status.error);
     }
   }
 
@@ -248,11 +254,11 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
                 saveShoppingList: _handleSaveShoppingList,
               ),
             ),
-            _AddItemsToShoppingListView(
-              prev: _moveBackToSetListNameAndDescription,
+            AddItemsToShoppingListView(
+              onBackButtonPress: _moveBackToSetListNameAndDescription,
               items: _itemsOnAddItemsToListView,
               onItemTap: addItemToShoppingList,
-              canMoveToSetItem: _canCreateList,
+              canSubmit: _canCreateList,
               saveShoppingList: _handleSaveShoppingList,
             )
           ],
@@ -442,106 +448,6 @@ class _SetListNameAndDescriptionActionButton extends StatelessWidget {
                   ViewState.busy,
             ),
           ),
-      ],
-    );
-  }
-}
-
-class _AddItemsToShoppingListView extends StatelessWidget {
-  final Function prev;
-  final List<ItemModel> items;
-  final Function onItemTap;
-  final bool canMoveToSetItem;
-  final Function saveShoppingList;
-
-  _AddItemsToShoppingListView({
-    this.prev,
-    this.items,
-    this.onItemTap,
-    this.canMoveToSetItem,
-    this.saveShoppingList,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SearchInputPlaceholder(hint: 'Search Items'),
-        Separator(distanceAsPercent: Numbers.two),
-        _ItemsList(items: items, onItemTap: onItemTap),
-        Separator(distanceAsPercent: Numbers.three, thin: true),
-        PaddingView(
-          child: _AddItemsToListActionButton(
-            prev: prev,
-            canMoveToSetItem: canMoveToSetItem,
-            saveShoppingList: saveShoppingList,
-          ),
-        ),
-        Separator(distanceAsPercent: Numbers.two),
-      ],
-    );
-  }
-}
-
-class _ItemsList extends StatelessWidget {
-  final List<ItemModel> items;
-  final Function onItemTap;
-
-  _ItemsList({this.items, this.onItemTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpandedView(
-      child: ListItems(
-        items: items,
-        onItemTaped: onItemTap,
-        bottomPadding: false,
-      ),
-    );
-  }
-}
-
-class _AddItemsToListActionButton extends StatelessWidget {
-  final Function prev;
-  final bool canMoveToSetItem;
-  final Function saveShoppingList;
-
-  _AddItemsToListActionButton({
-    this.prev,
-    this.canMoveToSetItem,
-    this.saveShoppingList,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ExpandedView(
-          child: ActionButton(
-            buttonType: ButtonType.secondary,
-            text: "Back",
-            icon: Icons.keyboard_arrow_left,
-            contentPosition: Position.center,
-            onPressed: prev,
-            disabled:
-                context.watch<ShoppingListViewModel>().state == ViewState.busy,
-          ),
-        ),
-        Separator(dimension: Dimension.width),
-        ExpandedView(
-          child: ActionButton(
-            buttonType:
-                (canMoveToSetItem) ? ButtonType.primary : ButtonType.disable,
-            text: "Done",
-            contentPosition: Position.center,
-            onPressed: () => saveShoppingList(context: context),
-            loading:
-                context.watch<ShoppingListViewModel>().state == ViewState.busy,
-            disabled:
-                context.watch<ShoppingListViewModel>().state == ViewState.busy,
-          ),
-        ),
       ],
     );
   }

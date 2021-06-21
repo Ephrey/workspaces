@@ -17,6 +17,7 @@ class FormInput extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final IconData prefixIcon;
+  final Widget suffixIcon;
   final TextAlign textAlign;
   final bool withBorder;
   final TextCapitalization capitalization;
@@ -36,6 +37,7 @@ class FormInput extends StatelessWidget {
     this.minLines: Numbers.one,
     this.maxLines: Numbers.six,
     this.prefixIcon,
+    this.suffixIcon,
     this.textAlign: TextAlign.start,
     this.capitalization: TextCapitalization.words,
     this.withBorder: true,
@@ -75,6 +77,7 @@ class FormInput extends StatelessWidget {
     );
 
     InputDecoration _inputDecoration = InputDecoration(
+      suffixIcon: (suffixIcon != null) ? suffixIcon : null,
       prefixIcon: (prefixIcon != null)
           ? Icon(prefixIcon,
               size: Numbers.size(

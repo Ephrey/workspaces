@@ -3,6 +3,7 @@ enum ButtonType { primary, secondary, disable }
 enum Dimension { width, height }
 enum InputType { field, dropdown, textArea }
 enum ViewState { idle, busy }
+enum Operations { reset, set, update, delete }
 
 /// [Status] : Representing default, success
 /// warning and error state
