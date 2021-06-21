@@ -4,6 +4,7 @@ const {
   ITEM_CATEGORY_MIN_LENGTH,
   ITEM_CATEGORY_MAX_LENGTH,
 } = require("../utils/constants/items");
+const TimeFactory = require("../utils/time/time");
 const mongoose = require("mongoose");
 
 const ItemModel = mongoose.model(
@@ -30,7 +31,7 @@ const ItemModel = mongoose.model(
       },
       createDate: {
         type: Date,
-        default: new Date(),
+        default: TimeFactory.uctDate(),
       },
     },
     { strictQuery: true }

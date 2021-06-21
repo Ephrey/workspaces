@@ -7,6 +7,7 @@ const {
   USER_EMAIL_MAX_LENGTH,
 } = require("../utils/constants/user");
 const { JSONWEBTOKEN_CONFIG_KEY } = require("../utils/constants/common");
+const TimeFactory = require("../utils/time/time");
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
@@ -35,7 +36,7 @@ const userSchema = new mongoose.Schema({
   },
   createDate: {
     type: Date,
-    default: new Date(),
+    default: TimeFactory.uctDate(),
   },
 });
 

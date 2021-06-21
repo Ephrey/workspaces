@@ -15,6 +15,7 @@ const {
   ITEM_PRICE_MAX,
   ITEM_DEFAULT_QUANTITY,
 } = require("../utils/constants/items");
+const TimeFactory = require("../utils/time/time");
 const mongoose = require("mongoose");
 
 const shoppingListItemSchema = new mongoose.Schema(
@@ -91,7 +92,7 @@ const shoppingListSchema = new mongoose.Schema(
     },
     createdDate: {
       type: Date,
-      default: new Date(),
+      default: TimeFactory.uctDate(),
     },
   },
   { strictQuery: true }

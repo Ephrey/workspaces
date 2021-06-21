@@ -14,6 +14,8 @@ const {
   ITEM_MAX_LENGTH,
   ITEM_CATEGORY_MIN_LENGTH,
   ITEM_CATEGORY_MAX_LENGTH,
+  ITEM_DEFAULT_QUANTITY,
+  ITEM_MAX_QUANTITY,
 } = require("../utils/constants/items");
 const debug = require("debug")("maket:shop_list_validator");
 const Joi = require("joi");
@@ -67,6 +69,10 @@ const validateShoppingListItemNewValues = (newValues) => {
   const schema = Joi.object({
     price: Joi.number().min(ITEM_PRICE_MIN).max(ITEM_PRICE_MAX).required(),
     bought: Joi.boolean().required(),
+    quantity: Joi.number()
+      .min(ITEM_DEFAULT_QUANTITY)
+      .max(ITEM_MAX_QUANTITY)
+      .required(),
   });
 
   return schema.validate(newValues);
