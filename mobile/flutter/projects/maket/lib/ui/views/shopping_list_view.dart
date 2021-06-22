@@ -305,7 +305,7 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
       content: OnLongPressActions(
         onCancel: _handleSelectionCancel,
         selectAllList: _selectAllItems,
-        onDelete: _deleteAllSelectedItems,
+        onDelete: _onDeleteItemTapped,
       ),
       duration: kOneYearDuration,
     );
@@ -318,36 +318,51 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
   }
 
   Future<void> _selectItem({ItemModel item}) async {
-    await _viewModel.selectListItems(item: item);
+    await _viewModel.selectListItem(item: item);
   }
 
   Future<void> _selectAllItems() async {
     await _viewModel.selectAllItems();
   }
 
-  void _deleteAllSelectedItems() {
+  void _onDeleteItemTapped() {
     showModal(
       context: context,
       child: ModalContainer(
         content: AlertBeforeDelete(
           subTitle: kDeleteItemsWarningText,
-          onYesPressed: () async {
-            await _viewModel.deleteAllSelectedItems();
-            pop(context: context);
-          },
+          onYesPressed: _deleteSelectedItems,
         ),
       ),
     );
+  }
+
+  Future<void> _deleteSelectedItems() async {
+    pop(context: context);
+
+    final HttpResponse _response =
+        await _viewModel.deleteAllSelectedItems(listId: widget.listId);
+
+    if (_response.status) {
+      _showMessage(response: _response, status: Status.success);
+      hideSnackBar(context: context);
+    }
+
+    if (!_response.status) {
+      _showMessage(response: _response, status: Status.error);
+    }
+
+    _toggleSelectionState();
   }
 
   void _toggleSelectionState() {
     _setState(() => _itemSelectionTriggered = !_itemSelectionTriggered);
   }
 
-  void _shoErrorMessage({HttpResponse response}) {
+  void _showMessage({HttpResponse response, Status status: Status.success}) {
     _future(() => showSnackBar(
           context: context,
-          flavor: Status.error,
+          flavor: status,
           content: SnackBarAlert(message: response.message),
         ));
   }
@@ -382,7 +397,7 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
 
             if (viewModel.state == ViewState.idle &&
                 !viewModel.responseListItems.status) {
-              _shoErrorMessage(response: viewModel.responseListItems);
+              _showMessage(response: viewModel.responseListItems);
 
               return EmptyMessageAlert(
                 title: kOnErrorReloadMessage,

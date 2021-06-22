@@ -251,17 +251,7 @@ class ShoppingListViewModel extends BaseViewModel {
 
       _responseListItems.data.addAll(items);
 
-      List<Map<String, dynamic>> _itemsToJson = ItemModel.itemsToJson(
-        items: _responseListItems.data,
-        removeSelectedField: false,
-        removeTitles: true,
-      );
-
-      List<ItemModel> _itemsOrderedByCategories =
-          ItemViewModel.orderItemsByCategories(items: _itemsToJson);
-
-      _setListItemsToResponse(items: _itemsOrderedByCategories);
-      _saveListItemsToLocal(listId: listId);
+      _reorganiseListItems(listId: listId);
 
       _response.data.forEach((ShoppingListModel list) {
         if (list.id == listId) {
@@ -283,15 +273,16 @@ class ShoppingListViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> selectListItems({ItemModel item}) async {
+  Future<void> selectListItem({ItemModel item}) async {
     _responseListItems.data.forEach((ItemModel currentItem) {
       if (currentItem.id == item.id) {
         currentItem.selected = !item.selected;
       }
     });
-    if (_isAllElementSelected) _isAllElementSelected = false;
 
     _calculateSelectedItems();
+
+    _checkIfAllItemsAreSelected();
 
     idle;
   }
@@ -321,13 +312,50 @@ class ShoppingListViewModel extends BaseViewModel {
     idle;
   }
 
-  Future<void> deleteAllSelectedItems() async {
-    _responseListItems.data.removeWhere((ItemModel currentItem) {
-      return currentItem.selected;
-    });
-    _isAllElementSelected = false;
-    _selectedElementsCounter = Numbers.zero;
-    unSelectAllListItems();
+  Future<HttpResponse> deleteAllSelectedItems({String listId}) async {
+    try {
+      String _responseMessage = await _service.deleteItems(
+        listId: listId,
+        itemIds: _getSelectedItemsIds(),
+      );
+
+      _responseListItems.data.removeWhere((ItemModel currentItem) {
+        return currentItem.selected;
+      });
+
+      _isAllElementSelected = false;
+
+      unSelectAllListItems();
+
+      _reorganiseListItems(listId: listId);
+
+      int _remainingItemsCounter = _countItems();
+
+      _response.data.forEach((ShoppingListModel list) {
+        if (list.id == listId) {
+          list.itemsCount = _remainingItemsCounter;
+          listItemsCount[listId] = list.itemsCount;
+        }
+      });
+
+      _calculateSpent();
+
+      idle;
+      return Response.build(
+        data: _remainingItemsCounter,
+        message: _responseMessage,
+      );
+    } on ApiException catch (ex) {
+      print('api ex. ${ex.message}');
+
+      idle;
+      return Response.build(status: false, code: ex.code, message: ex.message);
+    } catch (ex) {
+      print('ex $ex');
+
+      idle;
+      return Response.build(status: false, message: 'Could not Delete');
+    }
   }
 
   // Local Methods
@@ -364,11 +392,15 @@ class ShoppingListViewModel extends BaseViewModel {
   }
 
   void _calculateSpent() {
+    double _spentTotal = Numbers.asDouble(Numbers.zero);
+
     responseListItems.data.forEach((ItemModel item) {
       if (item.price > Numbers.asDouble(Numbers.zero) && item.bought) {
-        _spent = (_spent + (item.price * item.quantity));
+        _spentTotal = (_spentTotal + (item.price * item.quantity));
       }
     });
+
+    _spent = _spentTotal;
   }
 
   void _calculateSelectedItems() {
@@ -381,6 +413,16 @@ class ShoppingListViewModel extends BaseViewModel {
     });
 
     _selectedElementsCounter = _selectedItemsCounter;
+  }
+
+  int _countItems() {
+    int _counter = 0;
+    responseListItems.data.forEach((ItemModel item) {
+      if (item.category != ItemConstants.itemGroupTitle) {
+        _counter++;
+      }
+    });
+    return _counter;
   }
 
   void _resetSpent() {
@@ -401,5 +443,37 @@ class ShoppingListViewModel extends BaseViewModel {
 
   void _setListItemsToResponse({List<ItemModel> items}) {
     _responseListItems = Response.build(data: items);
+  }
+
+  void _reorganiseListItems({String listId}) {
+    List<Map<String, dynamic>> _itemsToJson = ItemModel.itemsToJson(
+      items: _responseListItems.data,
+      removeSelectedField: false,
+      removeTitles: true,
+    );
+
+    List<ItemModel> _itemsOrderedByCategories =
+        ItemViewModel.orderItemsByCategories(items: _itemsToJson);
+
+    _setListItemsToResponse(items: _itemsOrderedByCategories);
+    _saveListItemsToLocal(listId: listId);
+  }
+
+  void _checkIfAllItemsAreSelected() {
+    if (_selectedElementsCounter == _countItems()) {
+      _isAllElementSelected = true;
+    } else {
+      if (_isAllElementSelected) _isAllElementSelected = false;
+    }
+  }
+
+  List<String> _getSelectedItemsIds() {
+    List<String> _selectedItemsIds = [];
+
+    _responseListItems.data.forEach((ItemModel currentItem) {
+      if (currentItem.selected) _selectedItemsIds.add(currentItem.id);
+    });
+
+    return _selectedItemsIds;
   }
 }

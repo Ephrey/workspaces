@@ -79,4 +79,18 @@ class ShoppingListService extends AbstractApi {
 
     return _response.body;
   }
+
+  Future<String> deleteItems({
+    String listId,
+    List<String> itemIds,
+  }) async {
+    final http.Response _response = await this.delete(
+      url: this.url(
+          path: AbstractApi.baseShoppingListPath + '/' + listId + '/items'),
+      body: {'itemIds': itemIds},
+      headers: {HttpHeadersKeys.xToken: await this.getToken()},
+    );
+
+    return _response.body;
+  }
 }
