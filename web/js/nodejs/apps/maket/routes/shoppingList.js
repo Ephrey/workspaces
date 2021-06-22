@@ -127,7 +127,7 @@ router.put("/:id/add_items", validateId, async (req, res) => {
     { $push: { items: { $each: items } } }
   );
 
-  return response.n >= 1 && response.nModified >= 1 && response.ok === 1
+  return response.n > 0 && response.nModified > 0 && response.ok === 1
     ? res.send("Successfully Added.")
     : res.status(INTERNAL_SERVER_ERROR).send("Could not add the Items");
 });
@@ -199,9 +199,8 @@ router.delete("/:id", validateId, async (req, res) => {
     : res.send(deletedShoppingList);
 });
 
-router.delete("/:id/item/:itemId", validateId, async (req, res) => {
+router.delete("/:id/items", validateId, async (req, res) => {
   const shoppingListId = req.params.id;
-  const shoppingListItemId = req.params.itemId;
 
   const isShoppingListIdExist = await ShoppingListModel.exists({
     _id: shoppingListId,
@@ -210,21 +209,15 @@ router.delete("/:id/item/:itemId", validateId, async (req, res) => {
   if (!isShoppingListIdExist)
     return res.status(NOT_FOUND).send("Shopping List not found");
 
-  const isShoppingListItemExist = await ShoppingListModel.findOne({
-    "items._id": { $eq: shoppingListItemId },
-    _id: { $eq: shoppingListId },
-  });
-
-  if (!isShoppingListItemExist)
-    return res.status(NOT_FOUND).send("Item not found in the Shopping List");
-
-  const updatedShoppingList = await ShoppingListModel.findOneAndUpdate(
-    { _id: shoppingListId },
-    { $pull: { items: { _id: shoppingListItemId } } },
-    { new: true, useFindAndModify: false }
+  const response = await ShoppingListModel.updateMany(
+    { _id: shoppingListId, owner: req.body.owner },
+    { $pull: { items: { id: { $in: req.body.itemIds } } } },
+    { multi: true }
   );
 
-  res.send(updatedShoppingList);
+  return response.n > 0 && response.nModified > 0 && response.ok === 1
+    ? res.send("Successfully Deleted.")
+    : res.status(INTERNAL_SERVER_ERROR).send("Could not delete");
 });
 
 module.exports = router;
