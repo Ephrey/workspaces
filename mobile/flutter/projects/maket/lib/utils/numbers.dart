@@ -99,4 +99,8 @@ class Numbers {
   static String stringAsFixed({dynamic number, int fraction: two}) {
     return number.toStringAsFixed(fraction);
   }
+
+  static String minSpent() {
+    return Numbers.stringAsFixed(number: Numbers.zero);
+  }
 }

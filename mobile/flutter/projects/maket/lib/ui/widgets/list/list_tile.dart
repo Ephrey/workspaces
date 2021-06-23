@@ -51,7 +51,7 @@ class ShoppingListTile extends StatelessWidget {
                   dimension: Dimension.width,
                   distanceAsPercent: Numbers.seven,
                 ),
-              _ListInfo(list: list),
+              _ListInfo(list: list, longPressTriggered: longPressTriggered),
               if (!longPressTriggered) _ArrowIcon(),
             ],
           ),
@@ -65,8 +65,9 @@ class ShoppingListTile extends StatelessWidget {
 
 class _ListInfo extends StatelessWidget {
   final ShoppingListModel list;
+  final bool longPressTriggered;
 
-  _ListInfo({this.list});
+  _ListInfo({this.list, this.longPressTriggered});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +80,8 @@ class _ListInfo extends StatelessWidget {
             Separator(distanceAsPercent: Numbers.one),
           if (list.description.isNotEmpty) ListSubTitle(text: list.description),
           Separator(distanceAsPercent: Numbers.one),
-          ListItemCountAndCreateDate(list: list),
+          ListItemCountAndCreateDate(
+              list: list, longPressTriggered: longPressTriggered),
         ],
       ),
     );

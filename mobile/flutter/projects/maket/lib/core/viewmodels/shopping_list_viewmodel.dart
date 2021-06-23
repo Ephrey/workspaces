@@ -280,7 +280,7 @@ class ShoppingListViewModel extends BaseViewModel {
       }
     });
 
-    _calculateSelectedItems();
+    _countSelectedItems();
 
     _checkIfAllItemsAreSelected();
 
@@ -300,7 +300,7 @@ class ShoppingListViewModel extends BaseViewModel {
 
     _isAllElementSelected = !_isAllElementSelected;
 
-    _calculateSelectedItems();
+    _countSelectedItems();
     idle;
   }
 
@@ -309,6 +309,7 @@ class ShoppingListViewModel extends BaseViewModel {
       currentItem.selected = false;
     });
     _selectedElementsCounter = Numbers.zero;
+    _isAllElementSelected = false;
     idle;
   }
 
@@ -323,36 +324,20 @@ class ShoppingListViewModel extends BaseViewModel {
         return currentItem.selected;
       });
 
-      _isAllElementSelected = false;
-
       unSelectAllListItems();
 
       _reorganiseListItems(listId: listId);
 
-      int _remainingItemsCounter = _countItems();
-
-      _response.data.forEach((ShoppingListModel list) {
-        if (list.id == listId) {
-          list.itemsCount = _remainingItemsCounter;
-          listItemsCount[listId] = list.itemsCount;
-        }
-      });
+      _resetListItemsCount(listId: listId);
 
       _calculateSpent();
 
       idle;
-      return Response.build(
-        data: _remainingItemsCounter,
-        message: _responseMessage,
-      );
+      return Response.build(message: _responseMessage);
     } on ApiException catch (ex) {
-      print('api ex. ${ex.message}');
-
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
-      print('ex $ex');
-
       idle;
       return Response.build(status: false, message: 'Could not Delete');
     }
@@ -386,9 +371,11 @@ class ShoppingListViewModel extends BaseViewModel {
     final ShoppingListModel _newListFromJson =
         ShoppingListModel.fromJson(json: newList);
 
-    (hasLists)
-        ? _response.data.insert(Numbers.zero, _newListFromJson)
-        : response.data = [_newListFromJson];
+    if (hasLists) {
+      _response.data.insert(Numbers.zero, _newListFromJson);
+    } else {
+      _response.data = [_newListFromJson];
+    }
   }
 
   void _calculateSpent() {
@@ -403,7 +390,7 @@ class ShoppingListViewModel extends BaseViewModel {
     _spent = _spentTotal;
   }
 
-  void _calculateSelectedItems() {
+  void _countSelectedItems() {
     int _selectedItemsCounter = 0;
 
     _responseListItems.data.forEach((ItemModel currentItem) {
@@ -437,14 +424,6 @@ class ShoppingListViewModel extends BaseViewModel {
     });
   }
 
-  void _saveListItemsToLocal({String listId}) {
-    _localListItems[listId] = responseListItems.data;
-  }
-
-  void _setListItemsToResponse({List<ItemModel> items}) {
-    _responseListItems = Response.build(data: items);
-  }
-
   void _reorganiseListItems({String listId}) {
     List<Map<String, dynamic>> _itemsToJson = ItemModel.itemsToJson(
       items: _responseListItems.data,
@@ -457,6 +436,14 @@ class ShoppingListViewModel extends BaseViewModel {
 
     _setListItemsToResponse(items: _itemsOrderedByCategories);
     _saveListItemsToLocal(listId: listId);
+  }
+
+  void _saveListItemsToLocal({String listId}) {
+    _localListItems[listId] = responseListItems.data;
+  }
+
+  void _setListItemsToResponse({List<ItemModel> items}) {
+    _responseListItems = Response.build(data: items);
   }
 
   void _checkIfAllItemsAreSelected() {
@@ -475,5 +462,14 @@ class ShoppingListViewModel extends BaseViewModel {
     });
 
     return _selectedItemsIds;
+  }
+
+  void _resetListItemsCount({String listId}) {
+    _response.data.forEach((ShoppingListModel list) {
+      if (list.id == listId) {
+        list.itemsCount = _countItems();
+        listItemsCount[listId] = list.itemsCount;
+      }
+    });
   }
 }

@@ -12,12 +12,14 @@ final double _vertical = Numbers.asDouble(Numbers.twentyFive);
 class FloatingContainer extends StatelessWidget {
   final Widget content;
   final AlignmentGeometry position;
-  final Color flavor;
+  final Color backgroundColor;
+  final int widthDivideBy;
 
   FloatingContainer({
     @required this.content,
     this.position: Alignment.bottomCenter,
-    this.flavor: kWhite,
+    this.backgroundColor: kWhite,
+    this.widthDivideBy: Numbers.zero,
   });
 
   @override
@@ -28,9 +30,9 @@ class FloatingContainer extends StatelessWidget {
         horizontal: _horizontal,
         vertical: _vertical,
         child: Container(
-          width: ScreenSize(context: context).width,
+          width: ScreenSize(context: context).width / widthDivideBy,
           decoration: BoxDecoration(
-            color: flavor,
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(
               kFloatingContainerBorderRadius,
             ),

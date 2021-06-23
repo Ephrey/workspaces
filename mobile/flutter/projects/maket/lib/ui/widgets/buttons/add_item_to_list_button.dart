@@ -14,8 +14,8 @@ class AddItemToListButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PaddingView(
-      vertical: (Numbers.size(context: context, percent: Numbers.four)),
-      horizontal: (Numbers.size(context: context, percent: Numbers.three)),
+      vertical: (Numbers.size(context: context, percent: Numbers.two)),
+      horizontal: (Numbers.size(context: context, percent: Numbers.two)),
       child: AlignedView(
         child: CircleButton(
           buttonSize: (Numbers.size(context: context, percent: Numbers.eight)),

@@ -14,6 +14,7 @@ import 'package:maket/ui/widgets/add_item_to_shopping_list.dart';
 import 'package:maket/ui/widgets/alert_before_delete.dart';
 import 'package:maket/ui/widgets/buttons/add_item_to_list_button.dart';
 import 'package:maket/ui/widgets/empty_message_alert_view.dart';
+import 'package:maket/ui/widgets/floating_container.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/list/list_more_info.dart';
 import 'package:maket/ui/widgets/list/list_name.dart';
@@ -133,14 +134,11 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     );
   }
 
-  _setState(fn) {
-    setState(fn);
-    super.setState(fn);
-  }
-
   void _hideLoading() {
     _setState(() => isLoading = false);
   }
+
+  _setState(fn) => super.setState(fn);
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +157,10 @@ class _ShoppingListViewState extends State<ShoppingListView> {
           AddItemToListButton(
             onTap: () => _showAddItemsToList(),
             isLoading: isLoading,
+          ),
+          ChangeNotifierProvider<ShoppingListViewModel>.value(
+            value: locator<ShoppingListViewModel>(),
+            child: _Spent(budget: widget.list.budget),
           ), // PlusButton(),
         ],
       ),
@@ -225,40 +227,46 @@ class _ShoppingListMoreInfo extends StatelessWidget {
             showSpent: false,
           ),
         ),
-        ChangeNotifierProvider<ShoppingListViewModel>.value(
-          value: locator<ShoppingListViewModel>(),
-          child: _Spent(),
-        ),
       ],
     );
   }
 }
 
 class _Spent extends StatelessWidget {
+  final double budget;
+
+  _Spent({this.budget});
+
   @override
   Widget build(BuildContext context) {
     TextStyle _spentAmountStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      color: kBgPrimaryColor,
-      fontSize:
-          (Numbers.size(context: context, percent: Numbers.two) - Numbers.two),
+      fontWeight: FontWeight.w800,
+      color: kTextPrimaryColor,
+      fontSize: (Numbers.size(context: context, percent: Numbers.two)),
     );
+    String _spent = context.watch<ShoppingListViewModel>().getSpent;
 
-    return (context.watch<ShoppingListViewModel>().getSpent != "0.00")
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              const Text('spt.', style: TextStyle(color: kTextSecondaryColor)),
-              Separator(
-                dimension: Dimension.width,
-                distanceAsPercent: Numbers.one,
-              ),
-              Text(
-                'R${context.watch<ShoppingListViewModel>().getSpent}',
-                style: _spentAmountStyle,
-              ),
-            ],
+    return (_spent != Numbers.minSpent())
+        ? FloatingContainer(
+            backgroundColor: (Numbers.stringToDouble(_spent) > budget)
+                ? kErrorColor
+                : kTextActionColor,
+            widthDivideBy: Numbers.two,
+            content: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Separator(
+                  dimension: Dimension.width,
+                  distanceAsPercent: Numbers.one,
+                ),
+                Text(
+                  'R${context.watch<ShoppingListViewModel>().getSpent}',
+                  style: _spentAmountStyle,
+                ),
+              ],
+            ),
           )
         : Text('');
   }
@@ -305,7 +313,7 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
       content: OnLongPressActions(
         onCancel: _handleSelectionCancel,
         selectAllList: _selectAllItems,
-        onDelete: _onDeleteItemTapped,
+        onDelete: _onIconDeleteItemTapped,
       ),
       duration: kOneYearDuration,
     );
@@ -325,7 +333,7 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
     await _viewModel.selectAllItems();
   }
 
-  void _onDeleteItemTapped() {
+  void _onIconDeleteItemTapped() {
     showModal(
       context: context,
       child: ModalContainer(

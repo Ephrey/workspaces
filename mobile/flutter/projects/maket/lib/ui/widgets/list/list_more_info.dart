@@ -15,12 +15,14 @@ class ListItemCountAndCreateDate extends StatelessWidget {
   final ShoppingListModel list;
   final bool showSpent;
   final dynamic itemsCounter;
+  final longPressTriggered;
 
   ListItemCountAndCreateDate({
     this.fontSize,
     this.list,
     this.showSpent: true,
     this.itemsCounter,
+    this.longPressTriggered: false,
   });
 
   @override
@@ -31,42 +33,42 @@ class ListItemCountAndCreateDate extends StatelessWidget {
     );
 
     bool _hasBudget = (list.budget > Numbers.asDouble(Numbers.zero));
-    bool _hasSpent = (list.spent > Numbers.asDouble(Numbers.zero));
+
+    List<Widget> _children = [
+      ChangeNotifierProvider<ShoppingListViewModel>.value(
+        value: locator<ShoppingListViewModel>(),
+        child: _ItemCounter(list: list, fontSize: fontSize),
+      ),
+      _separator,
+      DotSeparator(),
+      _separator,
+      if (_hasBudget && !longPressTriggered)
+        ListSubTitle(
+          text: 'R${list.budget}',
+          fontWeight: FontWeight.w700,
+          fontSize: (fontSize),
+        ),
+      if (_hasBudget && !longPressTriggered) _separator,
+      if (_hasBudget && !longPressTriggered) DotSeparator(),
+      if (_hasBudget && !longPressTriggered) _separator,
+    ];
+
+    if (showSpent) {
+      _children.add(ChangeNotifierProvider<ShoppingListViewModel>.value(
+        value: locator<ShoppingListViewModel>(),
+        child: _Spent(list: list, fontSize: fontSize),
+      ));
+    }
+
+    _children.add(ListSubTitle(
+      text: locator<Date>().humanReadable(date: list.createDate),
+      fontWeight: FontWeight.w700,
+      fontSize: fontSize,
+    ));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ChangeNotifierProvider<ShoppingListViewModel>.value(
-          value: locator<ShoppingListViewModel>(),
-          child: _ItemCounter(list: list, fontSize: fontSize),
-        ),
-        _separator,
-        DotSeparator(),
-        _separator,
-        if (_hasBudget)
-          ListSubTitle(
-            text: 'R${list.budget}',
-            fontWeight: FontWeight.w700,
-            fontSize: (fontSize),
-          ),
-        if (_hasBudget) _separator,
-        if (_hasBudget) DotSeparator(),
-        if (_hasBudget) _separator,
-        if (_hasSpent && showSpent)
-          ListSubTitle(
-            text: 'R${list.spent.toStringAsFixed(2)}',
-            fontWeight: FontWeight.w700,
-            fontSize: fontSize,
-          ),
-        if (_hasSpent && showSpent) _separator,
-        if (_hasSpent && showSpent) DotSeparator(),
-        if (_hasSpent && showSpent) _separator,
-        ListSubTitle(
-          text: locator<Date>().humanReadable(date: list.createDate),
-          fontWeight: FontWeight.w700,
-          fontSize: fontSize,
-        ),
-      ],
+      children: _children,
     );
   }
 }
@@ -90,6 +92,43 @@ class _ItemCounter extends StatelessWidget {
       text: '$_itemsCounter item$_plural',
       fontWeight: FontWeight.w700,
       fontSize: fontSize,
+    );
+  }
+}
+
+class _Spent extends StatelessWidget {
+  final ShoppingListModel list;
+  final double fontSize;
+
+  _Spent({this.list, this.fontSize});
+
+  @override
+  Widget build(BuildContext context) {
+    dynamic _separator = Separator(
+      distanceAsPercent: Numbers.two,
+      dimension: Dimension.width,
+    );
+
+    String _spent = context.watch<ShoppingListViewModel>().getSpent;
+
+    _spent = (_spent != Numbers.minSpent())
+        ? _spent
+        : Numbers.stringAsFixed(number: list.spent);
+
+    final bool _hasSpent = (_spent != null && _spent != Numbers.minSpent());
+
+    return Row(
+      children: [
+        if (_hasSpent)
+          ListSubTitle(
+            text: 'R${list.spent.toStringAsFixed(2)}',
+            fontWeight: FontWeight.w700,
+            fontSize: fontSize,
+          ),
+        if (_hasSpent) _separator,
+        if (_hasSpent) DotSeparator(),
+        if (_hasSpent) _separator,
+      ],
     );
   }
 }

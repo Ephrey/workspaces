@@ -78,6 +78,18 @@ class ItemViewModel extends BaseViewModel {
       }
     }
 
+    if (_items.isNotEmpty) {
+      Map<String, List<ItemModel>> _orderedItems = {};
+      List<String> _itemsCategories = _items.keys.toList();
+      _itemsCategories.sort();
+
+      for (String category in _itemsCategories) {
+        _orderedItems[category] = _items[category];
+      }
+
+      _items = _orderedItems;
+    }
+
     List<ItemModel> _itemsGroupedByCategory = [];
 
     _items.forEach((category, items) {
