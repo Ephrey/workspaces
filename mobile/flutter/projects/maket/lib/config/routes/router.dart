@@ -7,6 +7,7 @@ import 'package:maket/ui/views/create_shopping_list_view.dart';
 import 'package:maket/ui/views/items_search_view.dart';
 import 'package:maket/ui/views/list_search_view.dart';
 import 'package:maket/ui/views/register_view.dart';
+import 'package:maket/ui/views/restore_password.dart';
 import 'package:maket/ui/views/shopping_list_view.dart';
 import 'package:maket/ui/views/shopping_lists_view.dart';
 import 'package:maket/ui/views/sign_in_view.dart';
@@ -21,6 +22,7 @@ class AppRoute {
   static const String shoppingListView = 'shopping_list_view';
   static const String listSearchView = 'list_search_view';
   static const String itemsSearchView = 'items_search_view';
+  static const String restorePassword = 'restore_password';
 
   static Route<dynamic> generate(RouteSettings settings) {
     switch (settings.name) {
@@ -41,6 +43,8 @@ class AppRoute {
         return MaterialPageRoute(builder: (_) => ListSearchView());
       case itemsSearchView:
         return MaterialPageRoute(builder: (_) => ItemsSearchView());
+      case restorePassword:
+        return MaterialPageRoute(builder: (_) => RestorePassword());
       default:
         return MaterialPageRoute(
           builder: (_) => BaseView(

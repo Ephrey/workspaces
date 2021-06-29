@@ -167,7 +167,8 @@ class _SignInFormState extends State<_SignInForm> {
             child: TextRich(
               mainText: 'Forgot password',
               richText: 'Restore',
-              onTap: () => print('Navigate to Restoring view ...'),
+              onTap: () =>
+                  pushRoute(context: context, name: AppRoute.restorePassword),
             ),
           ),
           Separator(),
