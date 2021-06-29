@@ -48,6 +48,14 @@ const kDeleteListWarningText = 'This action is irreversible. '
 const kDeleteItemsWarningText = 'This action is irreversible. '
     'All selected "Items" will be permanently removed from this list.';
 
+const kAllItemsAddedToScreenMessage = 'All Items have been added to this list.';
+
+const kCouldNotGetItemsMessage = 'Could not add the Items';
+
+const kCouldNotDeleteItemMessage = 'Could not Delete';
+
+const kResultWillPearHereText = 'Results will appear here.';
+
 const TextStyle kCreateListAndItemsButtonStyle = TextStyle(
   color: kTextActionColor,
   fontWeight: FontWeight.w900,

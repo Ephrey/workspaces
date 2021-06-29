@@ -4,6 +4,8 @@ import 'package:maket/core/models/shopping_list_model.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
 import 'package:maket/ui/views/create_shopping_list_view.dart';
+import 'package:maket/ui/views/items_search_view.dart';
+import 'package:maket/ui/views/list_search_view.dart';
 import 'package:maket/ui/views/register_view.dart';
 import 'package:maket/ui/views/shopping_list_view.dart';
 import 'package:maket/ui/views/shopping_lists_view.dart';
@@ -17,6 +19,8 @@ class AppRoute {
   static const String shoppingListsView = 'shopping_lists_view';
   static const String createShoppingList = 'create_shopping_list';
   static const String shoppingListView = 'shopping_list_view';
+  static const String listSearchView = 'list_search_view';
+  static const String itemsSearchView = 'items_search_view';
 
   static Route<dynamic> generate(RouteSettings settings) {
     switch (settings.name) {
@@ -33,6 +37,10 @@ class AppRoute {
       case shoppingListView:
         ShoppingListModel _list = settings.arguments;
         return MaterialPageRoute(builder: (_) => ShoppingListView(list: _list));
+      case listSearchView:
+        return MaterialPageRoute(builder: (_) => ListSearchView());
+      case itemsSearchView:
+        return MaterialPageRoute(builder: (_) => ItemsSearchView());
       default:
         return MaterialPageRoute(
           builder: (_) => BaseView(

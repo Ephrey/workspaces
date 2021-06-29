@@ -213,7 +213,8 @@ class _RegisterFormState extends State<_RegisterForm> {
           Separator(),
           ContinueWithText(),
           Separator(),
-          SocialNetworkIcons()
+          SocialNetworkIcons(),
+          Separator(),
         ],
       ),
     );

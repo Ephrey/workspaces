@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/item_model.dart';
@@ -144,7 +143,7 @@ class _SetItemPriceViewState extends State<SetItemPriceView> {
   GestureHandler _getSuffixIcon() {
     return (widget.item.bought)
         ? GestureHandler(
-            child: Icon(FontAwesomeIcons.trashAlt, color: kErrorColor),
+            child: Icon(Icons.close_sharp, color: kErrorColor),
             onTap: () => _setItemPrice(operation: Operations.reset),
           )
         : null;

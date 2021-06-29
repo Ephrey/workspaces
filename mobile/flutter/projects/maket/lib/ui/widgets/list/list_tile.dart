@@ -22,7 +22,7 @@ class ShoppingListTile extends StatelessWidget {
     this.list,
     this.onTap,
     this.onLongPress,
-    this.longPressTriggered,
+    this.longPressTriggered: false,
   });
 
   dynamic _getIcon({bool selected}) {
@@ -58,7 +58,9 @@ class ShoppingListTile extends StatelessWidget {
         ),
       ),
       onTap: () => onTap(list: list),
-      onLongPress: (!longPressTriggered) ? () => onLongPress(list: list) : null,
+      onLongPress: (!longPressTriggered && onLongPress != null)
+          ? () => onLongPress(list: list)
+          : null,
     );
   }
 }

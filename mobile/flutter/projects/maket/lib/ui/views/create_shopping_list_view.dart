@@ -40,9 +40,6 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   TextEditingController _nameController;
   TextEditingController _budgetController;
   TextEditingController _descriptionController;
-  List<ItemModel> _selectedShoppingListItems = [];
-
-  List<ItemModel> _itemsOnAddItemsToListView = [];
 
   Status _nameState;
   Status _budgetState;
@@ -126,10 +123,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
 
     if (_response.status) {
       if (!_notifyIfEmptyItems(_response.data)) {
-        _setState(() {
-          _itemsOnAddItemsToListView = _response.data;
-          _hasItems = _response.status;
-        });
+        _setState(() => _hasItems = _response.status);
       }
     }
   }
@@ -151,35 +145,17 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     return _hasNoItems;
   }
 
-  void addItemToShoppingList(ItemModel tappedItem) {
-    final int _tappedItemIndex = _itemsOnAddItemsToListView.indexOf(tappedItem);
-
-    final bool _tappedItemState =
-        _itemsOnAddItemsToListView[_tappedItemIndex].selected;
-
-    if (_tappedItemState) {
-      _removeTappedItemFromShoppingList(tappedItem);
-    } else {
-      _addTappedItemToShoppingList(tappedItem);
-    }
-
-    _setState(() {
-      _itemsOnAddItemsToListView[_tappedItemIndex].selected = !_tappedItemState;
-    });
-  }
-
-  void _removeTappedItemFromShoppingList(ItemModel tappedItem) {
-    _selectedShoppingListItems.removeWhere((item) => item.id == tappedItem.id);
-  }
-
-  void _addTappedItemToShoppingList(ItemModel tappedItem) {
-    _selectedShoppingListItems.add(tappedItem);
+  Future<void> addItemToShoppingList(ItemModel tappedItem) async {
+    await locator<ItemViewModel>()
+        .keepSelectedShoppingListItems(tappedItem: tappedItem);
   }
 
   Future<void> _handleSaveShoppingList({BuildContext context}) async {
+    ItemViewModel _itemViewModel = locator<ItemViewModel>();
+
     final ShoppingListModel _shoppingList = ShoppingListModel(
       name: _nameController.text,
-      items: _selectedShoppingListItems,
+      items: _itemViewModel.selectedShoppingListItems,
       description: _descriptionController.text,
       budget: Numbers.stringToDouble(_budgetController.text),
     );
@@ -196,6 +172,8 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
         content: SnackBarAlert(message: _response.message),
         flavor: Status.success,
       );
+
+      _itemViewModel.resetSelectedShoppingListItems();
     } else {
       showSnackBar(
         context: context,
@@ -223,7 +201,6 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
     _nameController.dispose();
     _budgetController.dispose();
     _descriptionController.dispose();
-    _itemsOnAddItemsToListView.clear();
     super.dispose();
   }
 
@@ -256,7 +233,6 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
             ),
             AddItemsToShoppingListView(
               onBackButtonPress: _moveBackToSetListNameAndDescription,
-              items: _itemsOnAddItemsToListView,
               onItemTap: addItemToShoppingList,
               canSubmit: _canCreateList,
               saveShoppingList: _handleSaveShoppingList,
@@ -299,11 +275,15 @@ class _SetShoppingListNameAndDescriptionViewBody extends StatelessWidget {
     this.saveShoppingList,
   });
 
+  void _onBackArrowTapped() {
+    locator<ItemViewModel>().resetSelectedShoppingListItems();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        NavBar(),
+        NavBar(onTap: _onBackArrowTapped),
         _SetShoppingListNameAndDescriptionForm(
           nameController: nameController,
           budgetController: budgetController,

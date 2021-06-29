@@ -13,6 +13,20 @@ class BaseViewModel extends ChangeNotifier {
   /// [busy] :  set the current view to busy (show loading widget)
   void get busy => _setState(viewState: ViewState.busy);
 
+  bool isSearching = false;
+
+  bool get checkIfSearching => isSearching;
+
+  void setIsNotSearching({bool notify: false}) {
+    isSearching = false;
+    if (notify) idle;
+  }
+
+  void setIsSearching({bool notify: false}) {
+    isSearching = true;
+    if (notify) idle;
+  }
+
   void _setState({ViewState viewState}) {
     _state = viewState;
     notifyListeners();

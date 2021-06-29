@@ -4,6 +4,7 @@ import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
+import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
@@ -46,12 +47,12 @@ class ShoppingListView extends StatefulWidget {
 class _ShoppingListViewState extends State<ShoppingListView> {
   ShoppingListViewModel _viewModel = locator<ShoppingListViewModel>();
 
-  bool isLoading = false;
+  bool _isLoading = false;
 
-  List<ItemModel> _selectedMissingItems = [];
+  bool _hasMissingItems = false;
 
   Future<dynamic> _showAddItemsToList() async {
-    _setState(() => isLoading = true);
+    _setState(() => _isLoading = true);
 
     HttpResponse _response = await _viewModel.getMissingItemsFromList();
 
@@ -61,7 +62,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     }
 
     if (_response.status && !_response.data.isNotEmpty) {
-      _showWarningMessage(message: 'All Items have been added to this list.');
+      _showWarningMessage(message: kAllItemsAddedToScreenMessage);
       return false;
     }
 
@@ -69,38 +70,39 @@ class _ShoppingListViewState extends State<ShoppingListView> {
 
     showModal(
       context: context,
+      isDismissible: false,
       backgroundColor: kBgPrimaryColor,
-      child: AddItemsToShoppingListView(
-        items: _response.data,
-        onBackButtonPress: () => pop(context: context),
-        canSubmit: false,
-        onItemTap: _addItemToShoppingList,
-        saveShoppingList: _addMissingItemsToList,
+      child: Container(
+        height: Numbers.size(context: context, percent: Numbers.ninety),
+        child: AddItemsToShoppingListView(
+          onBackButtonPress: _onCancelAddItems,
+          canSubmit: false,
+          onItemTap: _keepSelectedMissingItems,
+          saveShoppingList: _saveMissingItemsToList,
+        ),
       ),
     );
   }
 
-  Future<void> _addItemToShoppingList(ItemModel selectedItem) async {
-    if (selectedItem.selected) {
-      _selectedMissingItems.add(selectedItem);
-    } else {
-      _selectedMissingItems.removeWhere((item) => item.id == selectedItem.id);
-    }
+  void _onCancelAddItems() {
+    pop(context: context);
+    locator<ItemViewModel>().resetSelectedShoppingListItems();
   }
 
-  Future<void> _addMissingItemsToList({BuildContext context}) async {
-    _selectedMissingItems.forEach((ItemModel item) => item.selected = false);
+  Future<void> _keepSelectedMissingItems(ItemModel selectedItem) async {
+    await locator<ItemViewModel>().keepSelectedShoppingListItems(
+      tappedItem: selectedItem,
+    );
+  }
 
-    HttpResponse _response = await _viewModel.addMissingItemsToShoppingList(
-      items: _selectedMissingItems,
+  Future<void> _saveMissingItemsToList({BuildContext context}) async {
+    HttpResponse _response = await _viewModel.saveMissingItemsToShoppingList(
       listId: widget.list.id,
     );
 
     pop(context: context);
 
-    if (!_response.status) {
-      _showErrorMessage(message: _response.message);
-    }
+    if (!_response.status) _showErrorMessage(message: _response.message);
 
     if (_response.status) {
       _showAlert(
@@ -110,7 +112,7 @@ class _ShoppingListViewState extends State<ShoppingListView> {
       );
     }
 
-    _selectedMissingItems.clear();
+    await _checkIfHasMissingItems();
   }
 
   void _showErrorMessage({String message}) {
@@ -134,11 +136,24 @@ class _ShoppingListViewState extends State<ShoppingListView> {
     );
   }
 
-  void _hideLoading() {
-    _setState(() => isLoading = false);
+  void _hideLoading() => _setState(() => _isLoading = false);
+
+  Future<void> _checkIfHasMissingItems() async {
+    HttpResponse _response = await _viewModel.getMissingItemsFromList();
+
+    if (_response.status && _response.data.isNotEmpty) {
+      _setState(() => _hasMissingItems = true);
+    } else {
+      _setState(() => _hasMissingItems = false);
+    }
   }
 
   _setState(fn) => super.setState(fn);
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,14 +165,18 @@ class _ShoppingListViewState extends State<ShoppingListView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _ShoppingListInfoBlock(list: widget.list),
-              _ShoppingListItems(listId: widget.list.id),
+              _ShoppingListItems(
+                listId: widget.list.id,
+                checkIfHasMissingItems: _checkIfHasMissingItems,
+              ),
               // Separator(distanceAsPercent: Numbers.ten),
             ],
           ),
-          AddItemToListButton(
-            onTap: () => _showAddItemsToList(),
-            isLoading: isLoading,
-          ),
+          if (_hasMissingItems)
+            AddItemToListButton(
+              onTap: () => _showAddItemsToList(),
+              isLoading: _isLoading,
+            ),
           ChangeNotifierProvider<ShoppingListViewModel>.value(
             value: locator<ShoppingListViewModel>(),
             child: _Spent(budget: widget.list.budget),
@@ -190,18 +209,17 @@ class _ShoppingListInfoBlock extends StatelessWidget {
             ListName(
               name: list.name,
               color: kTextPrimaryColor,
-              fontSize: (Numbers.size(context: context, percent: Numbers.four) -
-                  Numbers.two),
+              fontSize: Numbers.size(context: context, percent: Numbers.three),
             ),
             if (_hasDescription(description: list.description))
-              Separator(distanceAsPercent: Numbers.two),
+              Separator(distanceAsPercent: Numbers.five, thin: true),
             if (_hasDescription(description: list.description))
               ListSubTitle(
                 text: list.description,
                 fontSize: Numbers.size(context: context, percent: Numbers.two) -
                     Numbers.three,
               ),
-            Separator(distanceAsPercent: Numbers.two),
+            Separator(distanceAsPercent: Numbers.five, thin: true),
             _ShoppingListMoreInfo(list: list),
           ],
         ),
@@ -261,10 +279,7 @@ class _Spent extends StatelessWidget {
                   dimension: Dimension.width,
                   distanceAsPercent: Numbers.one,
                 ),
-                Text(
-                  'R${context.watch<ShoppingListViewModel>().getSpent}',
-                  style: _spentAmountStyle,
-                ),
+                Text('R$_spent', style: _spentAmountStyle),
               ],
             ),
           )
@@ -274,8 +289,9 @@ class _Spent extends StatelessWidget {
 
 class _ShoppingListItems extends StatefulWidget {
   final String listId;
+  final Function checkIfHasMissingItems;
 
-  _ShoppingListItems({this.listId});
+  _ShoppingListItems({this.listId, this.checkIfHasMissingItems});
 
   @override
   __ShoppingListItemsState createState() => __ShoppingListItemsState();
@@ -361,6 +377,8 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
     }
 
     _toggleSelectionState();
+
+    widget.checkIfHasMissingItems();
   }
 
   void _toggleSelectionState() {
@@ -383,7 +401,10 @@ class __ShoppingListItemsState extends State<_ShoppingListItems> {
 
   @override
   void initState() {
-    _future(() => _viewModel.getListItems(listId: widget.listId));
+    _future(() async {
+      await _viewModel.getListItems(listId: widget.listId);
+      await widget.checkIfHasMissingItems();
+    });
     super.initState();
   }
 

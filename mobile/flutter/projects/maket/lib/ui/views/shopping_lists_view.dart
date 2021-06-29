@@ -37,6 +37,10 @@ class ShoppingListsView extends StatefulWidget {
 }
 
 class _ShoppingListsViewState extends State<ShoppingListsView> {
+  void _showSearchView() {
+    pushRoute(context: context, name: AppRoute.listSearchView);
+  }
+
   @override
   void initState() {
     locator<ShoppingListViewModel>().getAllListBodies();
@@ -53,7 +57,11 @@ class _ShoppingListsViewState extends State<ShoppingListsView> {
             return BaseView(
               safeAreaBottom: false,
               appBar: (viewModel.response.data.length > Numbers.zero)
-                  ? appBar(title: SearchInputPlaceholder(hint: 'Search Lists'))
+                  ? appBar(
+                      title: SearchInputPlaceholder(
+                      hint: 'Search Lists',
+                      onTap: _showSearchView,
+                    ))
                   : null,
               child: child,
             );

@@ -1,3 +1,4 @@
+import 'package:maket/constants/common.dart';
 import 'package:maket/constants/items.dart';
 import 'package:maket/core/models/item_model.dart';
 import 'package:maket/core/models/shopping_list_model.dart';
@@ -43,6 +44,14 @@ class ShoppingListViewModel extends BaseViewModel {
   String get getSpent => Numbers.stringAsFixed(number: _spent);
 
   Map<String, int> listItemsCount = {};
+
+  List<ShoppingListModel> searchedItems = [];
+
+  List<ShoppingListModel> get getSearchedItems => searchedItems;
+
+  bool get hasSearchedResults => searchedItems.isNotEmpty;
+
+  // Methods
 
   Future<HttpResponse> create({ShoppingListModel shoppingList}) async {
     busy;
@@ -138,8 +147,9 @@ class ShoppingListViewModel extends BaseViewModel {
       _calculateSpent();
       _increaseListSpent(listId: listId);
 
-      final String _responseMessage =
-          (item.bought) ? 'Item price set' : 'Item Price removed';
+      final String _responseMessage = (item.bought)
+          ? '${item.name} price set'
+          : '${item.name} Price removed';
 
       idle;
       return Response.build(message: _responseMessage);
@@ -189,12 +199,17 @@ class ShoppingListViewModel extends BaseViewModel {
     try {
       final List<String> _listIds = _getSelectedListsIds();
 
-      final String _response = await _service.deleteMany(listIds: _listIds);
+      final String _responseMessage =
+          await _service.deleteMany(listIds: _listIds);
 
       await _removeSelectedListsFromCurrentLists(selectedListIds: _listIds);
 
+      _responseListItems = Response.build();
+      // _selectedMissingItems = [];
+      searchedItems = [];
+
       idle;
-      return Response.build(message: _response);
+      return Response.build(message: _responseMessage);
     } on ApiException catch (ex) {
       idle;
 
@@ -229,7 +244,10 @@ class ShoppingListViewModel extends BaseViewModel {
       bool _inList = false;
 
       _responseListItems.data.forEach((ItemModel itemInList) {
-        if (itemInList.id == item['_id']) _inList = true;
+        if (itemInList.id == item['_id'] &&
+            itemInList.category != ItemConstants.itemGroupTitle) {
+          _inList = true;
+        }
       });
 
       if (!_inList) _items.add(item);
@@ -240,25 +258,30 @@ class ShoppingListViewModel extends BaseViewModel {
     return _response;
   }
 
-  Future<HttpResponse> addMissingItemsToShoppingList({
-    List<ItemModel> items,
-    String listId,
-  }) async {
+  Future<HttpResponse> saveMissingItemsToShoppingList({String listId}) async {
     busy;
     try {
-      final _responseMessage =
-          await _service.addItemsToList(listId: listId, items: items);
+      ItemViewModel _itemViewModel = locator<ItemViewModel>();
 
-      _responseListItems.data.addAll(items);
+      List<ItemModel> _items = _itemViewModel.selectedShoppingListItems;
+
+      final String _responseMessage =
+          await _service.addItemsToList(listId: listId, items: _items);
+
+      _responseListItems.data.addAll(_items);
 
       _reorganiseListItems(listId: listId);
 
       _response.data.forEach((ShoppingListModel list) {
         if (list.id == listId) {
-          list.itemsCount = (list.itemsCount + items.length);
+          list.itemsCount =
+              (list.itemsCount + _itemViewModel.selectedShoppingListItemsCount);
           listItemsCount[listId] = list.itemsCount;
         }
       });
+
+      // _selectedMissingItems.clear();
+      _itemViewModel.resetSelectedShoppingListItems();
 
       idle;
       return Response.build(message: _responseMessage);
@@ -269,7 +292,7 @@ class ShoppingListViewModel extends BaseViewModel {
     } catch (ex) {
       idle;
 
-      return Response.build(status: false, message: 'Could not add the Items');
+      return Response.build(status: false, message: kCouldNotGetItemsMessage);
     }
   }
 
@@ -339,8 +362,48 @@ class ShoppingListViewModel extends BaseViewModel {
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
       idle;
-      return Response.build(status: false, message: 'Could not Delete');
+      return Response.build(status: false, message: kCouldNotDeleteItemMessage);
     }
+  }
+
+  Future<void> searchListByName({String name}) async {
+    busy;
+    clearSearchedResults();
+
+    if (name.isEmpty) {
+      setIsNotSearching();
+      idle;
+      return;
+    }
+
+    setIsSearching();
+
+    bool _hasResult = false;
+
+    response.data.forEach((ShoppingListModel list) {
+      if (list.name.toLowerCase().contains(name.toLowerCase())) {
+        if (!searchedItems.contains(list)) searchedItems.add(list);
+        _hasResult = true;
+      }
+    });
+
+    if (!_hasResult) clearSearchedResults();
+
+    idle;
+  }
+
+  void clearSearchedResults({bool notify: false}) {
+    getSearchedItems.clear();
+    if (notify) idle;
+  }
+
+  Future<void> keepSelectedMissingItems({ItemModel selectedItem}) async {
+    if (selectedItem.selected) {
+      // _selectedMissingItems.add(selectedItem);
+    } else {
+      // _selectedMissingItems.removeWhere((item) => item.id == selectedItem.id);
+    }
+    idle;
   }
 
   // Local Methods

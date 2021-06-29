@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/item_model.dart';
+import 'package:maket/core/viewmodels/item_viewmodel.dart';
 import 'package:maket/core/viewmodels/shopping_list_viewmodel.dart';
 import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
@@ -8,74 +10,69 @@ import 'package:maket/ui/widgets/buttons/action_button.dart';
 import 'package:maket/ui/widgets/list/list_items.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:provider/provider.dart';
 
 import 'fields/search_input_placeholder.dart';
 
-class AddItemsToShoppingListView extends StatefulWidget {
+class AddItemsToShoppingListView extends StatelessWidget {
   final Function onBackButtonPress;
-  final List<ItemModel> items;
   final Function onItemTap;
   final bool canSubmit;
   final Function saveShoppingList;
 
   AddItemsToShoppingListView({
     this.onBackButtonPress,
-    this.items,
     this.onItemTap,
     this.canSubmit,
     this.saveShoppingList,
   });
 
   @override
-  _AddItemsToShoppingListViewState createState() =>
-      _AddItemsToShoppingListViewState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<ItemViewModel>.value(
+      value: locator<ItemViewModel>(),
+      child: _AddItemsToShoppingListView(
+        onBackButtonPress: onBackButtonPress,
+        onItemTap: onItemTap,
+        canSubmit: canSubmit,
+        saveShoppingList: saveShoppingList,
+      ),
+    );
+  }
 }
 
-class _AddItemsToShoppingListViewState
-    extends State<AddItemsToShoppingListView> {
-  List<ItemModel> _items;
-  int _selectedItems = 0;
+class _AddItemsToShoppingListView extends StatefulWidget {
+  final Function onBackButtonPress;
+  final Function onItemTap;
+  final bool canSubmit;
+  final Function saveShoppingList;
 
-  bool _localState = true;
+  _AddItemsToShoppingListView({
+    this.onBackButtonPress,
+    this.onItemTap,
+    this.canSubmit,
+    this.saveShoppingList,
+  });
+  @override
+  __AddItemsToShoppingListViewState createState() =>
+      __AddItemsToShoppingListViewState();
+}
 
+class __AddItemsToShoppingListViewState
+    extends State<_AddItemsToShoppingListView> {
   bool _canSubmit = false;
 
-  void _onItemTapped(ItemModel tapedItem) {
-    if (_canSubmit && !_localState) {
-      widget.onItemTap(tapedItem);
-    } else {
-      _checkSelectedItems(tapedItem);
-    }
-  }
+  void _onItemTapped(ItemModel tapedItem) => widget.onItemTap(tapedItem);
 
-  void _checkSelectedItems(ItemModel tapedItem) {
-    setState(() {
-      _items.forEach((ItemModel item) {
-        if (item.id == tapedItem.id) {
-          item.selected = !item.selected;
-          widget.onItemTap(item);
-          (item.selected) ? _selectedItems++ : _selectedItems--;
-          _checkIfCanSubmit();
-        }
-      });
-    });
-  }
-
-  void _checkIfCanSubmit() {
-    setState(() {
-      _canSubmit = (_selectedItems > Numbers.zero);
-    });
+  void _showSearchView() {
+    pushRoute(context: context, name: AppRoute.itemsSearchView);
   }
 
   @override
   void initState() {
-    _items = widget.items;
-    if (widget.canSubmit) {
-      _canSubmit = widget.canSubmit;
-      _localState = false;
-    }
+    if (widget.canSubmit) _canSubmit = widget.canSubmit;
     super.initState();
   }
 
@@ -84,9 +81,11 @@ class _AddItemsToShoppingListViewState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SearchInputPlaceholder(hint: 'Search Items'),
-        Separator(distanceAsPercent: Numbers.two),
-        _ItemsList(items: _items, onItemTap: _onItemTapped),
+        SearchInputPlaceholder(hint: 'Search Items', onTap: _showSearchView),
+        _ItemsList(
+          items: context.watch<ItemViewModel>().response.data,
+          onItemTap: _onItemTapped,
+        ),
         Separator(distanceAsPercent: Numbers.three, thin: true),
         ChangeNotifierProvider<ShoppingListViewModel>.value(
           value: locator<ShoppingListViewModel>(),
@@ -151,7 +150,10 @@ class _AddItemsToListActionButton extends StatelessWidget {
         Separator(dimension: Dimension.width),
         ExpandedView(
           child: ActionButton(
-            buttonType: (canSubmit) ? ButtonType.primary : ButtonType.disable,
+            buttonType: (canSubmit ||
+                    context.watch<ItemViewModel>().hasSelectedShoppingListItems)
+                ? ButtonType.primary
+                : ButtonType.disable,
             text: "Done",
             contentPosition: Position.center,
             onPressed: () => saveShoppingList(context: context),

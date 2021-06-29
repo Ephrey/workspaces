@@ -5,6 +5,7 @@ class ItemConstants {
   static const String keySelected = 'selected';
 
   static List<String> _itemCategories = [
+    'Accessory',
     'Dairy',
     'Drinks',
     'Fruit',

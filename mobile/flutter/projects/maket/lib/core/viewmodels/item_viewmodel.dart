@@ -12,17 +12,43 @@ class ItemViewModel extends BaseViewModel {
 
   HttpResponse _response = Response.build();
 
+  List<dynamic> _localItems = [];
+
+  List<dynamic> get localItems => _localItems;
+
+  bool get hasLocalItems => _localItems.isNotEmpty;
+
   HttpResponse get response => _response;
 
   bool get hasItems => _response.data.length > Numbers.zero;
 
+  List<ItemModel> searchedItems = [];
+
+  List<ItemModel> get getSearchedItems => searchedItems;
+
+  bool get hasSearchedResults => searchedItems.isNotEmpty;
+
+  List<ItemModel> _selectedShoppingListItems = [];
+
+  List<ItemModel> get selectedShoppingListItems => _selectedShoppingListItems;
+
+  bool get hasSelectedShoppingListItems =>
+      _selectedShoppingListItems.isNotEmpty;
+
+  int get selectedShoppingListItemsCount => _selectedShoppingListItems.length;
+
+  // Methods
+
   Future<HttpResponse> create({ItemModel item}) async {
     busy;
     try {
-      await _itemService.create(item: item.toJson());
-      _resetLocalItemList();
+      Map<String, dynamic> _newItem =
+          await _itemService.create(item: item.toJson());
+
+      _addItemToLocalItems(item: _newItem);
+      _resetItemListFromResponse();
       idle;
-      return Response.build(message: 'Item created');
+      return Response.build(message: '${item.name} created');
     } on ApiException catch (ex) {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
@@ -35,7 +61,14 @@ class ItemViewModel extends BaseViewModel {
   Future<HttpResponse> getAll() async {
     busy;
     try {
-      final List<dynamic> _items = await _itemService.getAll();
+      List<dynamic> _items = [];
+
+      if (hasLocalItems) {
+        _items = localItems;
+      } else {
+        _items = await _itemService.getAll();
+        _localItems = _items;
+      }
 
       _response = Response.build(data: _items);
 
@@ -110,9 +143,75 @@ class ItemViewModel extends BaseViewModel {
     return _itemsGroupedByCategory;
   }
 
+  Future<void> searchItemByName({String name}) async {
+    busy;
+    clearSearchedResults();
+
+    if (name.isEmpty) {
+      setIsNotSearching();
+      idle;
+      return;
+    }
+
+    setIsSearching();
+
+    bool _hasResult = false;
+
+    response.data.forEach((ItemModel item) {
+      if (item.name.toLowerCase().contains(name.toLowerCase())) {
+        if (!searchedItems.contains(item) &&
+            item.category != ItemConstants.itemGroupTitle) {
+          searchedItems.add(item);
+        }
+        _hasResult = true;
+      }
+    });
+
+    if (!_hasResult) clearSearchedResults();
+
+    idle;
+  }
+
+  void clearSearchedResults({bool notify: false}) {
+    getSearchedItems.clear();
+    if (notify) idle;
+  }
+
+  Future<void> keepSelectedShoppingListItems({ItemModel tappedItem}) async {
+    int _tappedItemIndex = _response.data.indexOf(tappedItem);
+
+    bool _tappedItemState = _response.data[_tappedItemIndex].selected;
+
+    _response.data[_tappedItemIndex].selected = !_tappedItemState;
+
+    if (_tappedItemState) {
+      _removeTappedItemFromShoppingList(tappedItem);
+    } else {
+      _addTappedItemToShoppingList(tappedItem);
+    }
+    idle;
+  }
+
+  void resetSelectedShoppingListItems() {
+    _selectedShoppingListItems = [];
+  }
+
   // local helper functions.
 
-  void _resetLocalItemList() {
+  void _removeTappedItemFromShoppingList(ItemModel tappedItem) {
+    _selectedShoppingListItems.removeWhere((item) => item.id == tappedItem.id);
+  }
+
+  void _addTappedItemToShoppingList(ItemModel tappedItem) {
+    _selectedShoppingListItems.add(tappedItem);
+  }
+
+  void _resetItemListFromResponse() {
     _response = Response.build();
+  }
+
+  void _addItemToLocalItems({Map<String, dynamic> item, bool notify: false}) {
+    _localItems.add(item);
+    if (notify) idle;
   }
 }
