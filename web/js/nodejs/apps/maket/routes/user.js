@@ -1,4 +1,7 @@
-const { BAD_REQUEST } = require("../utils/constants/httpResponseCodes");
+const {
+  BAD_REQUEST,
+  SUCCESS,
+} = require("../utils/constants/httpResponseCodes");
 const {
   userRegisterValidate,
   userLoginValidate,
@@ -14,6 +17,7 @@ const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const debug = require("debug")("maket:userRoute");
 const UserModel = require("../models/user");
+const RestorePasswordCodeModel = require("../models/restorePasswordCode");
 const express = require("express");
 const router = express.Router();
 
@@ -71,6 +75,29 @@ router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
   }
 
   res.set({ "x-token": token }).send();
+});
+
+router.post("/verify_email", async (req, res) => {
+  const email = req.body.email;
+
+  debug(req.body.email);
+
+  const emailExist = await UserModel.exists({ email: email });
+
+  const responseCode = emailExist ? SUCCESS : BAD_REQUEST;
+  const responseMessage = emailExist ? "Email Found" : "Email not Found";
+
+  if (emailExist) {
+    const code = RestorePasswordCodeModel.generateCode();
+    const restoreDetails = new RestorePasswordCodeModel({
+      email: email,
+      code: code,
+    });
+
+    restoreDetails.save();
+  }
+
+  res.status(responseCode).send(responseMessage);
 });
 
 module.exports = router;
