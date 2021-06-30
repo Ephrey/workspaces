@@ -84,16 +84,21 @@ class Numbers {
   }
 
   static double stringToDouble(String string) {
-    return (!isNumeric(string)) ? asDouble(zero) : parseDouble(string);
+    return (!isDoubleNumeric(string)) ? asDouble(zero) : parseDouble(string);
   }
 
   static double parseDouble(dynamic value) {
     return double.parse(value);
   }
 
-  static bool isNumeric(String value) {
+  static bool isDoubleNumeric(String value) {
     if (value == null) return false;
     return double.tryParse(value) != null;
+  }
+
+  static bool isIntNumeric(String value) {
+    if (value == null) return false;
+    return int.tryParse(value) != null;
   }
 
   static String stringAsFixed({dynamic number, int fraction: two}) {

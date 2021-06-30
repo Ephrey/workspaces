@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/models/user_model.dart';
-import 'package:maket/core/viewmodels/sign_in_viewmodel.dart';
+import 'package:maket/core/viewmodels/user_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
 import 'package:maket/ui/views/base/centered_view.dart';
+import 'package:maket/ui/views/base/expanded_view.dart';
 import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/ui/views/base/scrollable_view.dart';
 import 'package:maket/ui/widgets/buttons/action_button.dart';
@@ -40,12 +41,12 @@ class _SignInViewBody extends StatelessWidget {
     return Column(
       children: [
         NavBar(),
-        Expanded(
-          flex: 2,
+        ExpandedView(
+          flex: Numbers.two,
           child: CenteredView(
             child: ScrollableView(
               child: ChangeNotifierProvider(
-                create: (context) => locator<SignInViewModel>(),
+                create: (context) => locator<UserViewModel>(),
                 child: _SignInForm(),
               ),
             ),
@@ -107,8 +108,7 @@ class _SignInFormState extends State<_SignInForm> {
       password: _passwordController.text,
     );
 
-    final _response =
-        await context.read<SignInViewModel>().login(user: useInfo);
+    final _response = await context.read<UserViewModel>().login(user: useInfo);
 
     if (_response.status) {
       return pushRoute(context: context, name: AppRoute.shoppingListsView);
@@ -178,7 +178,7 @@ class _SignInFormState extends State<_SignInForm> {
             text: 'Sign In',
             onPressed: () => _handleSubmitForm(context: context),
             contentPosition: Position.center,
-            loading: (context.watch<SignInViewModel>().state == ViewState.busy),
+            loading: (context.watch<UserViewModel>().state == ViewState.busy),
           ),
           Separator(),
           ContinueWithText(),

@@ -43,7 +43,7 @@ class _RegisterViewBody extends StatelessWidget {
       children: [
         NavBar(),
         ExpandedView(
-          flex: 2,
+          flex: Numbers.two,
           child: CenteredView(
             child: ScrollableView(
               child: ChangeNotifierProvider(

@@ -4,6 +4,7 @@ enum Dimension { width, height }
 enum InputType { field, dropdown, textArea }
 enum ViewState { idle, busy }
 enum Operations { reset, set, update, delete }
+enum RestorePasswordSteps { email, otpCode, newPassword }
 
 /// [Status] : Representing default, success
 /// warning and error state
