@@ -1,6 +1,8 @@
 const {
   BAD_REQUEST,
   SUCCESS,
+  INTERNAL_SERVER_ERROR,
+  FOUND,
 } = require("../utils/constants/httpResponseCodes");
 const {
   userRegisterValidate,
@@ -9,9 +11,13 @@ const {
 const {
   USER_REGISTER_ENDPOINT,
   USER_LOGIN_ENDPOINT,
+  USER_VERIFY_EMAIL_ENDPOINT,
+  USER_VERIFY_OTP_CODE_ENDPOINT,
+  USER_UPDATE_PASSWORD_ENDPOINT,
 } = require("../utils/constants/user");
 const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
 const { X_TOKEN } = require("../utils/constants/headersKeys");
+const mail = require("../utils/mail/sender");
 const JsonWebToke = require("../validators/jsonWebToken");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
@@ -77,27 +83,109 @@ router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
   res.set({ "x-token": token }).send();
 });
 
-router.post("/verify_email", async (req, res) => {
-  const email = req.body.email;
+router.post(USER_VERIFY_EMAIL_ENDPOINT, async (req, res) => {
+  try {
+    const email = req.body.email;
 
-  debug(req.body.email);
+    const emailExist = await UserModel.exists({ email: email });
 
-  const emailExist = await UserModel.exists({ email: email });
+    let codeSent = false;
 
-  const responseCode = emailExist ? SUCCESS : BAD_REQUEST;
-  const responseMessage = emailExist ? "Email Found" : "Email not Found";
+    if (emailExist) {
+      if (await RestorePasswordCodeModel.exists({ email: email })) {
+        return res
+          .status(FOUND)
+          .send("Verification code already sent. \n Check your Email");
+      }
 
-  if (emailExist) {
-    const code = RestorePasswordCodeModel.generateCode();
-    const restoreDetails = new RestorePasswordCodeModel({
+      const restoreDetails = new RestorePasswordCodeModel({ email: email });
+      debug(restoreDetails.code);
+      if (await restoreDetails.save()) {
+        const didSend = await mail(
+          restoreDetails.email,
+          restoreDetails.code,
+          "Enter this code in the app."
+        );
+        codeSent = didSend;
+      }
+    }
+
+    let responseCode = BAD_REQUEST;
+    let responseMessage;
+
+    if (emailExist && codeSent) {
+      responseCode = SUCCESS;
+      responseMessage = "Verification Code sent";
+    } else if (emailExist && !codeSent) {
+      responseMessage = "Verification Code not sent";
+    } else {
+      responseMessage = "Email not found";
+    }
+
+    return res.status(responseCode).send(responseMessage);
+  } catch (ex) {
+    debug(ex);
+    return res.status(INTERNAL_SERVER_ERROR).send("Server Error. Try again.");
+  }
+});
+
+router.post(USER_VERIFY_OTP_CODE_ENDPOINT, async (req, res) => {
+  try {
+    const email = req.body.email;
+    const otp = req.body.otp;
+
+    debug(otp);
+    debug(email);
+
+    const isValidCode = await RestorePasswordCodeModel.exists({
+      code: otp,
       email: email,
-      code: code,
     });
 
-    restoreDetails.save();
-  }
+    let message = "Valid Code.";
+    let responseCode = SUCCESS;
 
-  res.status(responseCode).send(responseMessage);
+    if (!isValidCode) {
+      message = "Invalid or Unknown Code.";
+      responseCode = BAD_REQUEST;
+    }
+
+    return res.status(responseCode).send(message);
+  } catch (ex) {
+    const message = "Couldn't not verify your OTP Code.";
+    return res.status(INTERNAL_SERVER_ERROR).send(message);
+  }
+});
+
+router.put(USER_UPDATE_PASSWORD_ENDPOINT, async (req, res) => {
+  try {
+    const email = req.body.email;
+
+    const hashedPassword = await bcrypt.hash(
+      req.body.password,
+      PASSWORD_HASH_SALT_ROUNDS
+    );
+
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email: email },
+      { password: hashedPassword },
+      { new: true, useFindAndModify: true }
+    );
+
+    if (updatedUser) {
+      await RestorePasswordCodeModel.deleteMany(
+        { email: email },
+        { useFindAndModify: true }
+      );
+    }
+
+    const token = updatedUser.generateToken();
+    const message = "Successfully updated.";
+    res.set({ "x-token": token }).status(SUCCESS).send(message);
+  } catch (ex) {
+    debug(ex.message);
+    return res.status(INTERNAL_SERVER_ERROR).send("Could not update password");
+  }
 });
 
 module.exports = router;

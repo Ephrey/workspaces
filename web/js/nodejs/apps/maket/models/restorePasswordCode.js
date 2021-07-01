@@ -21,18 +21,17 @@ const restorePasswordCodeSchema = new mongoose.Schema({
     type: String,
     min: CODE_MIN_LENGTH,
     max: CODE_MAX_LENGTH,
-    required: true,
-    trim: true,
+    default: generateCode(),
   },
 });
 
-restorePasswordCodeSchema.statics.generateCode = function () {
-  return Math.floor(1000 + Math.random() * 9000) + "";
-};
-
 const RestorePasswordCodeModel = mongoose.model(
-  "restoreCodes",
+  "Otps",
   restorePasswordCodeSchema
 );
+
+function generateCode() {
+  return Math.floor(1000 + Math.random() * 9000) + "";
+}
 
 module.exports = RestorePasswordCodeModel;
