@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:maket/config/routes/router.dart';
+import 'package:maket/constants/colors.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/viewmodels/user_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
@@ -15,6 +17,7 @@ import 'package:maket/utils/email.dart';
 import 'package:maket/utils/form.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
+import 'package:maket/utils/navigation/push.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/snackbar/show_snackbar.dart';
 
@@ -52,6 +55,8 @@ class _RestorePasswordForm extends StatefulWidget {
 }
 
 class _RestorePasswordFromState extends State<_RestorePasswordForm> {
+  UserViewModel _viewModel = locator<UserViewModel>();
+
   RestorePasswordSteps _currentStep = RestorePasswordSteps.email;
 
   bool _isLoading = false;
@@ -128,23 +133,67 @@ class _RestorePasswordFromState extends State<_RestorePasswordForm> {
   // handle submit forms
   Future<void> _verifyEmail() async {
     _showLoading();
-    final _email = _emailController.text;
-    final HttpResponse _response =
-        await locator<UserViewModel>().verifyEmail(email: _email);
+
+    final HttpResponse _response = await _viewModel.verifyEmail(
+      email: _emailController.text,
+    );
 
     _hideLoading();
+    print('** ${_response.status} : ${_response.code}');
+    if ((_response.status && _response.code == Response.success) ||
+        _response.code == Response.found) {
+      _updateCurrentStep(step: RestorePasswordSteps.otpCode);
 
-    if (_response.code == 200) {
-      _setState(() => _currentStep = RestorePasswordSteps.otpCode);
+      if (_response.code == Response.found) {
+        _showAlertMessage(status: Status.warning, message: _response.message);
+      }
     } else {
       _showAlertMessage(status: Status.error, message: _response.message);
     }
+
     _deactivateActionButton();
   }
 
-  Future<void> _verifyOtpCode() async {}
+  Future<void> _verifyOtpCode() async {
+    _showLoading();
 
-  Future<void> _updatePassword() async {}
+    HttpResponse _response = await _viewModel.verifyOtpCode(
+      otpCode: _otpController.text,
+      email: _emailController.text,
+    );
+
+    _hideLoading();
+
+    if (_response.status) {
+      String _message = (_response.message + ' Enter Your new password.');
+      _showAlertMessage(message: _message);
+      _updateCurrentStep(step: RestorePasswordSteps.newPassword);
+    } else {
+      _showAlertMessage(status: Status.error, message: _response.message);
+    }
+
+    _deactivateActionButton();
+  }
+
+  Future<void> _updatePassword() async {
+    _showLoading();
+
+    HttpResponse _response = await _viewModel.updatePassword(
+      newPassword: _newPasswordController.text,
+      email: _emailController.text,
+    );
+
+    _hideLoading();
+
+    if (_response.status) {
+      pushRoute(context: context, name: AppRoute.shoppingListsView);
+      _showAlertMessage(message: _response.message);
+    } else {
+      _showAlertMessage(status: Status.error, message: _response.message);
+    }
+
+    _deactivateActionButton();
+  }
 
   // helper methods
   bool _areValidPasswords({String pwd1, String pwd2}) {
@@ -172,11 +221,14 @@ class _RestorePasswordFromState extends State<_RestorePasswordForm> {
     }
   }
 
-  void _showAlertMessage({Status status, String message}) {
+  void _showAlertMessage({Status status: Status.success, String message}) {
     showSnackBar(
       context: context,
       flavor: status,
-      content: SnackBarAlert(message: message),
+      content: SnackBarAlert(
+        message: message,
+        textColor: getStatusTextColor(status),
+      ),
     );
   }
 

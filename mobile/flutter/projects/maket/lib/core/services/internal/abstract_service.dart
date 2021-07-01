@@ -14,7 +14,9 @@ abstract class AbstractApi {
 
   static const String baseUserPath = 'user';
   static const String loginPath = (baseUserPath + '/me');
-  static const String verifyEmail = (baseUserPath + '/verify_email');
+  static const String verifyEmailPath = (baseUserPath + '/verify_email');
+  static const String verifyOtpCodePath = (baseUserPath + '/verify_otp_code');
+  static const String updatePasswordPath = (baseUserPath + '/update_password');
 
   static const String baseItemPath = 'items';
 

@@ -259,7 +259,9 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
 }
 
 class _ButtonsCreateItemsAndLists extends StatelessWidget {
-  void _showCreateItemsModal({BuildContext context}) {
+  Future<void> _showCreateItemsModal({BuildContext context}) async {
+    // await LocalStorage.remove(key: HttpHeadersKeys.xToken);
+
     showModal(
       context: context,
       child: CreateItemView(),

@@ -2,7 +2,11 @@ import 'package:maket/constants/enums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
-  static Future<bool> set(DataType dataType, String key, dynamic value) async {
+  static Future<bool> set({
+    DataType dataType,
+    String key,
+    dynamic value,
+  }) async {
     SharedPreferences storage = await _instance();
     switch (dataType) {
       case DataType.string:
@@ -26,6 +30,15 @@ class LocalStorage {
       return storage.get(key);
     } catch (ex) {
       return null;
+    }
+  }
+
+  static Future<bool> remove({String key}) async {
+    SharedPreferences storage = await _instance();
+    try {
+      return storage.remove(key);
+    } catch (ex) {
+      return false;
     }
   }
 

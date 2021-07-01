@@ -17,9 +17,9 @@ class RegisterViewModel extends BaseViewModel {
       final token = await _registerService.register(userInfo: user.toJson());
 
       final bool set = await LocalStorage.set(
-        DataType.string,
-        HttpHeadersKeys.xToken,
-        token,
+        dataType: DataType.string,
+        key: HttpHeadersKeys.xToken,
+        value: token,
       );
 
       idle;
