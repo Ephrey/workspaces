@@ -39,18 +39,15 @@ class ListItemCountAndCreateDate extends StatelessWidget {
         value: locator<ShoppingListViewModel>(),
         child: _ItemCounter(list: list, fontSize: fontSize),
       ),
-      _separator,
-      DotSeparator(),
-      _separator,
-      if (_hasBudget && !longPressTriggered)
+      if (_hasBudget) _separator,
+      if (_hasBudget) DotSeparator(),
+      if (_hasBudget) _separator,
+      if (_hasBudget)
         ListSubTitle(
           text: 'R${list.budget}',
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
           fontSize: (fontSize),
         ),
-      if (_hasBudget && !longPressTriggered) _separator,
-      if (_hasBudget && !longPressTriggered) DotSeparator(),
-      if (_hasBudget && !longPressTriggered) _separator,
     ];
 
     if (showSpent) {
@@ -60,11 +57,18 @@ class ListItemCountAndCreateDate extends StatelessWidget {
       ));
     }
 
-    _children.add(ListSubTitle(
-      text: locator<Date>().humanReadable(date: list.createDate),
-      fontWeight: FontWeight.w700,
-      fontSize: fontSize,
-    ));
+    if (!showSpent) {
+      _children.addAll([
+        _separator,
+        DotSeparator(),
+        _separator,
+        ListSubTitle(
+          text: locator<Date>().humanReadable(date: list.createDate),
+          fontWeight: FontWeight.w600,
+          fontSize: fontSize,
+        )
+      ]);
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,7 +94,7 @@ class _ItemCounter extends StatelessWidget {
 
     return ListSubTitle(
       text: '$_itemsCounter item$_plural',
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       fontSize: fontSize,
     );
   }
@@ -101,6 +105,12 @@ class _Spent extends StatelessWidget {
   final double fontSize;
 
   _Spent({this.list, this.fontSize});
+
+  bool _checkIfHasSpent(spent, spentFromList) {
+    return ((spent != null && spent != Numbers.minSpent()) &&
+        spentFromList != 0.00 &&
+        spentFromList != 0.0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,19 +125,19 @@ class _Spent extends StatelessWidget {
         ? _spent
         : Numbers.stringAsFixed(number: list.spent);
 
-    final bool _hasSpent = (_spent != null && _spent != Numbers.minSpent());
+    final bool _hasSpent = _checkIfHasSpent(_spent, list.spent);
 
     return Row(
       children: [
-        if (_hasSpent)
-          ListSubTitle(
-            text: 'R${list.spent.toStringAsFixed(2)}',
-            fontWeight: FontWeight.w700,
-            fontSize: fontSize,
-          ),
         if (_hasSpent) _separator,
         if (_hasSpent) DotSeparator(),
         if (_hasSpent) _separator,
+        if (_hasSpent)
+          ListSubTitle(
+            text: 'R${Numbers.stringAsFixed(number: list.spent)}',
+            fontWeight: FontWeight.w500,
+            fontSize: fontSize,
+          ),
       ],
     );
   }

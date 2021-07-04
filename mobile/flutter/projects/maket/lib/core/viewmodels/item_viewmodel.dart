@@ -48,7 +48,7 @@ class ItemViewModel extends BaseViewModel {
       _addItemToLocalItems(item: _newItem);
       _resetItemListFromResponse();
       idle;
-      return Response.build(message: '${item.name} created');
+      return Response.build(message: 'Added ${item.name}');
     } on ApiException catch (ex) {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);

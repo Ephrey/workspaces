@@ -9,7 +9,7 @@ import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/local_storage.dart';
 
 abstract class AbstractApi {
-  static const String endpoint = 'localhost:3000';
+  static const String endpoint = '169.254.136.141:3000';
   static const String basePath = '/api/';
 
   static const String baseUserPath = 'user';
@@ -30,7 +30,9 @@ abstract class AbstractApi {
   };
 
   Uri url({String path: '', Map<String, dynamic> params: const {}}) {
-    return Uri.http(endpoint, (basePath + path), params);
+    Uri _url = Uri.http(endpoint, (basePath + path), params);
+    print(_url);
+    return _url;
   }
 
   Future<http.Response> post({

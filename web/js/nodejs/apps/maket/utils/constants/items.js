@@ -9,5 +9,5 @@ module.exports = Object.freeze({
   ITEM_PRICE_MIN: 0.0,
   ITEM_PRICE_MAX: 50000.0,
   ITEM_DEFAULT_QUANTITY: 1,
-  ITEM_MAX_QUANTITY: 25,
+  ITEM_MAX_QUANTITY: 100,
 });

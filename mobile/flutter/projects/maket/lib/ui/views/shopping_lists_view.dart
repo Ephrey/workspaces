@@ -21,7 +21,9 @@ import 'package:maket/ui/widgets/model_container.dart';
 import 'package:maket/ui/widgets/on_long_press_actions.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
+import 'package:maket/utils/http/http_headers_keys.dart';
 import 'package:maket/utils/http/http_responses.dart';
+import 'package:maket/utils/local_storage.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/pop.dart';
 import 'package:maket/utils/navigation/push.dart';
@@ -260,7 +262,7 @@ class __ShoppingListTilesState extends State<_ShoppingListTiles> {
 
 class _ButtonsCreateItemsAndLists extends StatelessWidget {
   Future<void> _showCreateItemsModal({BuildContext context}) async {
-    // await LocalStorage.remove(key: HttpHeadersKeys.xToken);
+    await LocalStorage.remove(key: HttpHeadersKeys.xToken);
 
     showModal(
       context: context,
@@ -301,6 +303,6 @@ class _HistoryListTitle extends StatelessWidget {
       fontWeight: FontWeight.w800,
       letterSpacing: kLetterSpacing,
     );
-    return PaddingView(child: Text('History', style: _style));
+    return PaddingView(child: Text('Others', style: _style));
   }
 }

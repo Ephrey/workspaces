@@ -137,7 +137,7 @@ class ShoppingListViewModel extends BaseViewModel {
 
       _responseListItems.data.forEach((ItemModel currentItem) {
         if (currentItem.id == item.id) {
-          currentItem.price = item.price;
+          currentItem.price = Numbers.doubleAsFixed(number: item.price);
           currentItem.quantity = item.quantity;
           currentItem.bought = item.bought;
         }

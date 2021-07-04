@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maket/constants/colors.dart';
 import 'package:maket/utils/time.dart';
 
-const String kAppName = 'Makèt';
+const String kAppName = 'makèt';
 
 const String kAppSlogan = 'Shopping Made Easy';
 
@@ -56,9 +56,11 @@ const kCouldNotDeleteItemMessage = 'Could not Delete';
 
 const kResultWillPearHereText = 'Results will appear here.';
 
+const kCodeSentToEmailTExt = 'We have sent the code to your email.';
+
 const TextStyle kCreateListAndItemsButtonStyle = TextStyle(
   color: kTextActionColor,
   fontWeight: FontWeight.w900,
-  fontSize: 17.0,
+  fontSize: 15.0,
   letterSpacing: kLetterSpacing,
 );

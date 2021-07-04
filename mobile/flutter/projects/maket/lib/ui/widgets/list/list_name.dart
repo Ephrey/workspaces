@@ -7,18 +7,20 @@ class ListName extends StatelessWidget {
   final Color color;
   final double fontSize;
   final FontWeight fontWeight;
+  final bool overFlow;
 
   ListName({
     @required this.name,
     this.color: kPrimaryColor,
     this.fontSize,
-    this.fontWeight: FontWeight.w700,
+    this.fontWeight: FontWeight.w800,
+    this.overFlow: true,
   }) : assert(name != null);
 
   @override
   Widget build(BuildContext context) {
     double _fontSize = (fontSize == null)
-        ? (Numbers.size(context: context, percent: Numbers.two) - Numbers.two)
+        ? (Numbers.size(context: context, percent: Numbers.two))
         : fontSize;
 
     TextStyle _style = TextStyle(
@@ -27,6 +29,13 @@ class ListName extends StatelessWidget {
       fontWeight: fontWeight,
     );
 
-    return Text(name, style: _style);
+    return (overFlow)
+        ? Text(name, style: _style)
+        : Text(
+            name,
+            style: _style,
+            maxLines: Numbers.one,
+            overflow: TextOverflow.ellipsis,
+          );
   }
 }

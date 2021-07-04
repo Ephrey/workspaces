@@ -67,7 +67,7 @@ class ItemTitle extends StatelessWidget {
     double _screenHeightTwoPercent =
         Numbers.size(context: context, percent: Numbers.two);
 
-    final _fontSize = (_screenHeightTwoPercent - Numbers.two);
+    final _fontSize = (_screenHeightTwoPercent - Numbers.one);
 
     bool _isItemsTitle = (item.category == ItemConstants.itemGroupTitle);
 

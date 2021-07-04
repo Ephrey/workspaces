@@ -83,6 +83,11 @@ class Numbers {
     return int.parse(string);
   }
 
+  static double toValidDecimal(String price) {
+    return stringToDouble(
+        ((price.contains(',')) ? price.replaceFirst(',', '.') : price));
+  }
+
   static double stringToDouble(String string) {
     return (!isDoubleNumeric(string)) ? asDouble(zero) : parseDouble(string);
   }
@@ -103,6 +108,10 @@ class Numbers {
 
   static String stringAsFixed({dynamic number, int fraction: two}) {
     return number.toStringAsFixed(fraction);
+  }
+
+  static double doubleAsFixed({dynamic number, int fraction: two}) {
+    return double.parse(number.toStringAsFixed(fraction));
   }
 
   static String minSpent() {

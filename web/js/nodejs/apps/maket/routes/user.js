@@ -17,7 +17,7 @@ const {
 } = require("../utils/constants/user");
 const { PASSWORD_HASH_SALT_ROUNDS } = require("../utils/constants/common");
 const { X_TOKEN } = require("../utils/constants/headersKeys");
-const mail = require("../utils/mail/sender");
+const Email = require("../utils/mail/email");
 const JsonWebToke = require("../validators/jsonWebToken");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
@@ -85,33 +85,40 @@ router.post(USER_LOGIN_ENDPOINT, async (req, res) => {
 
 router.post(USER_VERIFY_EMAIL_ENDPOINT, async (req, res) => {
   try {
-    const email = req.body.email;
+    const userEmail = req.body.email;
 
-    const emailExist = await UserModel.exists({ email: email });
+    const emailExist = await UserModel.exists({ email: userEmail });
 
     let codeSent = false;
 
     if (emailExist) {
-      if (await RestorePasswordCodeModel.exists({ email: email })) {
+      if (await RestorePasswordCodeModel.exists({ email: userEmail })) {
         return res
           .status(FOUND)
           .send("Verification code already sent. \n Check your Email");
       }
 
-      const restoreDetails = new RestorePasswordCodeModel({ email: email });
-      debug(restoreDetails.code);
-      if (await restoreDetails.save()) {
-        const didSend = await mail(
-          restoreDetails.email,
-          restoreDetails.code,
-          "Enter this code in the app."
-        );
-        codeSent = didSend;
+      const restoreDetails = new RestorePasswordCodeModel({ email: userEmail });
+
+      const mail = new Email(
+        '"Maket App" <help@maket.com>',
+        restoreDetails.email,
+        "Confirmation Code is #" + restoreDetails.code,
+        "<h1>Hope to See you There ...</h1>"
+      );
+
+      mail.initTransport();
+      const emailResponse = await mail.send();
+
+      if (emailResponse.rejected.length === 0) {
+        if (await restoreDetails.save()) {
+          codeSent = true;
+        }
       }
     }
 
     let responseCode = BAD_REQUEST;
-    let responseMessage;
+    let responseMessage = "";
 
     if (emailExist && codeSent) {
       responseCode = SUCCESS;
@@ -169,14 +176,11 @@ router.put(USER_UPDATE_PASSWORD_ENDPOINT, async (req, res) => {
     const updatedUser = await UserModel.findOneAndUpdate(
       { email: email },
       { password: hashedPassword },
-      { new: true, useFindAndModify: true }
+      { new: true, useFindAndModify: false }
     );
 
     if (updatedUser) {
-      await RestorePasswordCodeModel.deleteMany(
-        { email: email },
-        { useFindAndModify: true }
-      );
+      await RestorePasswordCodeModel.deleteMany({ email: email });
     }
 
     const token = updatedUser.generateToken();

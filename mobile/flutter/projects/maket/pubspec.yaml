@@ -24,6 +24,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^1.2.0
+  archive: ^3.0.0
+  image: ^3.0.2
+#  crypto: ^3.0.0
 
 flutter:
   uses-material-design: true

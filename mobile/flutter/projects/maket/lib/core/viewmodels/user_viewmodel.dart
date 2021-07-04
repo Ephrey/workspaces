@@ -31,6 +31,7 @@ class UserViewModel extends BaseViewModel {
       idle;
       return Response.build(status: false, code: ex.code, message: ex.message);
     } catch (ex) {
+      print('In Login Method *** :  $ex');
       idle;
       return Response.build(status: false, message: 'Failed to Login');
     }

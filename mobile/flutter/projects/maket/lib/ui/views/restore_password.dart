@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maket/config/routes/router.dart';
 import 'package:maket/constants/colors.dart';
+import 'package:maket/constants/common.dart';
 import 'package:maket/constants/enums.dart';
 import 'package:maket/core/viewmodels/user_viewmodel.dart';
 import 'package:maket/ui/views/base/base_view.dart';
@@ -279,7 +280,7 @@ class _RestorePasswordFromState extends State<_RestorePasswordForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (_currentStep == RestorePasswordSteps.email)
           FormInput(
@@ -302,6 +303,8 @@ class _RestorePasswordFromState extends State<_RestorePasswordForm> {
             state: _otpCodeStatus,
             onChange: _handleOtpCodeField,
           ),
+        if (_currentStep == RestorePasswordSteps.otpCode)
+          _CodeSentToEmailText(),
         if (_currentStep == RestorePasswordSteps.newPassword)
           FormInput(
             controller: _newPasswordController,
@@ -336,5 +339,12 @@ class _RestorePasswordFromState extends State<_RestorePasswordForm> {
         )
       ],
     );
+  }
+}
+
+class _CodeSentToEmailText extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text(kCodeSentToEmailTExt, style: TextStyle(color: kErrorColor));
   }
 }

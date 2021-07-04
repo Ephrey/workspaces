@@ -169,7 +169,6 @@ class _ShoppingListViewState extends State<ShoppingListView> {
                 listId: widget.list.id,
                 checkIfHasMissingItems: _checkIfHasMissingItems,
               ),
-              // Separator(distanceAsPercent: Numbers.ten),
             ],
           ),
           if (_hasMissingItems)
@@ -217,7 +216,7 @@ class _ShoppingListInfoBlock extends StatelessWidget {
               ListSubTitle(
                 text: list.description,
                 fontSize: Numbers.size(context: context, percent: Numbers.two) -
-                    Numbers.three,
+                    Numbers.one,
               ),
             Separator(distanceAsPercent: Numbers.five, thin: true),
             _ShoppingListMoreInfo(list: list),
@@ -240,7 +239,7 @@ class _ShoppingListMoreInfo extends StatelessWidget {
         ExpandedView(
           child: ListItemCountAndCreateDate(
             fontSize: Numbers.size(context: context, percent: Numbers.two) -
-                Numbers.four,
+                Numbers.two,
             list: list,
             showSpent: false,
           ),
@@ -266,6 +265,7 @@ class _Spent extends StatelessWidget {
 
     return (_spent != Numbers.minSpent())
         ? FloatingContainer(
+            position: Alignment.bottomLeft,
             backgroundColor: (Numbers.stringToDouble(_spent) > budget)
                 ? kErrorColor
                 : kTextActionColor,

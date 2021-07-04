@@ -46,8 +46,8 @@ class _SetItemPriceViewState extends State<SetItemPriceView> {
   bool _isLoading = false;
 
   dynamic _handleItemPriceInput(String price) {
-    double _price = Numbers.stringToDouble(price);
-
+    double _price = Numbers.toValidDecimal(price);
+    print(_price);
     if (_maxPriceExceeded(price: _price)) return false;
 
     if (_priceStateIsUnchanged(price: _price)) return false;
@@ -80,7 +80,7 @@ class _SetItemPriceViewState extends State<SetItemPriceView> {
       _item.quantity = Numbers.one;
       _item.bought = false;
     } else {
-      _item.price = Numbers.stringToDouble(_controller.text);
+      _item.price = Numbers.toValidDecimal(_controller.text);
       _item.quantity = _selectedQuantity;
       _item.bought = true;
     }
@@ -248,7 +248,7 @@ class _QuantityButtons extends StatelessWidget {
         },
         separatorBuilder: (_, __) =>
             Separator(dimension: Dimension.width, thin: true),
-        itemCount: Numbers.twentyFive,
+        itemCount: Numbers.hundred,
       ),
     );
   }
@@ -266,13 +266,13 @@ class _QuantityButton extends StatelessWidget {
     final bool _activeBtn = (id == selectedQuantity);
 
     final double _btnSize =
-        (Numbers.size(context: context, percent: Numbers.five) + Numbers.four);
+        (Numbers.size(context: context, percent: Numbers.five) + Numbers.six);
 
     final Color _btnBgColor = _activeBtn ? kPrimaryColor : kSecondaryColor;
 
     final TextStyle _textStyle = TextStyle(
       color: (_activeBtn) ? kTextPrimaryColor : kTextSecondaryColor,
-      fontSize: 18.0,
+      fontSize: (_btnSize / Numbers.three),
     );
 
     return GestureHandler(

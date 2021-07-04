@@ -17,7 +17,7 @@ class ListSubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     double _fontSize = (fontSize != null)
         ? fontSize
-        : Numbers.size(context: context, percent: Numbers.two) - Numbers.four;
+        : Numbers.size(context: context, percent: Numbers.two) - Numbers.three;
 
     TextStyle _style = TextStyle(
       color: kTextSecondaryColor,

@@ -6,9 +6,6 @@ import 'package:maket/ui/views/base/padding_view.dart';
 import 'package:maket/utils/numbers.dart';
 import 'package:maket/utils/screen_size.dart';
 
-final double _horizontal = Numbers.asDouble(Numbers.eighteen);
-final double _vertical = Numbers.asDouble(Numbers.twentyFive);
-
 class FloatingContainer extends StatelessWidget {
   final Widget content;
   final AlignmentGeometry position;
@@ -24,6 +21,11 @@ class FloatingContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double _size = Numbers.size(context: context, percent: Numbers.three);
+
+    final double _horizontal = _size - Numbers.five;
+    final double _vertical = _size;
+
     return AlignedView(
       position: position,
       child: PaddingView(

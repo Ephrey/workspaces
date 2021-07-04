@@ -18,6 +18,7 @@ import 'package:maket/ui/widgets/nav_bar.dart';
 import 'package:maket/ui/widgets/separator.dart';
 import 'package:maket/ui/widgets/snackbar_alert.dart';
 import 'package:maket/utils/form.dart';
+import 'package:maket/utils/hide_keyboard.dart';
 import 'package:maket/utils/http/http_responses.dart';
 import 'package:maket/utils/locator.dart';
 import 'package:maket/utils/navigation/pop.dart';
@@ -69,7 +70,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   }
 
   dynamic _handleBudgetField(String budget) {
-    double _budget = Numbers.stringToDouble(budget);
+    double _budget = Numbers.toValidDecimal(budget);
 
     bool _isValidBudget = (_budget > Forms.minBudget);
 
@@ -110,6 +111,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
   Status _getFieldState(bool state) => (state) ? Status.success : Status.error;
 
   void _moveToAddItemsToList() {
+    hideKeyboard(context: context);
     _pageController.nextPage(duration: _duration, curve: _curve);
   }
 
@@ -157,7 +159,7 @@ class _CreateShoppingListViewState extends State<CreateShoppingListView> {
       name: _nameController.text,
       items: _itemViewModel.selectedShoppingListItems,
       description: _descriptionController.text,
-      budget: Numbers.stringToDouble(_budgetController.text),
+      budget: Numbers.toValidDecimal(_budgetController.text),
     );
 
     final HttpResponse _response = await context
